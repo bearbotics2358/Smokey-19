@@ -2,12 +2,20 @@
 
 CameraSubsystem::CameraSubsystem(subsystems::CommandSwerveDrivetrain* m_drivetrain) {
     m_drivetrain = m_drivetrain;
+    RP2toRobot = 
+        frc::Transform3d(frc::Translation3d(14_in, 7.5_in, 17_in),
+            frc::Rotation3d(0_deg, 0_deg, 0_deg));
+    m_poseEstimator = std::make_unique<photon::PhotonPoseEstimator>(aprilTagFieldLayout, photon::PoseStrategy::MULTI_TAG_PNP_ON_COPROCESSOR, RP2toRobot);
 }
 
 void CameraSubsystem::updateRP2Data() {
     resultRP2 = rubikPi2Camera.GetLatestResult();
     if (resultRP2.HasTargets()) {
         frc::SmartDashboard::PutBoolean("RP2 Camera Has Targets", true);
+        std::optional<photon::EstimatedRobotPose> estimatedPose = m_poseEstimator->Update(resultRP2);
+        frc::SmartDashboard::PutNumber("Camera/CurrentX", m_poseEstimator.get()->GetReferencePose().X().value());
+        frc::SmartDashboard::PutNumber("Camera/CurrentX", m_poseEstimator.get()->GetReferencePose().Y().value());
+        frc::SmartDashboard::PutNumber("Camera/CurrentX", m_poseEstimator.get()->GetReferencePose().Z().value());
         RP2BestTarget = resultRP2.GetBestTarget();
         RP2toTarget = RP2BestTarget.GetBestCameraToTarget();
         frc::SmartDashboard::PutNumber("RP2 X Pose", RP2toTarget.X().value());
