@@ -7,9 +7,8 @@
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/RobotModeTriggers.h>
 
-RobotContainer::RobotContainer(TurretSubsystem* turret):
-m_cameraSubsystem(&m_drivetrain),
-m_turretSubsystem(turret)
+RobotContainer::RobotContainer()
+    : m_cameraSubsystem(&m_drivetrain)
 {
     ConfigureBindings();
 }
@@ -40,11 +39,11 @@ void RobotContainer::ConfigureBindings()
         return point.WithModuleDirection(frc::Rotation2d{-joystick.GetLeftY(), -joystick.GetLeftX()});
     }));
 
-    joystick.LeftTrigger().WhileTrue(m_turretSubsystem->SetGoalAngle(90_deg));
-    joystick.LeftBumper().WhileTrue(m_turretSubsystem->SetGoalAngle(135_deg));
-    joystick.RightTrigger().WhileTrue(m_turretSubsystem->SetGoalAngle(225_deg));
-    joystick.RightBumper().WhileTrue(m_turretSubsystem->SetGoalAngle(180_deg));
-    //m_turretSubsystem->SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
+    joystick.LeftTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(90_deg));
+    joystick.LeftBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
+    joystick.RightTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(225_deg));
+    joystick.RightBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(180_deg));
+    //m_turretSubsystem.SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -57,10 +56,6 @@ void RobotContainer::ConfigureBindings()
     joystick.LeftBumper().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
-}
-
-void RobotContainer::Periodic() {
-    m_turretSubsystem->SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()

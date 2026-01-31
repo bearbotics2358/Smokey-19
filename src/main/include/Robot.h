@@ -41,9 +41,6 @@ private:
 
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
 
-    CameraSubsystem m_cameraSubsystem;
-    TurretSubsystem m_turretSubsystem;
-
     /* log and replay timestamp and joystick data */
     ctre::phoenix6::HootAutoReplay m_timeAndJoystickReplay = ctre::phoenix6::HootAutoReplay{}
         .WithTimestampReplay()

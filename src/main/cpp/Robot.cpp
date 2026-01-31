@@ -6,17 +6,10 @@
 
 #include <frc2/command/CommandScheduler.h>
 
-Robot::Robot():
-m_cameraSubsystem(&m_drivetrain),
-m_turretSubsystem(),
-m_container(&m_turretSubsystem)
-{}
+Robot::Robot() {}
 
 void Robot::RobotPeriodic() {
     m_timeAndJoystickReplay.Update();
-    m_cameraSubsystem.Periodic();
-    m_container.Periodic();
-    m_turretSubsystem.SetGoalAngle(units::angle::degree_t(fabs(frc::SmartDashboard::GetNumber("PIDTuner/x", 0)) * 100));
     frc2::CommandScheduler::GetInstance().Run();
 }
 
@@ -39,16 +32,12 @@ void Robot::AutonomousPeriodic() {}
 void Robot::AutonomousExit() {}
 
 void Robot::TeleopInit() {
-    //not tested yet
-    m_turretSubsystem.turretInit();
     if (m_autonomousCommand) {
         frc2::CommandScheduler::GetInstance().Cancel(m_autonomousCommand.value());
     }
 }
 
-void Robot::TeleopPeriodic() {
-    m_turretSubsystem.Periodic();
-}
+void Robot::TeleopPeriodic() {}
 
 void Robot::TeleopExit() {}
 

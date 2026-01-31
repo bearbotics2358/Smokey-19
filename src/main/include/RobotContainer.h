@@ -30,16 +30,14 @@ private:
     frc2::CommandXboxController joystick{0};
 
     CameraSubsystem m_cameraSubsystem;
-    TurretSubsystem *m_turretSubsystem;
+    TurretSubsystem m_turretSubsystem;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
 
-    RobotContainer(TurretSubsystem* turret);
+    RobotContainer();
 
     frc2::CommandPtr GetAutonomousCommand();
-
-    void Periodic();
 
 private:
     void ConfigureBindings();
