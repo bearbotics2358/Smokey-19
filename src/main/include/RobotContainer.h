@@ -10,6 +10,8 @@
 #include "Telemetry.h"
 #include "subsystems/CameraSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
+#include "vision/VisionConstants.h"
+#include "vision/VisionSubsystem.h"
 
 class RobotContainer {
 private:
@@ -35,6 +37,7 @@ private:
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
+    VisionSubsystem m_VisionSubsystem{&m_drivetrain, VisionConstants::GetLocalizationCameras(&m_drivetrain)};
 
     RobotContainer();
 
