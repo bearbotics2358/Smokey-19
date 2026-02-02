@@ -1,12 +1,11 @@
 #include "subsystems/TurretSubsystem.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-TurretSubsystem::TurretSubsystem():
-m_turretSpinMotor(kTurretMotorID),
-m_cameraSubsystem(&m_drivetrain)
+TurretSubsystem::TurretSubsystem()
+    : m_turretSpinMotor(kTurretMotorID)
 {
     ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
-    
+
     auto& talonFXConfigurator = m_turretSpinMotor.GetConfigurator();
     configs::CurrentLimitsConfigs limitConfigs{};
     limitConfigs.SupplyCurrentLimit = units::current::ampere_t(1);
