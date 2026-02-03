@@ -17,8 +17,6 @@
 
 #include <frc/controller/SimpleMotorFeedforward.h>
 
-#include <subsystems/CameraSubsystem.h>
-
 #include <subsystems/CommandSwerveDrivetrain.h>
 
 constexpr int kTurretMotorID = 60;
@@ -36,12 +34,10 @@ class TurretSubsystem : public frc2::SubsystemBase {
         bool motorLimit();
 
         bool getLimitSwitch();
-        
+
         void turretInit();
 
         bool turretInitialized = false;
-
-        subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
     private:
         void GoToAngle();
 
@@ -67,7 +63,5 @@ class TurretSubsystem : public frc2::SubsystemBase {
         //frc::SimpleMotorFeedforward m_turretFeedForward{kS, kV, kA};
 
         units::degree_t m_setpointAngle = 90_deg;
-
-        CameraSubsystem m_cameraSubsystem;
 
 };

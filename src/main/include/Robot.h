@@ -39,8 +39,6 @@ private:
 
     RobotContainer m_container;
 
-    subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
-
     /* log and replay timestamp and joystick data */
     ctre::phoenix6::HootAutoReplay m_timeAndJoystickReplay = ctre::phoenix6::HootAutoReplay{}
         .WithTimestampReplay()
