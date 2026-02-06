@@ -26,6 +26,17 @@
     "tuple": "cpp",
     "type_traits": "cpp",
     "utility": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "atomic": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp",
+    "exception": "cpp",
+    "iterator": "cpp",
+    "initializer_list": "cpp",
+    "iosfwd": "cpp",
+    "new": "cpp",
+    "sstream": "cpp",
+    "stdexcept": "cpp"
   }
 }
