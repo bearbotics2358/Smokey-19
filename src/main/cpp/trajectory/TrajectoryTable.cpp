@@ -1,5 +1,9 @@
 // TrjectoryTable.cpp - class to hold the table of angle versus speed (actually wheel RPM) for the shooter
 
+#if defined(_WIN32) || defined(_WIN64)
+#define _USE_MATH_DEFINES
+#endif
+
 #include <math.h>
 #include "trajectory/TrajectoryTable.h"
 

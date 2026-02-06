@@ -28,12 +28,12 @@ class TrajectoryTable {
 	int get_rpm_inc();
 
 	double data[TRAJECTORY_TABLE_ANGLES][TRAJECTORY_TABLE_SPEEDS];
-	
+
  private:
 
 	double m_wheel_diameter_in;
-	double m_hub_height_in;
 	double m_shooter_height_in;
+	double m_hub_height_in;
 
 	int m_theta_min;
 	int m_theta_max;
