@@ -1,6 +1,6 @@
 // TrajectoryCalc.h - helper class to calculate trajectories for the shooter
 
-#include "TrajectoryTable.h"
+#include "trajectory/TrajectoryTable.h"
 
 class TrajectoryCalc {
 

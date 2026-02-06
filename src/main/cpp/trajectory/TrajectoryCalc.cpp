@@ -1,7 +1,7 @@
 // TrajectoryCalc.cpp - helper class to calculate trajectories for the shooter
 
 #include <math.h>
-#include "TrajectoryCalc.h"
+#include "trajectory/TrajectoryCalc.h"
 
 void TrajectoryCalc::init()
 {

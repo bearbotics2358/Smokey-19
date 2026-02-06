@@ -1,7 +1,7 @@
 // TrjectoryTable.cpp - class to hold the table of angle versus speed (actually wheel RPM) for the shooter
 
 #include <math.h>
-#include "TrajectoryTable.h"
+#include "trajectory/TrajectoryTable.h"
 
 TrajectoryTable::TrajectoryTable(double wheel_diameter_in, double shooter_height_in, double hub_height_in) :
 	m_wheel_diameter_in(wheel_diameter_in),
