@@ -4,17 +4,55 @@
 #include <frc/simulation/FlywheelSim.h>
 #include <frc/system/plant/LinearSystemId.h>
 
+#include <frc/controller/ProfiledPIDController.h>
+#include <frc/trajectory/TrapezoidProfile.h>
+
+#include <frc2/command/Commands.h>
+
 #include <ctre/phoenix6/TalonFX.hpp>
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
     ShooterSubsystem();
+    
+    units::revolutions_per_minute_t CurrentSpeed();
+
     void Periodic() override;
     void SimulationPeriodic() override;
 
 private:
+    void GoToSpeed();
+    frc2::CommandPtr EnableShooter();
+    frc2::CommandPtr StopShooter();
+    void SetGoalSpeed(units::revolutions_per_minute_t speed);
+    
+
+    //find actual value for everything later
     static constexpr int kFlywheelMotorId = 2;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
+
+    static constexpr int kFlywheelFollowerMotorId = 3;
+    ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
+
+    static constexpr double kGearRatio = 113.28;
+
+    static constexpr units::turns_per_second_t kMaxVelocity = 1.5_tps;
+    static constexpr units::turns_per_second_squared_t kMaxAcceleration = 0.75_tr_per_s_sq;
+    double P = 3;
+    double I = 0.3;
+    double D = 0.0;
+
+
+    frc::TrapezoidProfile<units::revolutions_per_minute_t>::Constraints m_constraints {
+            kMaxVelocity, kMaxAcceleration
+    };
+
+    frc::PIDController m_shooterPID {
+            P, I, D
+    };
+
+    units::revolutions_per_minute_t m_setSpeed = 3600_rpm;
+    
 
     ////////////////////////////
     // Simulation related values

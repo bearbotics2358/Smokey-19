@@ -12,6 +12,7 @@
 #include "subsystems/TurretSubsystem.h"
 #include "vision/VisionConstants.h"
 #include "vision/VisionSubsystem.h"
+#include "subsystems/ShooterSubsystem.h"
 
 class RobotContainer {
 private:
@@ -34,6 +35,7 @@ private:
 
     CameraSubsystem m_cameraSubsystem;
     TurretSubsystem m_turretSubsystem;
+    ShooterSubsystem m_shooterSubsystem;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
