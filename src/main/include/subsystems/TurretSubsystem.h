@@ -19,15 +19,20 @@
 
 #include <frc2/command/button/Trigger.h>
 
+#include <subsystems/CommandSwerveDrivetrain.h>
+
 constexpr int kTurretMotorID = 60;
 
 class TurretSubsystem : public frc2::SubsystemBase {
     public:
-        TurretSubsystem();
+        TurretSubsystem(subsystems::CommandSwerveDrivetrain* drivetrain);
 
         frc2::CommandPtr SetGoalAngle(units::degree_t angle);
+        void SetAngleGoal(units::degree_t angle);
         units::degree_t CurrentAngle();
         void goToAngle();
+
+        units::degree_t AngleToHub();
 
         void Periodic() override;
         void SimulationPeriodic() override;
@@ -85,4 +90,5 @@ class TurretSubsystem : public frc2::SubsystemBase {
           10_deg,
         };
 
+        subsystems::CommandSwerveDrivetrain* m_drivetrain;
 };

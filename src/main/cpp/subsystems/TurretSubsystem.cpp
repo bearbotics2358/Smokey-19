@@ -9,16 +9,16 @@
 #include <frc/util/Color8Bit.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
-TurretSubsystem::TurretSubsystem()
-    : m_turretSpinMotor(kTurretMotorID)
+TurretSubsystem::TurretSubsystem(subsystems::CommandSwerveDrivetrain* drivetrain)
+    : m_turretSpinMotor(kTurretMotorID), m_drivetrain(drivetrain)
 {
     ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
 
     auto& talonFXConfigurator = m_turretSpinMotor.GetConfigurator();
-    ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs{};
-    limitConfigs.SupplyCurrentLimit = units::current::ampere_t(1);
-    limitConfigs.SupplyCurrentLimitEnable = true;
-    talonFXConfigurator.Apply(limitConfigs);
+    // ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs{};
+    // limitConfigs.SupplyCurrentLimit = units::current::ampere_t(1);
+    // limitConfigs.SupplyCurrentLimitEnable = true;
+    // talonFXConfigurator.Apply(limitConfigs);
 
     motorConfigs.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake)
         .WithInverted(false);
@@ -40,13 +40,32 @@ void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Setpoint", m_setpointAngle);
     BearLog::Log("Turret/Angle", CurrentAngle());
 
+    AngleToHub();
     GoToAngle();
 }
 
+units::degree_t TurretSubsystem::AngleToHub() {
+    double strafe = m_drivetrain->GetState().Pose.Y().value() - 4.02;
+    double forward = m_drivetrain->GetState().Pose.X().value() - 4.02;
+    units::degree_t robotangle = m_drivetrain->GetState().Pose.Rotation().Degrees();
+    units::degree_t angle = units::degree_t(units::radian_t(atan(strafe/forward))) - robotangle - 90_deg;
+    SetAngleGoal(angle);
+
+    BearLog::Log("Vision/DriveTrain/RobotPoseDrive/X", strafe);
+    BearLog::Log("Vision/DriveTrain/RobotPoseDrive/Y", forward);
+    BearLog::Log("Vision/DriveTrain/RobotPoseDrive/anglegoal", angle);
+
+    return angle;
+}
+
 frc2::CommandPtr TurretSubsystem::SetGoalAngle(units::degree_t angle) {
-    return frc2::cmd::RunOnce([this, angle] {
+    return frc2::cmd::Run([this, angle] {
         m_setpointAngle = angle;
     });
+}
+
+void TurretSubsystem::SetAngleGoal(units::degree_t angle) {
+        m_setpointAngle = angle;
 }
 
 bool TurretSubsystem::motorLimit() {

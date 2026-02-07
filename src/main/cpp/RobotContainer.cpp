@@ -8,7 +8,7 @@
 #include <frc2/command/button/RobotModeTriggers.h>
 
 RobotContainer::RobotContainer()
-    : m_cameraSubsystem(&m_drivetrain)
+    : m_cameraSubsystem(&m_drivetrain), m_turretSubsystem(&m_drivetrain)
 {
     ConfigureBindings();
 }
