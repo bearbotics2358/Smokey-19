@@ -1,6 +1,6 @@
 // TrajectoryCalc.cpp - helper class to calculate trajectories for the shooter
 
-#include <math.h>
+#include <units/math.h>
 #include "trajectory/TrajectoryCalc.h"
 
 void TrajectoryCalc::init()
@@ -21,25 +21,25 @@ void TrajectoryCalc::init()
 // perhaps return success/failure/reason code, and angle as a parameter??
 // and return angle for longest shot possible??
 // perhaps return best angle and also return an error result, or predicted distance??
-double TrajectoryCalc::get_angle(double distance, double rpm)
+units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolutions_per_minute_t rpm)
 {
-	int rpm_indx = get_rpm_index(rpm);
-	int theta_ret = 0;
+	int rpm_indx = get_rpm_index(rpm.value());
+	units::degree_t theta_ret = 0_deg;
 	int theta_indx = 0;
-	double dist = 0;
-	double dist_best = -99;
+	units::foot_t dist = 0_ft;
+	units::foot_t dist_best = -99_ft;
 	double theta_indx_best = 0;
-		
+
 	// starting at 90 degrees and moving to lower angles, find the best match
 	// stop once the table distance:
 	// - is shorter than the previous
 
 	for(theta_indx = 90; theta_indx >= 0; theta_indx -= 1) {
-		dist = table.data[theta_indx][rpm_indx];
+		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
 
 		// look for best match from 2 adjacent entries in the table
 		// now see which is closer
-		if(fabs(distance - dist) < fabs(distance - dist_best) + 0.01) { // 0.01 'cause comparing floating point numbers
+		if(units::math::fabs(distance - dist) < units::math::fabs(distance - dist_best) + 0.01_ft) { // 0.01 'cause comparing floating point numbers
 			// this one is better
 			theta_indx_best = theta_indx;
 			dist_best = dist;
@@ -47,12 +47,12 @@ double TrajectoryCalc::get_angle(double distance, double rpm)
 			continue;
 		} else {
 			// this one is worse, use the previous one
-			theta_ret = theta_indx_best;
+			theta_ret = units::degree_t(theta_indx_best);
 			// done
 			break;
 		}
 	}
-			
+
 	return theta_ret;
 }
 
@@ -64,13 +64,13 @@ int TrajectoryCalc::get_rpm_index(double rpm)
 	if(rpm > table.get_rpm_max()) {
 		rpm = table.get_rpm_max();
 	}
-	
+
 	indx = (rpm - table.get_rpm_min()) / table.get_rpm_inc();
 
 	if(indx < 0) {
 		indx = 0;
 	}
-	
+
 	return indx;
 }
 

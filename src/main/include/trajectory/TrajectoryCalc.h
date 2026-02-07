@@ -2,19 +2,22 @@
 
 #include "trajectory/TrajectoryTable.h"
 
+#include <units/angle.h>
+#include <units/angular_velocity.h>
+#include <units/length.h>
+
 class TrajectoryCalc {
 
  public:
 
 	TrajectoryCalc() {}
 	~TrajectoryCalc() {}
-	
+
 	void init();
-	double get_angle(double distance, double rpm);
+	units::degree_t get_angle(units::foot_t distance, units::revolutions_per_minute_t rpm);
 	int get_rpm_index(double rpm);
 
  private:
-	double m_wheel_diameter;
 	TrajectoryTable table;
 
 } ;
