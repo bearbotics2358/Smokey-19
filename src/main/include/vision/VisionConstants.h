@@ -9,6 +9,18 @@
 #include "vision/VisionInputPhotonVision.h"
 #include "vision/VisionInputPhotonVisionSim.h"
 
+struct CameraInfo {
+  // The name of the camera as defined in its configuration (e.g. in the PhotonVision configuration page)
+  std::string camera_name;
+
+  // Represents the distance from the center of the robot to the camera
+  frc::Transform3d robot_to_camera;
+
+  CameraInfo() = delete;
+  CameraInfo(std::string cameraName, frc::Transform3d robotToCamera)
+    : camera_name(cameraName), robot_to_camera(robotToCamera) {}
+};
+
 class VisionConstants {
 public:
   static inline const frc::AprilTagFieldLayout kAprilTagFieldLayout = frc::AprilTagFieldLayout::LoadField(frc::AprilTagField::kDefaultField);
@@ -35,9 +47,11 @@ private:
    * Generate a list of cameras used for localization
    */
   static std::vector<std::unique_ptr<IVisionInput>> CreateLocalizationCameras() {
-    std::vector<std::unique_ptr<IVisionInput>> localization_cameras;
+    const frc::Transform3d kRobotToCameraFront{0.0_in, 0.0_in, 0.0_in, frc::Rotation3d{0.0_rad, 0.0_rad, 0.0_rad}};
+    const std::string kCameraNameFront{"Front"};
 
-    // @todo Add the real cameras here!
+    std::vector<std::unique_ptr<IVisionInput>> localization_cameras;
+    localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(kCameraNameFront, kRobotToCameraFront));
 
     return localization_cameras;
   }
@@ -46,12 +60,11 @@ private:
    * Generate a list of simulated cameras for running on the simluator
    */
   static std::vector<std::unique_ptr<IVisionInput>> CreateSimLocalizationCameras(subsystems::CommandSwerveDrivetrain* drivetrain) {
-    const frc::Transform3d kSimRobotToCamera0{0.2_m, 0.0_m, 0.2_m, frc::Rotation3d{0.0_rad, -0.4_rad, 0.0_rad}};
-    const std::string kCameraName0{"localization0"};
+    const CameraInfo kCamera0{"localization0", {0.2_m, 0.0_m, 0.2_m, frc::Rotation3d{0.0_rad, -0.4_rad, 0.0_rad}}};
 
     std::vector<std::unique_ptr<IVisionInput>> localization_cameras;
 
-    localization_cameras.push_back(std::make_unique<VisionInputPhotonVisionSim>(kCameraName0, kSimRobotToCamera0, [drivetrain] {
+    localization_cameras.push_back(std::make_unique<VisionInputPhotonVisionSim>(kCamera0.camera_name, kCamera0.robot_to_camera, [drivetrain] {
       return drivetrain->GetState().Pose;
     }));
 

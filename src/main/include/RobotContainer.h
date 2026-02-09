@@ -36,7 +36,6 @@ private:
 
     frc2::CommandXboxController joystick{0};
 
-    CameraSubsystem m_cameraSubsystem;
     TurretSubsystem m_turretSubsystem;
     IntakeSubsystem m_intakeSubsystem;
 
