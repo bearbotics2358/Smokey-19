@@ -8,6 +8,7 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include "subsystems/CommandSwerveDrivetrain.h"
 #include "Telemetry.h"
+#include "Config.h"
 #include "subsystems/CameraSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
@@ -16,8 +17,10 @@
 
 class RobotContainer {
 private:
+    RobotType m_RobotType{config::GetRobotType()};
+
     double speedlimit = 1.0;
-    units::meters_per_second_t MaxSpeed = speedlimit * TunerConstants::kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
+    units::meters_per_second_t MaxSpeed = speedlimit * TunerConstants::GetSpeedAt12Volts(m_RobotType); // kSpeedAt12Volts desired top speed
     units::radians_per_second_t MaxAngularRate = speedlimit * 0.75_tps; // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -38,7 +41,7 @@ private:
     IntakeSubsystem m_intakeSubsystem;
 
 public:
-    subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};
+    subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};
     VisionSubsystem m_VisionSubsystem{&m_drivetrain, VisionConstants::GetLocalizationCameras(&m_drivetrain)};
 
     RobotContainer();
