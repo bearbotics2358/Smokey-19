@@ -3,20 +3,21 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc/simulation/FlywheelSim.h>
 #include <frc/system/plant/LinearSystemId.h>
-
- #include <frc/controller/PIDController.h>
-
-
+#include <frc/controller/PIDController.h>
 #include <frc2/command/Commands.h>
-
 #include <ctre/phoenix6/TalonFX.hpp>
+//including the same as turret.h to see 
+#include <frc2/command/button/Trigger.h>
+#include <frc/DigitalInput.h>
+#include <frc/Encoder.h>
+#include <units/length.h>
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
     ShooterSubsystem();
     
     units::revolutions_per_minute_t CurrentSpeed();
-
+    void SetGoalSpeed(units::revolutions_per_minute_t speed);
     void Periodic() override;
     void SimulationPeriodic() override;
 
@@ -24,7 +25,7 @@ private:
     void GoToSpeed();
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
-    void SetGoalSpeed(units::revolutions_per_minute_t speed);
+
     
 
     //find actual value for everything later

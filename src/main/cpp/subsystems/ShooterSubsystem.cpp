@@ -1,17 +1,16 @@
 #include "subsystems/ShooterSubsystem.h"
-
 #include "bearlog/bearlog.h"
-
 #include <frc/RobotController.h>
 #include <frc/simulation/BatterySim.h>
 #include <frc/simulation/RoboRioSim.h>
-
 #include <frc/smartdashboard/SmartDashboard.h>
+//including the same as turret.cpp to see
+#include <frc/RobotBase.h>
+#include <frc/util/Color8Bit.h>
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem() {
-    m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
-   
+    m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));   
 }
 
 void ShooterSubsystem::Periodic() {
@@ -23,6 +22,11 @@ void ShooterSubsystem::Periodic() {
 void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
         m_setSpeed = speed;
 }
+
+units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
+    units::degree_t speed = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+    return speed;
+};
 
 void ShooterSubsystem::GoToSpeed() { 
     P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
@@ -37,11 +41,15 @@ void ShooterSubsystem::GoToSpeed() {
 }
 
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
-    SetGoalSpeed(3600_rpm);
+    return frc2::cmd::RunOnce([this] {
+        SetGoalSpeed(3600_rpm);
+    });
 }
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
-    SetGoalSpeed(0_rpm);
+    return frc2::cmd::RunOnce([this] {
+        SetGoalSpeed(0_rpm);
+    });
 }
 
 void ShooterSubsystem::SimulationPeriodic() {
