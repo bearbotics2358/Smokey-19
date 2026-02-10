@@ -16,7 +16,6 @@ ShooterSubsystem::ShooterSubsystem() {
 
 void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/Speed", units::revolutions_per_minute_t(m_FlywheelMotor.GetVelocity().GetValue()));
-    m_FlywheelMotor.SetVoltage(5_V);
     GoToSpeed();
     
 }

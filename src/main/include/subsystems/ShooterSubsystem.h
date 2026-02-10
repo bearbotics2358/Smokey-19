@@ -4,8 +4,8 @@
 #include <frc/simulation/FlywheelSim.h>
 #include <frc/system/plant/LinearSystemId.h>
 
-#include <frc/controller/ProfiledPIDController.h>
-#include <frc/trajectory/TrapezoidProfile.h>
+ #include <frc/controller/PIDController.h>
+
 
 #include <frc2/command/Commands.h>
 
@@ -36,16 +36,9 @@ private:
 
     static constexpr double kGearRatio = 113.28;
 
-    static constexpr units::turns_per_second_t kMaxVelocity = 1.5_tps;
-    static constexpr units::turns_per_second_squared_t kMaxAcceleration = 0.75_tr_per_s_sq;
     double P = 3;
     double I = 0.3;
     double D = 0.0;
-
-
-    frc::TrapezoidProfile<units::revolutions_per_minute_t>::Constraints m_constraints {
-            kMaxVelocity, kMaxAcceleration
-    };
 
     frc::PIDController m_shooterPID {
             P, I, D
