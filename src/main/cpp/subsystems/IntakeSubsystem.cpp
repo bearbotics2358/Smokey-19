@@ -40,6 +40,8 @@ IntakeSubsystem::IntakeSubsystem():
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+
+    m_setpointAngle = m_stowAngle;
 }
 
 void IntakeSubsystem::Periodic() {
@@ -57,23 +59,32 @@ frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
 }
 
 units::degree_t IntakeSubsystem::CurrentAngle() {
-    units::degree_t angle = units::degree_t(m_extenderMotor.GetPosition().GetValue().value() * kGearRatio);
+    units::degree_t angle = GetAngleFromTurns(m_extenderMotor.GetPosition().GetValue()) * kGearRatio;
     return angle;
 }
 
-frc2::CommandPtr IntakeSubsystem::SetGoalAngle(units::degree_t angle) {
-    return frc2::cmd::RunOnce([this, angle] {
+frc2::CommandPtr IntakeSubsystem::SetGoalAngle() {
+    return frc2::cmd::RunOnce([this] {
+        units::degree_t angle;
+        if (isExtended == true) {
+            isExtended = false;
+            angle = 0_deg;
+        } else {
+            isExtended = true;
+            angle = 90_deg;
+        }
+        BearLog::Log("Is Extended?", isExtended);
         m_setpointAngle = angle;
     });
 }
 
 units::degree_t IntakeSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations.value() * kGearRatio);
+    units::degree_t angle = units::degree_t(rotations);
     return angle;
 }
 
 units::turn_t IntakeSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t(angle.value() / kGearRatio);
+    units::turn_t rotations = units::turn_t(angle);
     return rotations;
 }
 
@@ -86,7 +97,7 @@ void IntakeSubsystem::GoToAngle() {
 
 // Runs in Simulation only!
 void IntakeSubsystem::SimulationInit() {
-    const double kSimIntakeLineWidth = 16;
+    const double kSimIntakeLineWidth = 6;
     m_IntakeMech = m_MechRoot->Append<frc::MechanismLigament2d>("Intake", kIntakeRadius.value(), 0_deg, kSimIntakeLineWidth, frc::Color8Bit{frc::Color::kPurple});
     frc::SmartDashboard::PutData("Intake Sim", &m_Mech);
 

@@ -27,7 +27,7 @@ public:
         void Periodic() override;
         void SimulationPeriodic() override;
 
-        frc2::CommandPtr SetGoalAngle(units::degree_t angle);
+        frc2::CommandPtr SetGoalAngle();
         units::degree_t CurrentAngle();
 private:
         void GoToAngle();
@@ -41,11 +41,11 @@ private:
 
         static constexpr double kGearRatio = 1;
 
-        static constexpr double kEGearRatio = 360;
+        static constexpr double kEGearRatio = 1;
 
         static constexpr units::turns_per_second_t kMaxVelocity = 1.5_tps;
         static constexpr units::turns_per_second_squared_t kMaxAcceleration = 0.75_tr_per_s_sq;
-        double P = 20;
+        double P = 3;
         double I = 0.3;
         double D = 0.0;
 
@@ -58,7 +58,10 @@ private:
             P, I, D, m_constraints
         };
 
-        units::degree_t m_setpointAngle = 0_deg;
+        units::degree_t m_setpointAngle;
+        units::degree_t m_stowAngle = 0_deg;
+        units::degree_t m_extendedAngle = 90_deg;
+        bool isExtended = false;
 
 
         void SimulationInit();
@@ -79,9 +82,9 @@ private:
         };
 
         frc::Mechanism2d m_EMech{1, 1};
-        frc::MechanismRoot2d* m_EMechRoot{m_EMech.GetRoot("extenderRoot", 360, 360)};
+        frc::MechanismRoot2d* m_EMechRoot{m_EMech.GetRoot("extenderRoot", 0.5, 0.5)};
         frc::MechanismLigament2d* m_EIntakeMech;
-        const units::meter_t kEIntakeRadius = 24_in;
+        const units::meter_t kEIntakeRadius = 12_in;
         frc::DCMotor m_EIntakeGearbox{frc::DCMotor::KrakenX60(1)};
         frc::sim::SingleJointedArmSim m_EIntakeSimModel{
           m_EIntakeGearbox,
