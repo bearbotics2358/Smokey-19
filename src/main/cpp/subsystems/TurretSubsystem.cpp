@@ -131,7 +131,9 @@ void TurretSubsystem::SimulationPeriodic() {
 
     // AdvantageScope does not yet support a mechanism that is in the XY plane. To visualize that in 3d mode,
     // we construct a Pose3d object and use a Cone object in AdvantageScope.
-    auto bot_pose = m_GetCurrentBotPose();
-    frc::Pose3d turret_sim_3d_pose = {bot_pose.X(), bot_pose.Y(), 12_in, frc::Rotation3d{0_rad, 0_rad, CurrentAngle()}};
+    frc::Pose2d bot_pose = m_GetCurrentBotPose();
+
+    // Incorporate the rotation of the robot to simulate the turret being attached
+    frc::Pose3d turret_sim_3d_pose = {bot_pose.X(), bot_pose.Y(), 12_in, frc::Rotation3d{0_rad, 0_rad, bot_pose.Rotation().Degrees() + CurrentAngle()}};
     BearLog::Log("Turret/Pose", turret_sim_3d_pose);
 }
