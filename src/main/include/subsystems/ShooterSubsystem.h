@@ -25,7 +25,7 @@ private:
     void GoToSpeed();
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
-
+    units::revolutions_per_minute_t GetSpeedFromTurns(units::turn_t rotations);
     
 
     //find actual value for everything later

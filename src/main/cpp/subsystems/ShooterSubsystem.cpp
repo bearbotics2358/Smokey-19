@@ -24,9 +24,15 @@ void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
 }
 
 units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
-    units::degree_t speed = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+    units::revolutions_per_minute_t speed = GetSpeedFromTurns(m_FlywheelMotor.GetPosition().GetValue());
     return speed;
 };
+
+//copies the framework of GetAngleFromTurns, does the logic still work? 
+units::revolutions_per_minute_t ShooterSubsystem::GetSpeedFromTurns(units::turn_t rotations) {
+    units::revolutions_per_minute_t speed = units::revolutions_per_minute_t(rotations.value() * kGearRatio);
+    return speed;
+}
 
 void ShooterSubsystem::GoToSpeed() { 
     P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
