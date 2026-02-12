@@ -8,6 +8,18 @@ void TrajectoryCalc::init()
 	table.init();
 }
 
+TrajectoryInfo TrajectoryCalc::compute_trajectory_info(TrajectoryInfo inputs)
+{
+	// Start with the input data as the default and modify what we find that needs to change
+	TrajectoryInfo result = inputs;
+
+	result.angle += 7_deg;
+	result.rpm += 1000_rpm;
+	result.will_succeed = true;
+
+	return result;
+}
+
 // NOTE: This code is based on the anglevsdistance table having angles that start at 0, go to 90 degrees, with
 // a step of 1 degree
 //
