@@ -31,8 +31,6 @@ IntakeSubsystem::IntakeSubsystem():
 }
 
 void IntakeSubsystem::Periodic() {
-    BearLog::Log("intakePeriodicRunning", true);
-    BearLog::Log("Intake/Angle", CurrentAngle());
 }
 
 frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
@@ -40,20 +38,10 @@ frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
         BearLog::Log("Intake/Volts", volts);
         m_intakeSpinMotor.SetVoltage(volts);
     });
-    CurrentAngle();
-}
-
-units::degree_t IntakeSubsystem::CurrentAngle() {
-    units::degree_t angle = units::degree_t(m_intakeSpinMotor.GetPosition().GetValue().value() * kGearRatio);
-    return angle;
 }
 
 // Runs in Simulation only!
 void IntakeSubsystem::SimulationInit() {
-    const double kSimIntakeLineWidth = 6;
-    m_IntakeMech = m_MechRoot->Append<frc::MechanismLigament2d>("Intake", kIntakeRadius.value(), 0_deg, kSimIntakeLineWidth, frc::Color8Bit{frc::Color::kPurple});
-    frc::SmartDashboard::PutData("Intake Sim", &m_Mech);
-
     auto& intake_sim = m_intakeSpinMotor.GetSimState();
     intake_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
     intake_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
@@ -75,7 +63,4 @@ void IntakeSubsystem::SimulationPeriodic() {
     // Update the simulated state for the Intake motor
     intake_sim.SetRawRotorPosition(kGearRatio * m_IntakeSimModel.GetAngle());
     intake_sim.SetRotorVelocity(kGearRatio * m_IntakeSimModel.GetVelocity());
-
-    // Update the simulated UI mechanism to the new angle based on the motor
-    m_IntakeMech->SetAngle(CurrentAngle());
 }
