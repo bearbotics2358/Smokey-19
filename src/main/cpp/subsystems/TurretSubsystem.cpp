@@ -16,10 +16,10 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
 
     auto& talonFXConfigurator = m_turretSpinMotor.GetConfigurator();
-    ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs{};
-    limitConfigs.SupplyCurrentLimit = units::current::ampere_t(1);
-    limitConfigs.SupplyCurrentLimitEnable = true;
-    talonFXConfigurator.Apply(limitConfigs);
+    // ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs{};
+    // limitConfigs.SupplyCurrentLimit = units::current::ampere_t(3);
+    // limitConfigs.SupplyCurrentLimitEnable = true;
+    // talonFXConfigurator.Apply(limitConfigs);
 
     motorConfigs.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake)
         .WithInverted(false);
@@ -42,6 +42,7 @@ void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Angle", CurrentAngle());
 
     GoToAngle();
+    AngleToHub();
 }
 
 frc2::CommandPtr TurretSubsystem::SetGoalAngle(units::degree_t angle) {
@@ -78,7 +79,7 @@ bool TurretSubsystem::getLimitSwitch() {
 }
 
 void TurretSubsystem::GoToAngle() {
-    P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
+    P = frc::SmartDashboard::GetNumber("PIDTuner/P", 6);
     I = frc::SmartDashboard::GetNumber("PIDTuner/I", 0) / 3;
     D = frc::SmartDashboard::GetNumber("PIDTuner/D", 0) / 3;
     m_turretPID.SetPID(P, I, D);
@@ -97,6 +98,22 @@ void TurretSubsystem::turretInit() {
         m_turretSpinMotor.SetVoltage(units::volt_t(0.2));
     };
 };
+
+units::degree_t TurretSubsystem::AngleToHub() {
+    frc::Pose2d bot_pose = m_GetCurrentBotPose();
+    double strafe = bot_pose.Y().value() - 4.02;
+    double forward = bot_pose.X().value() - 4.02;
+    units::degree_t robotangle = bot_pose.Rotation().Degrees();
+    units::degree_t angle = units::degree_t(units::radian_t(atan(strafe/forward))) - robotangle;
+
+    BearLog::Log("Vision/DriveTrain/RobotPoseDrive/X", strafe);
+    BearLog::Log("Vision/DriveTrain/RobotPoseDrive/Y", forward);
+    BearLog::Log("Vision/DriveTrain/RobotPoseDrive/anglegoal", angle);
+
+    m_setpointAngle = angle;
+
+    return angle;
+}
 
 // Runs in Simulation only!
 void TurretSubsystem::SimulationInit() {

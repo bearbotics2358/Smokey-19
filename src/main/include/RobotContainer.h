@@ -10,6 +10,7 @@
 #include "Telemetry.h"
 #include "subsystems/CameraSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
+#include "subsystems/IntakeSubsystem.h"
 #include "vision/VisionConstants.h"
 #include "vision/VisionSubsystem.h"
 
@@ -31,9 +32,11 @@ private:
     Telemetry logger{MaxSpeed};
 
     frc2::CommandXboxController joystick{0};
+    frc2::CommandXboxController operatorController{1};
 
     CameraSubsystem m_cameraSubsystem;
     TurretSubsystem m_turretSubsystem;
+    IntakeSubsystem m_intakeSubsystem;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain()};

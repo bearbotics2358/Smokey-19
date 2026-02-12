@@ -39,6 +39,8 @@ class TurretSubsystem : public frc2::SubsystemBase {
 
         void turretInit();
 
+        units::degree_t AngleToHub();
+
         bool turretInitialized = false;
     private:
         void GoToAngle();

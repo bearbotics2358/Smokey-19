@@ -9,7 +9,8 @@
 
 RobotContainer::RobotContainer()
     : m_cameraSubsystem(&m_drivetrain),
-      m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
+      m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }},
+      m_intakeSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
 {
     ConfigureBindings();
 }
@@ -39,6 +40,11 @@ void RobotContainer::ConfigureBindings()
     joystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
         return point.WithModuleDirection(frc::Rotation2d{-joystick.GetLeftY(), -joystick.GetLeftX()});
     }));
+
+    operatorController.A().OnTrue(m_intakeSubsystem.SetGoalAngle());
+
+    joystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
+    joystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
 
     joystick.LeftTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(90_deg));
     joystick.LeftBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
