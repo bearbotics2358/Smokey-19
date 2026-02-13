@@ -44,18 +44,34 @@ void TurretSubsystem::Periodic() {
     GoToAngle();
 }
 
-frc2::CommandPtr TurretSubsystem::SetGoalAngle(units::degree_t angle) {
-    return frc2::cmd::RunOnce([this, angle] {
-        m_setpointAngle = angle;
+units::degree_t TurretSubsystem::AngleToHub() {
+    frc::Pose2d robotPose = m_GetCurrentBotPose();
+
+    double strafe = robotPose.Y().value() - 4.335;
+    double forward = robotPose.X().value() - 4.615;
+    units::degree_t robotAngle = robotPose.Rotation().Degrees();
+    units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe/forward))) - robotAngle;
+
+    return angleToHub;
+}
+
+frc2::CommandPtr TurretSubsystem::PointAtHub() {
+    return frc2::cmd::RunOnce([this] {
+        if (pointAtHubToggle == true) {
+            pointAtHubToggle = false;
+        } else {
+            pointAtHubToggle = true;
+        }
+        BearLog::Log("Turret/PointToggle", pointAtHubToggle);
     });
 }
 
-bool TurretSubsystem::motorLimit() {
-    if ((CurrentAngle().value() >= 180) || (CurrentAngle().value() < -180)) {
-        return true;
+void TurretSubsystem::SetGoalAngle() {
+    if (pointAtHubToggle == false) {
+        m_setpointAngle = m_stowAngle;
     } else {
-        return false;
-    };
+        m_setpointAngle = AngleToHub();
+    }
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
@@ -78,10 +94,7 @@ bool TurretSubsystem::getLimitSwitch() {
 }
 
 void TurretSubsystem::GoToAngle() {
-    P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
-    I = frc::SmartDashboard::GetNumber("PIDTuner/I", 0) / 3;
-    D = frc::SmartDashboard::GetNumber("PIDTuner/D", 0) / 3;
-    m_turretPID.SetPID(P, I, D);
+    SetGoalAngle();
     double value = m_turretPID.Calculate(CurrentAngle(), m_setpointAngle);
     frc::SmartDashboard::PutNumber("Turret PID", value);
     m_turretSpinMotor.SetVoltage(units::volt_t(value));

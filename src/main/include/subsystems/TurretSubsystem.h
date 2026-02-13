@@ -26,20 +26,24 @@ class TurretSubsystem : public frc2::SubsystemBase {
     public:
         TurretSubsystem(std::function<frc::Pose2d()> getBotPose);
 
-        frc2::CommandPtr SetGoalAngle(units::degree_t angle);
+        void SetGoalAngle();
         units::degree_t CurrentAngle();
-        void goToAngle();
+
+        units::degree_t AngleToHub();
+
+        frc2::CommandPtr PointAtHub();
 
         void Periodic() override;
         void SimulationPeriodic() override;
-
-        bool motorLimit();
 
         bool getLimitSwitch();
 
         void turretInit();
 
         bool turretInitialized = false;
+        bool pointAtHubToggle = true;
+
+        units::degree_t m_stowAngle = 0_deg;
     private:
         void GoToAngle();
         units::degree_t GetAngleFromTurns(units::turn_t rotations);

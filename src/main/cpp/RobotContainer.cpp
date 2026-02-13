@@ -21,9 +21,9 @@ void RobotContainer::ConfigureBindings()
     m_drivetrain.SetDefaultCommand(
         // Drivetrain will execute this command periodically
         m_drivetrain.ApplyRequest([this]() -> auto&& {
-            return drive.WithVelocityX(-joystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                .WithVelocityY(-joystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                .WithRotationalRate(-joystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+            return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
+                .WithRotationalRate(-driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
         })
     );
 
@@ -35,29 +35,25 @@ void RobotContainer::ConfigureBindings()
         }).IgnoringDisable(true)
     );
 
-    joystick.A().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    joystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
-        return point.WithModuleDirection(frc::Rotation2d{-joystick.GetLeftY(), -joystick.GetLeftX()});
+    driverJoystick.A().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
+    driverJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
+        return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
     }));
 
-    joystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
-    joystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
+    operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
-    joystick.LeftTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(90_deg));
-    joystick.LeftBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
-    joystick.RightTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(225_deg));
-    joystick.RightBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(180_deg));
-    //m_turretSubsystem.SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
+    driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
+    driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    (joystick.Back() && joystick.Y()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-    (joystick.Back() && joystick.X()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
-    (joystick.Start() && joystick.Y()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    (joystick.Start() && joystick.X()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+    (driverJoystick.Back() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
+    (driverJoystick.Back() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
+    (driverJoystick.Start() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
+    (driverJoystick.Start() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
 
     // reset the field-centric heading on left bumper press
-    joystick.LeftBumper().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
+    driverJoystick.LeftBumper().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
