@@ -10,7 +10,7 @@
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem() {
-    m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));   
+    m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
 }
 
 void ShooterSubsystem::Periodic() {
@@ -27,13 +27,13 @@ units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
     return speed;
 };
 
-//copies the framework of GetAngleFromTurns, does the logic still work? 
+//copies the framework of GetAngleFromTurns, does the logic still work?
 units::revolutions_per_minute_t ShooterSubsystem::GetSpeedFromTurns(units::turn_t rotations) {
     units::revolutions_per_minute_t speed = units::revolutions_per_minute_t(rotations.value() * kGearRatio);
     return speed;
 }
 
-void ShooterSubsystem::GoToSpeed() { 
+void ShooterSubsystem::GoToSpeed() {
     P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
     I = frc::SmartDashboard::GetNumber("PIDTuner/I", 0) / 3;
     D = frc::SmartDashboard::GetNumber("PIDTuner/D", 0) / 3;
@@ -58,10 +58,6 @@ frc2::CommandPtr ShooterSubsystem::StopShooter(){
 }
 
 void ShooterSubsystem::SimulationInit() {
-    const double kSimShooterLineWidth = 6;
-    m_ShooterMech = m_MechRoot->Append<frc::MechanismLigament2d>("Shooter", kShooterRadius.value(), 0_deg, kSimShooterLineWidth, frc::Color8Bit{frc::Color::kPurple});
-    frc::SmartDashboard::PutData("Shooter Sim", &m_Mech);
-
     auto& shooter_sim = m_FlywheelMotor.GetSimState();
     shooter_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
     shooter_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
