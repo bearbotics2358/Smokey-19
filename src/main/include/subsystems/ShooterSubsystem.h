@@ -1,7 +1,6 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
-#include <frc/simulation/FlywheelSim.h>
 #include <frc/system/plant/LinearSystemId.h>
 #include <frc/controller/PIDController.h>
 #include <frc2/command/Commands.h>
@@ -11,6 +10,10 @@
 #include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 #include <units/length.h>
+//simulation stuff i think
+#include <frc/simulation/FlywheelSim.h>
+#include <frc/smartdashboard/Mechanism2d.h>
+#include <frc/smartdashboard/MechanismLigament2d.h>
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
@@ -20,6 +23,9 @@ public:
     void SetGoalSpeed(units::revolutions_per_minute_t speed);
     void Periodic() override;
     void SimulationPeriodic() override;
+
+    // void shooterInit();
+    // bool shooterInitialized = false;
 
 private:
     void GoToSpeed();
@@ -51,7 +57,22 @@ private:
     ////////////////////////////
     // Simulation related values
     //
-
+    void SimulationInit();
+    frc::Mechanism2d m_Mech{1, 1};
+    frc::MechanismRoot2d* m_MechRoot{m_Mech.GetRoot("shooterRoot", 0.5, 0.5)};
+    frc::MechanismLigament2d* m_ShooterMech;
+    const units::meter_t kShooterRadius = 12_in;//does this also apply to the shooter?
+    frc::DCMotor m_ShooterGearbox{frc::DCMotor::KrakenX60(1)};
+    frc::sim::SingleJointedArmSim m_ShooterSimModel{
+      m_ShooterGearbox,
+      kGearRatio,
+      frc::sim::SingleJointedArmSim::EstimateMOI(kShooterRadius, 0.1_kg),
+      kShooterRadius,
+      -180_deg,
+      180_deg,
+      false,
+      10_deg,
+    };
     // Reduction between motors and encoder, as output over input. If the flywheel
     // spins slower than the motors, this number should be greater than one.
     static constexpr double kFlywheelGearing = 1.0;

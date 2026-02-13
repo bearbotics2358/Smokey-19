@@ -16,7 +16,6 @@ ShooterSubsystem::ShooterSubsystem() {
 void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/Speed", units::revolutions_per_minute_t(m_FlywheelMotor.GetVelocity().GetValue()));
     GoToSpeed();
-    
 }
 
 void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
@@ -56,6 +55,16 @@ frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
         SetGoalSpeed(0_rpm);
     });
+}
+
+void ShooterSubsystem::SimulationInit() {
+    const double kSimShooterLineWidth = 6;
+    m_ShooterMech = m_MechRoot->Append<frc::MechanismLigament2d>("Shooter", kShooterRadius.value(), 0_deg, kSimShooterLineWidth, frc::Color8Bit{frc::Color::kPurple});
+    frc::SmartDashboard::PutData("Shooter Sim", &m_Mech);
+
+    auto& shooter_sim = m_FlywheelMotor.GetSimState();
+    shooter_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
+    shooter_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
 }
 
 void ShooterSubsystem::SimulationPeriodic() {
