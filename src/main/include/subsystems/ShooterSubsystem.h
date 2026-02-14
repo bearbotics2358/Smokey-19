@@ -2,18 +2,15 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <frc/system/plant/LinearSystemId.h>
-#include <frc/controller/PIDController.h>
+#include <frc/controller/BangBangController.h>
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
-//including the same as turret.h to see
 #include <frc2/command/button/Trigger.h>
 #include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 #include <units/length.h>
 //simulation stuff i think
 #include <frc/simulation/FlywheelSim.h>
-#include <frc/smartdashboard/Mechanism2d.h>
-#include <frc/smartdashboard/MechanismLigament2d.h>
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
@@ -26,29 +23,20 @@ public:
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
 
-    // void shooterInit();
-    // bool shooterInitialized = false;
-
 private:
     void GoToSpeed();
 
-
-    //find actual value for everything later
+    //find actual values for everything later
     static constexpr int kFlywheelMotorId = 2;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
 
     static constexpr int kFlywheelFollowerMotorId = 3;
     ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
 
-    static constexpr double kGearRatio = 113.28;
+    frc::BangBangController m_shooterBangBang {};
 
-    double P = 3;
-    double I = 0.3;
-    double D = 0.0;
-
-    frc::PIDController m_shooterPID {
-            P, I, D
-    };
+    static constexpr double kMaxVolts = 12.0;
+    //units::revolutions_per_minute_t m_tolerance = 5_rpm;
 
     units::revolutions_per_minute_t m_setSpeed = 3600_rpm;
 

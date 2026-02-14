@@ -4,9 +4,7 @@
 #include <frc/simulation/BatterySim.h>
 #include <frc/simulation/RoboRioSim.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-//including the same as turret.cpp to see
 #include <frc/RobotBase.h>
-#include <frc/util/Color8Bit.h>
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem() {
@@ -30,15 +28,10 @@ units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
 };
 
 void ShooterSubsystem::GoToSpeed() {
-    P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
-    I = frc::SmartDashboard::GetNumber("PIDTuner/I", 0) / 3;
-    D = frc::SmartDashboard::GetNumber("PIDTuner/D", 0) / 3;
-
-
-    m_shooterPID.SetPID(P, I, D);
-    double value = m_shooterPID.Calculate(CurrentSpeed().value(), m_setSpeed.value());
-    frc::SmartDashboard::PutNumber("Flywheel PID", value);
-    m_FlywheelMotor.SetVoltage(units::volt_t(value));
+    //m_shooterBangBang.SetTolerance(m_tolerance); 
+    double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
+    frc::SmartDashboard::PutNumber("Flywheel BangBang", value);
+    m_FlywheelMotor.SetVoltage(units::volt_t(value*kMaxVolts));
 }
 
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
