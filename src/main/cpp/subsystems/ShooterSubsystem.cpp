@@ -14,7 +14,9 @@ ShooterSubsystem::ShooterSubsystem() {
 }
 
 void ShooterSubsystem::Periodic() {
-    BearLog::Log("Flywheel/Speed", units::revolutions_per_minute_t(m_FlywheelMotor.GetVelocity().GetValue()));
+    BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
+    BearLog::Log("Flywheel/Speed", CurrentSpeed());
+
     GoToSpeed();
 }
 
@@ -23,15 +25,9 @@ void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
 }
 
 units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
-    units::revolutions_per_minute_t speed = GetSpeedFromTurns(m_FlywheelMotor.GetPosition().GetValue());
+    units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
-
-//copies the framework of GetAngleFromTurns, does the logic still work?
-units::revolutions_per_minute_t ShooterSubsystem::GetSpeedFromTurns(units::turn_t rotations) {
-    units::revolutions_per_minute_t speed = units::revolutions_per_minute_t(rotations.value() * kGearRatio);
-    return speed;
-}
 
 void ShooterSubsystem::GoToSpeed() {
     P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
@@ -55,12 +51,6 @@ frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
         SetGoalSpeed(0_rpm);
     });
-}
-
-void ShooterSubsystem::SimulationInit() {
-    auto& shooter_sim = m_FlywheelMotor.GetSimState();
-    shooter_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
-    shooter_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
 }
 
 void ShooterSubsystem::SimulationPeriodic() {

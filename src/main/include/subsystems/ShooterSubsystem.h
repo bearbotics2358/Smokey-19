@@ -23,15 +23,14 @@ public:
     void SetGoalSpeed(units::revolutions_per_minute_t speed);
     void Periodic() override;
     void SimulationPeriodic() override;
+    frc2::CommandPtr EnableShooter();
+    frc2::CommandPtr StopShooter();
 
     // void shooterInit();
     // bool shooterInitialized = false;
 
 private:
     void GoToSpeed();
-    frc2::CommandPtr EnableShooter();
-    frc2::CommandPtr StopShooter();
-    units::revolutions_per_minute_t GetSpeedFromTurns(units::turn_t rotations);
 
 
     //find actual value for everything later
@@ -57,7 +56,6 @@ private:
     ////////////////////////////
     // Simulation related values
     //
-    void SimulationInit();
     // Reduction between motors and encoder, as output over input. If the flywheel
     // spins slower than the motors, this number should be greater than one.
     static constexpr double kFlywheelGearing = 1.0;
