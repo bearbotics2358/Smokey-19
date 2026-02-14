@@ -12,6 +12,10 @@ ShooterSubsystem::ShooterSubsystem()
 {
     m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
 
+    ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
+    auto& talonFXConfigurator = m_FlywheelMotor.GetConfigurator();
+    motorConfigs.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast).WithInverted(false);
+    talonFXConfigurator.Apply(motorConfigs);
 
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
