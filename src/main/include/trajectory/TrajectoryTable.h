@@ -12,7 +12,7 @@ class TrajectoryTable {
 
  public:
 
-	TrajectoryTable(double wheel_diameter_in = 4.0, double shooter_height_in = 17.15, double hub_height_in = 72.0);
+	TrajectoryTable(double wheel_diameter_in = 4.0, double shooter_height_in = 18.2817, double hub_height_in = 75.0);
 	~TrajectoryTable() {}
 
 	void init();

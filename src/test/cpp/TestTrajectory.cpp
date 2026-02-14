@@ -41,7 +41,7 @@ INSTANTIATE_TEST_SUITE_P(
         TrajectoryParams{20_ft, 3600_rpm, 67},
         TrajectoryParams{5_ft, 3200_rpm, 83},
         TrajectoryParams{8_ft, 3200_rpm, 79},
-        TrajectoryParams{11_ft, 3200_rpm, 75},
-        TrajectoryParams{20_ft, 3200_rpm, 51}
+        TrajectoryParams{11_ft, 3200_rpm, 74},
+        TrajectoryParams{20_ft, 3200_rpm, 52}
     )
 );
