@@ -96,6 +96,7 @@ bool TurretSubsystem::getLimitSwitch() {
 }
 
 void TurretSubsystem::GoToAngle() {
+    SetGoalAngle();
   units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
 
   m_turretSpinMotor.SetControl(
