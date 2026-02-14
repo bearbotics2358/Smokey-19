@@ -6,11 +6,21 @@
 #include <frc/simulation/BatterySim.h>
 #include <frc/simulation/RoboRioSim.h>
 
-ShooterSubsystem::ShooterSubsystem() {
-}
+ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose)
+    : m_GetCurrentBotPose(getBotPose)
+{}
 
 void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/Speed", units::revolutions_per_minute_t(m_FlywheelMotor.GetVelocity().GetValue()));
+}
+
+units::meter_t ShooterSubsystem::DistanceToHub() {
+    double hubx = 4.335;
+    double huby = 4.615;
+    frc::Pose2d botPose = m_GetCurrentBotPose();
+    units::meter_t distance = units::meter_t(sqrt(pow(botPose.X().value() - hubx, 2) + pow(botPose.Y().value() - hubx, 2)));
+    
+    return distance;
 }
 
 void ShooterSubsystem::SimulationPeriodic() {

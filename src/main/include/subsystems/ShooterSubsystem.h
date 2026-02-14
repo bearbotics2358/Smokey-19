@@ -8,13 +8,16 @@
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
-    ShooterSubsystem();
+    ShooterSubsystem(std::function<frc::Pose2d()> getBotPose);
     void Periodic() override;
     void SimulationPeriodic() override;
+    units::meter_t DistanceToHub();
 
 private:
     static constexpr int kFlywheelMotorId = 2;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
+    
+    std::function<frc::Pose2d()> m_GetCurrentBotPose;
 
     ////////////////////////////
     // Simulation related values
