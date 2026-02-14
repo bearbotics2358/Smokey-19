@@ -56,6 +56,32 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 	return theta_ret;
 }
 
+TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs) 
+{
+	units::degree_t elevation = 0_deg;
+
+	inputs.return_value = TRAJECTORY_SUCCESS;
+
+	// will the current values result in a successful shot?
+
+	// Step 1 - compute the elevation angle with no limits
+	elevation = get_angle(inputs.distance, inputs.wheel_rpm);
+
+	// Step 2 - update values based on robot moving at speed
+	if((units::math::fabs(inputs.vx) > ROBOT_SPEED_THRESHOLD) || (units::math::fabs(inputs.vy) > ROBOT_SPEED_THRESHOLD)) {
+		// compensate the elevation angle, turret angle, and wheel speed due to robot moving at speed
+	} 
+
+	// Step 3 - adjust for elevation angle limits
+	if((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX)) {
+		// no adjustment needed
+	} else {
+		// adjust motor speed to bring elevation angle within limits
+	}
+
+	return inputs;
+}
+
 // get index into the angle_vs_speed table for the rpm column for the rpm that is <= to input
 int TrajectoryCalc::get_rpm_index(double rpm)
 {
