@@ -17,16 +17,26 @@
 #include <frc2/command/button/Trigger.h>
 
 constexpr int kIntakeMotorID = 62;
+constexpr int kExtenderMotorID = 63;
+constexpr units::inch_t kHopperInchesPerRotation = 1.0_in; 
+constexpr units::inch_t kHopperRetractedPos = 0_in;  
+constexpr units::inch_t kHopperExtendedPos = 10_in;
 
 class IntakeSubsystem : public frc2::SubsystemBase {
 public:
     IntakeSubsystem();
     frc2::CommandPtr SpinMotor(units::volt_t volts);
 
+    frc2::CommandPtr SetHopper(bool extended);
+
     void Periodic() override;
     void SimulationPeriodic() override;
 private:
         ctre::phoenix6::hardware::TalonFX m_intakeSpinMotor;
+
+        ctre::phoenix6::hardware::TalonFX m_hopperExtenderMotor; 
+
+        ctre::phoenix6::controls::PositionVoltage m_hopperPosRequest{0_tr};
 
         static constexpr double kGearRatio = 1;
 

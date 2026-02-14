@@ -9,7 +9,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 IntakeSubsystem::IntakeSubsystem():
-    m_intakeSpinMotor(kIntakeMotorID)
+    m_intakeSpinMotor(kIntakeMotorID),
+    m_hopperExtenderMotor(kExtenderMotorID)
 {
     ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
 
@@ -25,6 +26,14 @@ IntakeSubsystem::IntakeSubsystem():
     m_intakeSpinMotor.SetPosition(0_tr);
 
     m_intakeSpinMotor.GetConfigurator().Apply(motorConfigs);
+
+    ctre::phoenix6::configs::TalonFXConfiguration hopperConfig;
+    hopperConfig.Slot0.kP = 1.0; 
+    hopperConfig.Slot0.kI = 0.0;
+    hopperConfig.Slot0.kD = 0.0;
+    m_hopperExtenderMotor.GetConfigurator().Apply(hopperConfig);
+    m_hopperExtenderMotor.SetPosition(0_tr);
+
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
@@ -39,7 +48,13 @@ frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
         m_intakeSpinMotor.SetVoltage(volts);
     });
 }
-
+frc2::CommandPtr IntakeSubsystem::SetHopper(bool extended) {
+    return frc2::cmd::RunOnce([this, extended] {
+        units::inch_t targetInches = extended ? kHopperExtendedPos : kHopperRetractedPos;
+        units::turn_t targetTurns = targetInches / kHopperInchesPerRotation * 1_tr;
+        m_hopperExtenderMotor.SetControl(m_hopperPosRequest.WithPosition(targetTurns));
+    });
+}
 // Runs in Simulation only!
 void IntakeSubsystem::SimulationInit() {
     auto& intake_sim = m_intakeSpinMotor.GetSimState();
