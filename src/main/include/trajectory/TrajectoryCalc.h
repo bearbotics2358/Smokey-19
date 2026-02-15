@@ -13,6 +13,10 @@
 #define ROBOT_SPEED_THRESHOLD 0.01_fps  // minimum speed to enable speed compensation
 #define ROBOT_MAX_SPEED 19.9_fps // worst case based on Kraken X60, no FOC, 6000 RPM, R3
 
+#define HUB_DIAMETER 41.7_in
+#define FUEL_DIAMETER 6_in
+#define SUCCESSFUL_SHOT_RADIUS ((HUB_DIAMETER - FUEL_DIAMETER)/2.0)
+
 enum return_value_t {
 	TRAJECTORY_SUCCESS = 0,
 	TRAJECTORY_FAILURE_WHEEL_SPEED_LOW = 1,
@@ -42,7 +46,9 @@ class TrajectoryCalc {
 	void init();
 	units::degree_t get_angle(units::foot_t distance, units::revolutions_per_minute_t rpm);
 	TrajectoryInfo compute_trajectory(TrajectoryInfo inputs);
+	int get_rpm_index(units::revolutions_per_minute_t rpm);
 	int get_rpm_index(double rpm);
+	units::revolutions_per_minute_t get_rpm(int rpm_index);
 
  private:
 	TrajectoryTable table;
