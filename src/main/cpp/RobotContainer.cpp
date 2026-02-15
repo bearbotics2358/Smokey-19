@@ -8,7 +8,9 @@
 #include <frc2/command/button/RobotModeTriggers.h>
 
 RobotContainer::RobotContainer()
-    : m_cameraSubsystem(&m_drivetrain)
+    : m_cameraSubsystem(&m_drivetrain),
+    m_shooterSubsystem{[this] { return m_drivetrain.GetState().Pose; }, &m_turretSubsystem},
+    m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
 {
     ConfigureBindings();
 }
@@ -40,9 +42,9 @@ void RobotContainer::ConfigureBindings()
     }));
 
     joystick.LeftTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(90_deg));
-    joystick.LeftBumper().WhileTrue(m_shooterSubsystem.SetGoalAngle(135_deg));
-    joystick.RightTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(225_deg));
-    joystick.RightBumper().WhileTrue(m_shooterSubsystem.SetGoalAngle(180_deg));
+    joystick.LeftBumper().WhileTrue(m_shooterSubsystem.SetGoalAngle(75_deg));
+    joystick.RightTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(60_deg));
+    joystick.RightBumper().WhileTrue(m_shooterSubsystem.SetGoalAngle(45_deg));
     //m_turretSubsystem.SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
 
     // Run SysId routines when holding back/start and X/Y.

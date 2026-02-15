@@ -7,8 +7,10 @@
 #include <frc/RobotBase.h>
 
 using namespace ctre::phoenix6;
-ShooterSubsystem::ShooterSubsystem()
-    : m_shooterElevationSpinMotor{kShooterElevationMotorID}
+ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, TurretSubsystem* turretSubsystem)
+    : m_shooterElevationSpinMotor{kShooterElevationMotorID},
+    m_GetCurrentBotPose(getBotPose),
+    m_turretSubsystem(turretSubsystem)
 {
     m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
 
@@ -33,6 +35,7 @@ ShooterSubsystem::ShooterSubsystem()
 }
 
 void ShooterSubsystem::Periodic() {
+
     BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
     BearLog::Log("Flywheel/Speed", CurrentSpeed());
 
@@ -43,6 +46,78 @@ void ShooterSubsystem::Periodic() {
     BearLog::Log("ShooterElevation/Angle", CurrentAngle());
 
     GoToSpeed();
+
+    units::meter_t distance = DistanceToHub();
+
+    DrawTrajectory(RPMToVelocity(CurrentSpeed()), CurrentAngle());
+}
+
+void ShooterSubsystem::DrawTrajectory(
+    units::meters_per_second_t velocity,
+    units::degree_t angle)
+{
+    units::meters_per_second_squared_t gravity = 9.81_mps_sq;
+    std::vector<frc::Pose3d> poses;
+    double timeBetweenPoses = 0.05;
+
+    frc::Pose2d botPose2d = m_GetCurrentBotPose();
+    frc::Pose3d robotPose3d{
+        botPose2d.X(),
+        botPose2d.Y(),
+        0_m,
+        frc::Rotation3d{0_deg, 0_deg, botPose2d.Rotation().Degrees()}
+    };
+
+    units::radian_t degRad = units::radian_t(angle);
+
+    units::second_t timeOfFlight =
+        units::second_t((2.0 * (velocity.value() * sin(degRad.value()))) / gravity.value());
+
+    double time = 0;
+    double hDist = 0;
+    double vDist = 0;
+    while ((time <= timeOfFlight.value()) || (vDist >= 0)) {
+        hDist = velocity.value() * cos(degRad.value()) * time;
+        vDist = (velocity.value() * sin(degRad.value()) * time) - (0.5 * gravity.value() * pow(time, 2));
+
+        frc::Translation3d localPose{
+            units::meter_t(hDist), 
+            0_m, 
+            units::meter_t(vDist)
+        };
+
+        frc::Translation3d rotated = localPose.RotateBy(
+        frc::Rotation3d{0_deg, 0_deg, botPose2d.Rotation().Degrees() + m_turretSubsystem->CurrentAngle()});
+
+        frc::Pose3d worldPose{
+            robotPose3d.X() + rotated.X(),
+            robotPose3d.Y() + rotated.Y(),
+            robotPose3d.Z() + rotated.Z(),
+            frc::Rotation3d{}
+        };
+
+        poses.push_back(worldPose);
+        
+        time += timeBetweenPoses;
+    }
+
+    BearLog::Log("trajectory/trajectory", poses);
+}
+
+
+units::meters_per_second_t ShooterSubsystem::RPMToVelocity(units::revolutions_per_minute_t rpm) {
+    units::radians_per_second_t radPerSec = rpm * 2.0 * std::numbers::pi / 60.0;
+    units::meter_t flywheelCircumfrence = 2 * M_PI * kFlywheelRadius;
+    return units::meters_per_second_t(radPerSec.value() * flywheelCircumfrence.value());
+}
+
+units::meter_t ShooterSubsystem::DistanceToHub() {
+    double hubx = 4.335;
+    double huby = 4.615;
+    frc::Pose2d botPose = m_GetCurrentBotPose();
+    units::meter_t distance = units::meter_t(sqrt(pow(botPose.X().value() - hubx, 2) + pow(botPose.Y().value() - huby, 2)));
+    
+    return distance;
 }
 
 frc2::CommandPtr ShooterSubsystem::SetGoalAngle(units::degree_t angle) {

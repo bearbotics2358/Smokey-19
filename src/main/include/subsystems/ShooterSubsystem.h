@@ -15,10 +15,11 @@
 #include <frc/smartdashboard/Mechanism2d.h>
 #include <frc/smartdashboard/MechanismLigament2d.h>
 #include <frc/smartdashboard/MechanismRoot2d.h>
+#include "subsystems/TurretSubsystem.h"
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
-    ShooterSubsystem();
+    ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, TurretSubsystem* turretSubsystem);
 
     units::revolutions_per_minute_t CurrentSpeed();
     void SetGoalSpeed(units::revolutions_per_minute_t speed);
@@ -27,12 +28,20 @@ public:
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
 
+    units::meter_t DistanceToHub();
+
     units::degree_t CurrentAngle();
 
     frc2::CommandPtr SetGoalAngle(units::degree_t angle);
 
+    units::meters_per_second_t RPMToVelocity(units::revolutions_per_minute_t rpm);
+
+    void DrawTrajectory(units::meters_per_second_t velocity, units::degree_t angle);
+
 private:
     void GoToSpeed();
+
+    static constexpr units::meter_t kFlywheelRadius = 0.05_m;
 
     //find actual values for everything later
     static constexpr int kFlywheelMotorId = 2;
@@ -66,6 +75,8 @@ private:
 
 
     //Elevation Motor Inits
+
+    std::function<frc::Pose2d()> m_GetCurrentBotPose;
     void GoToAngle();
     units::degree_t GetAngleFromTurns(units::turn_t rotations);
     units::turn_t GetTurnsFromAngle(units::degree_t angle);
@@ -78,6 +89,8 @@ private:
     units::degree_t m_setpointAngle = 90_deg;
 
     ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{2.2_tr};
+
+    TurretSubsystem* m_turretSubsystem;
 
         void SimulationInit();
         frc::Mechanism2d m_Mech{1, 1};
