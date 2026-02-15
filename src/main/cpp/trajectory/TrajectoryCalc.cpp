@@ -75,10 +75,24 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 	if((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX)) {
 		inputs.return_value = TRAJECTORY_SUCCESS;
 	} else if(elevation < ELEVATION_ANGLE_MIN) {
-		inputs.return_value = TRAJECTORY_FAILURE_WHEEL_SPEED_LOW;
+		// will the shot still go in?
+		// distance the shot will go:
+		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
+		if(dist < inputs.distance - SUCCESSFUL_SHOT_RADIUS) {
+			inputs.return_value = TRAJECTORY_FAILURE_SHOT_SHORT;
+		} else {
+			inputs.return_value = TRAJECTORY_SUCCESS;
+		} 
 	} else {
 		// elevation angle is too high
-		inputs.return_value = TRAJECTORY_FAILURE_WHEEL_SPEED_HIGH;
+		// will the shot still go in?
+		// distance the shot will go:
+		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
+		if(dist > inputs.distance + SUCCESSFUL_SHOT_RADIUS) {
+			inputs.return_value = TRAJECTORY_FAILURE_SHOT_LONG;
+		} else {
+			inputs.return_value = TRAJECTORY_SUCCESS;
+		} 
 	}
 	inputs.elevation_angle = elevation;
 
