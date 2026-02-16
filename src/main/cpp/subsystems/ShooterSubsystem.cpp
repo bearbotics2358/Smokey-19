@@ -19,7 +19,7 @@ ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, Turr
 
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(2)
+        .WithKP(3)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
@@ -162,7 +162,7 @@ units::meters_per_second_t ShooterSubsystem::RPMToVelocity(units::revolutions_pe
 }
 
 units::meter_t ShooterSubsystem::DistanceToHub() {
-    double hubx = 4.335;
+    double hubx = 4.535;
     double huby = 4.615;
     frc::Pose2d botPose = m_GetCurrentBotPose();
     units::meter_t distance = units::meter_t(sqrt(pow(botPose.X().value() - hubx, 2) + pow(botPose.Y().value() - huby, 2)));

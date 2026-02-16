@@ -15,7 +15,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 {
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(1)
+        .WithKP(3)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
