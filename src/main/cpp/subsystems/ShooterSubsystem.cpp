@@ -60,6 +60,7 @@ void ShooterSubsystem::DrawTrajectory(
     std::vector<frc::Pose3d> poses;
     double timeBetweenPoses = 0.05;
 
+    units::meter_t shooterHeight = 0.6_m;
     frc::Pose2d botPose2d = m_GetCurrentBotPose();
     frc::Pose3d robotPose3d{
         botPose2d.X(),
@@ -70,15 +71,39 @@ void ShooterSubsystem::DrawTrajectory(
 
     units::radian_t degRad = units::radian_t(angle);
 
-    units::second_t timeOfFlight =
-        units::second_t((2.0 * (velocity.value() * sin(degRad.value()))) / gravity.value());
+    // units::second_t timeOfFlight = units::second_t(((velocity.value() * sin(degRad.value())) +
+    //     std::sqrt(std::pow(velocity.value() * sin(degRad.value()), 2) +
+    //         (2.0 * gravity.value() * shooterHeight.value())
+    //     )
+    // ) / gravity.value());
 
     double time = 0;
     double hDist = 0;
-    double vDist = 0;
-    while ((time <= timeOfFlight.value()) || (vDist >= 0)) {
-        hDist = velocity.value() * cos(degRad.value()) * time;
-        vDist = (velocity.value() * sin(degRad.value()) * time) - (0.5 * gravity.value() * pow(time, 2));
+    double vDist = shooterHeight.value();
+
+    double airDensity = 1.225;
+    double dragCoefficient = 0.47;
+    double crossSectionArea = M_PI * pow((0.150114 / 2.0), 2);
+    double mass = 0.227;
+
+    double dragConstant = 0.5 * airDensity * dragCoefficient * crossSectionArea;
+
+    double horizontalVelocity = velocity.value() * cos(degRad.value());
+    double verticalVelocity = velocity.value() * sin(degRad.value());
+    while ((vDist >= 0)) {
+        // hDist = velocity.value() * cos(degRad.value()) * time;
+        // vDist = shooterHeight.value() + (velocity.value() * sin(degRad.value()) * time) - (0.5 * gravity.value() * pow(time, 2));
+
+        double totalSpeed = sqrt(horizontalVelocity * horizontalVelocity + verticalVelocity * verticalVelocity);
+
+        double horizontalDrag = -(dragConstant * totalSpeed * horizontalVelocity) / mass;
+        double verticalDrag = -gravity.value() - (dragConstant * totalSpeed * verticalVelocity) / mass;
+
+        horizontalVelocity += horizontalDrag * timeBetweenPoses;
+        verticalVelocity += verticalDrag * timeBetweenPoses;
+
+        hDist += horizontalVelocity * timeBetweenPoses;
+        vDist += verticalVelocity * timeBetweenPoses;
 
         frc::Translation3d localPose{
             units::meter_t(hDist), 
