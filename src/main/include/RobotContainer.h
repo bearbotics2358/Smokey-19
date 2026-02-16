@@ -14,6 +14,7 @@
 #include "subsystems/IntakeSubsystem.h"
 #include "vision/VisionConstants.h"
 #include "vision/VisionSubsystem.h"
+#include "subsystems/ShooterSubsystem.h"
 
 class RobotContainer {
 private:
@@ -38,6 +39,7 @@ private:
 
     CameraSubsystem m_cameraSubsystem;
     TurretSubsystem m_turretSubsystem;
+    ShooterSubsystem m_shooterSubsystem;
     IntakeSubsystem m_intakeSubsystem;
 
 public:
