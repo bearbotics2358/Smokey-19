@@ -9,8 +9,9 @@
 #include <frc/util/Color8Bit.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
-TurretSubsystem::TurretSubsystem()
-    : m_turretSpinMotor(kTurretMotorID)
+TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
+    : m_turretSpinMotor(kTurretMotorID),
+      m_GetCurrentBotPose(getBotPose)
 {
     ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
 
@@ -127,4 +128,12 @@ void TurretSubsystem::SimulationPeriodic() {
 
     // Update the simulated UI mechanism to the new angle based on the motor
     m_TurretMech->SetAngle(CurrentAngle());
+
+    // AdvantageScope does not yet support a mechanism that is in the XY plane. To visualize that in 3d mode,
+    // we construct a Pose3d object and use a Cone object in AdvantageScope.
+    frc::Pose2d bot_pose = m_GetCurrentBotPose();
+
+    // Incorporate the rotation of the robot to simulate the turret being attached
+    frc::Pose3d turret_sim_3d_pose = {bot_pose.X(), bot_pose.Y(), 12_in, frc::Rotation3d{0_rad, 0_rad, bot_pose.Rotation().Degrees() + CurrentAngle()}};
+    BearLog::Log("Turret/Pose", turret_sim_3d_pose);
 }
