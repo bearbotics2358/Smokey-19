@@ -12,12 +12,14 @@ ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, Turr
     m_GetCurrentBotPose(getBotPose),
     m_turretSubsystem(turretSubsystem)
 {
+    m_trajectoryCalc.init();
+
     m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
 
 
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(0.6)
+        .WithKP(2)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
@@ -49,7 +51,28 @@ void ShooterSubsystem::Periodic() {
 
     units::meter_t distance = DistanceToHub();
 
-    DrawTrajectory(RPMToVelocity(CurrentSpeed()), CurrentAngle());
+    struct TrajectoryInfo shooterInfo;
+    bzero(&shooterInfo, sizeof(shooterInfo));
+    shooterInfo.elevation_angle = CurrentAngle();
+    shooterInfo.distance = DistanceToHub();
+    shooterInfo.wheel_rpm = m_setSpeed;
+
+    //20_ft, 52_deg, 3200_rpm, 55_deg, 3275_rpm
+
+    struct TrajectoryInfo shooterGoal = m_trajectoryCalc.compute_trajectory(shooterInfo);
+
+    int retvalue = shooterGoal.return_value;
+
+    BearLog::Log("shooterInfo/elevation_angle", shooterInfo.elevation_angle);
+    BearLog::Log("shooterInfo/goalelevation_angle", shooterGoal.elevation_angle);
+    BearLog::Log("shooterInfo/wheel_rpm", shooterInfo.wheel_rpm);
+    BearLog::Log("shooterInfo/goalwheel_rpm", shooterGoal.wheel_rpm);
+    BearLog::Log("shooterInfo/return_value", retvalue);
+
+    m_setpointAngle = shooterGoal.elevation_angle;
+    m_setSpeed = shooterGoal.wheel_rpm;
+
+    DrawTrajectory(RPMToVelocity(m_setSpeed), CurrentAngle());
 }
 
 void ShooterSubsystem::DrawTrajectory(

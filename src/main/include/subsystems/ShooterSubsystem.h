@@ -16,6 +16,7 @@
 #include <frc/smartdashboard/MechanismLigament2d.h>
 #include <frc/smartdashboard/MechanismRoot2d.h>
 #include "subsystems/TurretSubsystem.h"
+#include "trajectory/TrajectoryCalc.h"
 
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
@@ -55,7 +56,7 @@ private:
     static constexpr double kMaxVolts = 12.0;
     //units::revolutions_per_minute_t m_tolerance = 5_rpm;
 
-    units::revolutions_per_minute_t m_setSpeed = 2550_rpm;
+    units::revolutions_per_minute_t m_setSpeed = 3400_rpm;
 
 
     ////////////////////////////
@@ -103,9 +104,11 @@ private:
           kGearRatio,
           frc::sim::SingleJointedArmSim::EstimateMOI(kShooterElevationRadius, 0.2_kg),
           kShooterElevationRadius,
-          -360_deg,
-          360_deg,
+          55_deg,
+          75_deg,
           false,
           10_deg,
         };
+
+    TrajectoryCalc m_trajectoryCalc;
 };
