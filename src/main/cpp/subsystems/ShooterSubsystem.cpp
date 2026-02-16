@@ -9,6 +9,16 @@
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem() {
     m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
+
+    ctre::phoenix6::configs::MotorOutputConfigs motorConfigsLead;
+    auto& talonFXConfiguratorLead = m_FlywheelMotor.GetConfigurator();
+    motorConfigsLead.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast).WithInverted(false);
+    talonFXConfiguratorLead.Apply(motorConfigsLead);
+
+    ctre::phoenix6::configs::MotorOutputConfigs motorConfigsFollower;
+    auto& talonFXConfiguratorFollower = m_FlywheelFollowerMotor.GetConfigurator();
+    motorConfigsFollower.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+    talonFXConfiguratorFollower.Apply(motorConfigsFollower);
 }
 
 void ShooterSubsystem::Periodic() {
