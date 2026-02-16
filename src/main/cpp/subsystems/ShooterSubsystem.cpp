@@ -60,7 +60,7 @@ void ShooterSubsystem::DrawTrajectory(
     std::vector<frc::Pose3d> poses;
     double timeBetweenPoses = 0.05;
 
-    units::meter_t shooterHeight = 0.6_m;
+    units::meter_t shooterHeight = 18.2817_in;
     frc::Pose2d botPose2d = m_GetCurrentBotPose();
     frc::Pose3d robotPose3d{
         botPose2d.X(),
@@ -70,6 +70,8 @@ void ShooterSubsystem::DrawTrajectory(
     };
 
     units::radian_t degRad = units::radian_t(angle);
+
+    BearLog::Log("velocity", velocity);
 
     // units::second_t timeOfFlight = units::second_t(((velocity.value() * sin(degRad.value())) +
     //     std::sqrt(std::pow(velocity.value() * sin(degRad.value()), 2) +
@@ -131,9 +133,9 @@ void ShooterSubsystem::DrawTrajectory(
 
 
 units::meters_per_second_t ShooterSubsystem::RPMToVelocity(units::revolutions_per_minute_t rpm) {
-    units::radians_per_second_t radPerSec = rpm * 2.0 * std::numbers::pi / 60.0;
+    units::turns_per_second_t revPerSec = rpm;
     units::meter_t flywheelCircumfrence = 2 * M_PI * kFlywheelRadius;
-    return units::meters_per_second_t(radPerSec.value() * flywheelCircumfrence.value());
+    return units::meters_per_second_t(revPerSec.value() * flywheelCircumfrence.value() / 2);
 }
 
 units::meter_t ShooterSubsystem::DistanceToHub() {
@@ -142,6 +144,7 @@ units::meter_t ShooterSubsystem::DistanceToHub() {
     frc::Pose2d botPose = m_GetCurrentBotPose();
     units::meter_t distance = units::meter_t(sqrt(pow(botPose.X().value() - hubx, 2) + pow(botPose.Y().value() - huby, 2)));
     
+    BearLog::Log("Distance from the Hub", distance);
     return distance;
 }
 

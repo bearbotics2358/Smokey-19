@@ -55,7 +55,7 @@ private:
     static constexpr double kMaxVolts = 12.0;
     //units::revolutions_per_minute_t m_tolerance = 5_rpm;
 
-    units::revolutions_per_minute_t m_setSpeed = 3600_rpm;
+    units::revolutions_per_minute_t m_setSpeed = 2550_rpm;
 
 
     ////////////////////////////

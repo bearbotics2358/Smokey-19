@@ -41,10 +41,8 @@ void RobotContainer::ConfigureBindings()
         return point.WithModuleDirection(frc::Rotation2d{-joystick.GetLeftY(), -joystick.GetLeftX()});
     }));
 
-    joystick.LeftTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(90_deg));
-    joystick.LeftBumper().WhileTrue(m_shooterSubsystem.SetGoalAngle(75_deg));
-    joystick.RightTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(60_deg));
-    joystick.RightBumper().WhileTrue(m_shooterSubsystem.SetGoalAngle(45_deg));
+    joystick.LeftTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(70_deg));
+    joystick.RightTrigger().WhileTrue(m_shooterSubsystem.SetGoalAngle(90_deg));
     //m_turretSubsystem.SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
 
     // Run SysId routines when holding back/start and X/Y.
