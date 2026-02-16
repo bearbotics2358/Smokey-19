@@ -9,8 +9,8 @@
 
 RobotContainer::RobotContainer()
     : m_cameraSubsystem(&m_drivetrain),
-    m_shooterSubsystem{[this] { return m_drivetrain.GetState().Pose; }, &m_turretSubsystem},
-    m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
+      m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }},
+      m_shooterSubsystem{[this] { return m_drivetrain.GetState().Pose; }, &m_turretSubsystem}
 {
     ConfigureBindings();
 }
