@@ -34,6 +34,16 @@ ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, Turr
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+
+    ctre::phoenix6::configs::MotorOutputConfigs motorConfigsLead;
+    auto& talonFXConfiguratorLead = m_FlywheelMotor.GetConfigurator();
+    motorConfigsLead.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast).WithInverted(false);
+    talonFXConfiguratorLead.Apply(motorConfigsLead);
+
+    ctre::phoenix6::configs::MotorOutputConfigs motorConfigsFollower;
+    auto& talonFXConfiguratorFollower = m_FlywheelFollowerMotor.GetConfigurator();
+    motorConfigsFollower.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+    talonFXConfiguratorFollower.Apply(motorConfigsFollower);
 }
 
 void ShooterSubsystem::Periodic() {
