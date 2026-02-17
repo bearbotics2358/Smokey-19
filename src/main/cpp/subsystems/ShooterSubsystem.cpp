@@ -19,9 +19,9 @@ ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, Turr
 
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(3)
-        .WithKI(0)
-        .WithKD(0.2)
+        .WithKP(10)
+        .WithKI(6)
+        .WithKD(1)
         .WithKS(0)
         .WithKV(0.2);
 
@@ -107,7 +107,7 @@ void ShooterSubsystem::DrawTrajectory(
     double vDist = shooterHeight.value();
 
     double airDensity = 1.225;
-    double dragCoefficient = 0.47;
+    double dragCoefficient = 0.0; //0.47
     double crossSectionArea = M_PI * pow((0.150114 / 2.0), 2);
     double mass = 0.227;
 
@@ -162,8 +162,8 @@ units::meters_per_second_t ShooterSubsystem::RPMToVelocity(units::revolutions_pe
 }
 
 units::meter_t ShooterSubsystem::DistanceToHub() {
-    double hubx = 4.535;
-    double huby = 4.615;
+    double hubx = 4.54;
+    double huby = 4.105;
     frc::Pose2d botPose = m_GetCurrentBotPose();
     units::meter_t distance = units::meter_t(sqrt(pow(botPose.X().value() - hubx, 2) + pow(botPose.Y().value() - huby, 2)));
     

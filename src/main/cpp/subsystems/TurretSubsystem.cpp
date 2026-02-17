@@ -15,9 +15,9 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 {
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(3)
-        .WithKI(0)
-        .WithKD(0.2)
+        .WithKP(10)
+        .WithKI(6)
+        .WithKD(1)
         .WithKS(0)
         .WithKV(0.2);
 
@@ -49,8 +49,8 @@ void TurretSubsystem::Periodic() {
 units::degree_t TurretSubsystem::AngleToHub() {
     frc::Pose2d robotPose = m_GetCurrentBotPose();
 
-    double strafe = robotPose.Y().value() - 4.135;
-    double forward = robotPose.X().value() - 4.615;
+    double strafe = robotPose.Y().value() - 4.105;
+    double forward = robotPose.X().value() - 4.54;
     units::degree_t robotAngle = robotPose.Rotation().Degrees();
     units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe/forward))) - robotAngle;
 
