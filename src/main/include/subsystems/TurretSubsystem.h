@@ -6,6 +6,7 @@
 #include <frc/smartdashboard/Mechanism2d.h>
 #include <frc/smartdashboard/MechanismLigament2d.h>
 #include <frc/smartdashboard/MechanismRoot2d.h>
+#include <frc/geometry/Pose3d.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
 
@@ -23,7 +24,7 @@ constexpr int kTurretMotorID = 60;
 
 class TurretSubsystem : public frc2::SubsystemBase {
     public:
-        TurretSubsystem();
+        TurretSubsystem(std::function<frc::Pose2d()> getBotPose);
 
         frc2::CommandPtr SetGoalAngle(units::degree_t angle);
         units::degree_t CurrentAngle();
@@ -47,6 +48,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
         frc::DigitalInput m_limitSwitch{1};
 
         ctre::phoenix6::hardware::TalonFX m_turretSpinMotor;
+        std::function<frc::Pose2d()> m_GetCurrentBotPose;
 
         static constexpr double kGearRatio = 113.28;
 

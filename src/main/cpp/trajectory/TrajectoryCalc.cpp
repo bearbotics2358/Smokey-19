@@ -28,7 +28,7 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 	int theta_indx = 0;
 	units::foot_t dist = 0_ft;
 	units::foot_t dist_best = -99_ft;
-	double theta_indx_best = 0;
+	int theta_indx_best = 0;
 
 	// starting at 90 degrees and moving to lower angles, find the best match
 	// stop once the table distance:
