@@ -12,12 +12,12 @@
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/trajectory/TrapezoidProfile.h>
 
-constexpr int kIndexerSpinMotorID = 64;
+constexpr int kIndexerSpinMotorID = 55;
 
 class IndexerSubsystem : public frc2::SubsystemBase {
 public:
     IndexerSubsystem();
-    frc2::CommandPtr SpinMotor(units::angular_velocity::turns_per_second_t tps);
+    frc2::CommandPtr SpinMotorGoal(units::angular_velocity::turns_per_second_t tps);
 
     units::angular_velocity::turns_per_second_t GetMotorVelocity();
 
@@ -25,7 +25,12 @@ public:
     void SimulationPeriodic() override;
 
 private:
+    void GoToSpeed();
     ctre::phoenix6::hardware::TalonFX m_indexerSpinMotor;
+
+    units::turns_per_second_t m_setpointTPS;
+
+    ctre::phoenix6::controls::VelocityVoltage m_tpsRequest{0_tps};
 
     static constexpr double kGearRatio = 7.5;
 

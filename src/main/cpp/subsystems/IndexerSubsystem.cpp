@@ -12,11 +12,11 @@ IndexerSubsystem::IndexerSubsystem():
     // @todo Update these with real PID values for the motor
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(30)
+        .WithKP(5)
         .WithKI(0)
         .WithKD(0)
         .WithKS(0)
-        .WithKV(20);
+        .WithKV(1);
 
     // Define the overall configuration with the new hardware limit switch config
     // In this config object, we can also apply other things such as current limits,
@@ -32,16 +32,21 @@ IndexerSubsystem::IndexerSubsystem():
     }
 }
 
-frc2::CommandPtr IndexerSubsystem::SpinMotor(units::angular_velocity::turns_per_second_t tps) {
+frc2::CommandPtr IndexerSubsystem::SpinMotorGoal(units::angular_velocity::turns_per_second_t tps) {
     return frc2::cmd::RunOnce([this, tps] {
-        ctre::phoenix6::controls::VelocityVoltage m_tpsRequest{0_tps};
         BearLog::Log("Indexer/SetpointMotorVelocity", tps);
-        BearLog::Log("Indexer/MotorVelocity", GetMotorVelocity());
-        m_indexerSpinMotor.SetControl(m_tpsRequest.WithVelocity(tps));
+        m_setpointTPS = tps;
     });
 }
 
+void IndexerSubsystem::GoToSpeed() {
+    BearLog::Log("Indexer/SetpointMotorVelocity", m_setpointTPS);
+    m_indexerSpinMotor.SetControl(m_tpsRequest.WithVelocity(m_setpointTPS));
+    BearLog::Log("Indexer/MotorVelocity", GetMotorVelocity());
+}
+
 void IndexerSubsystem::Periodic() {
+    GoToSpeed();
 }
 
 units::angular_velocity::turns_per_second_t IndexerSubsystem::GetMotorVelocity() {
