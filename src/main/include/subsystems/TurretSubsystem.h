@@ -10,7 +10,6 @@
 
 #include <ctre/phoenix6/TalonFX.hpp>
 
-#include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 
 #include <units/length.h>
@@ -36,12 +35,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
         void Periodic() override;
         void SimulationPeriodic() override;
 
-        bool getLimitSwitch();
-
-        void turretInit();
-
-        bool turretInitialized = false;
-        bool pointAtHubToggle = true;
+        bool m_pointAtHubToggle = true;
 
         units::degree_t m_stowAngle = 0_deg;
     private:
@@ -51,14 +45,12 @@ class TurretSubsystem : public frc2::SubsystemBase {
 
         ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
 
-        frc::DigitalInput m_limitSwitch{1};
-
         ctre::phoenix6::hardware::TalonFX m_turretSpinMotor;
         std::function<frc::Pose2d()> m_GetCurrentBotPose;
 
         static constexpr double kGearRatio = 1;
 
-        units::degree_t m_setpointAngle = 90_deg;
+        units::degree_t m_setpointAngle = 0_deg;
 
         // Simulation specific items
         void SimulationInit();

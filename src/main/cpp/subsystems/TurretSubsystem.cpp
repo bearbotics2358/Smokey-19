@@ -21,7 +21,6 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
         .WithKS(0)
         .WithKV(0.2);
 
-    // Define the overall configuration with the new hardware limit switch config
     // In this config object, we can also apply other things such as current limits,
     // brake mode, which direction is positive rotation, etc.
     ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
@@ -38,8 +37,6 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 }
 
 void TurretSubsystem::Periodic() {
-    frc::SmartDashboard::PutBoolean("Get Limit Switch", getLimitSwitch());
-
     BearLog::Log("Turret/Setpoint", m_setpointAngle);
     BearLog::Log("Turret/Angle", CurrentAngle());
 
@@ -49,27 +46,28 @@ void TurretSubsystem::Periodic() {
 units::degree_t TurretSubsystem::AngleToHub() {
     frc::Pose2d robotPose = m_GetCurrentBotPose();
 
-    double strafe = robotPose.Y().value() - 4.335;
-    double forward = robotPose.X().value() - 4.615;
+    //Angle to BLUE alliance hub
+    units::meter_t strafe = robotPose.Y() - 4.335_m;
+    units::meter_t forward = robotPose.X() - 4.615_m;
     units::degree_t robotAngle = robotPose.Rotation().Degrees();
-    units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe/forward))) - robotAngle;
+    units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
 
     return angleToHub;
 }
 
 frc2::CommandPtr TurretSubsystem::PointAtHub() {
     return frc2::cmd::RunOnce([this] {
-        if (pointAtHubToggle == true) {
-            pointAtHubToggle = false;
+        if (m_pointAtHubToggle == true) {
+            m_pointAtHubToggle = false;
         } else {
-            pointAtHubToggle = true;
+            m_pointAtHubToggle = true;
         }
-        BearLog::Log("Turret/PointToggle", pointAtHubToggle);
+        BearLog::Log("Turret/PointToggle", m_pointAtHubToggle);
     });
 }
 
 void TurretSubsystem::SetGoalAngle() {
-    if (pointAtHubToggle == false) {
+    if (m_pointAtHubToggle == false) {
         m_setpointAngle = m_stowAngle;
     } else {
         m_setpointAngle = AngleToHub();
@@ -82,17 +80,13 @@ units::degree_t TurretSubsystem::CurrentAngle() {
 };
 
 units::degree_t TurretSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations);
+    units::degree_t angle = rotations;
     return angle;
 }
 
 units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t(angle);
+    units::turn_t rotations = angle;
     return rotations;
-}
-
-bool TurretSubsystem::getLimitSwitch() {
-    return !m_limitSwitch.Get();
 }
 
 void TurretSubsystem::GoToAngle() {
