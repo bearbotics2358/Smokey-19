@@ -12,6 +12,7 @@
 #include "subsystems/CameraSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
+#include "subsystems/IndexerSubsystem.h"
 #include "vision/VisionConstants.h"
 #include "vision/VisionSubsystem.h"
 #include "subsystems/ShooterSubsystem.h"
@@ -40,6 +41,7 @@ private:
     TurretSubsystem m_turretSubsystem;
     ShooterSubsystem m_shooterSubsystem;
     IntakeSubsystem m_intakeSubsystem;
+    IndexerSubsystem m_indexerSubsystem;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};

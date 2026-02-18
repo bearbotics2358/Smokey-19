@@ -42,11 +42,11 @@ void RobotContainer::ConfigureBindings()
     joystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     joystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
 
-    joystick.LeftTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(90_deg));
-    joystick.LeftBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
-    joystick.RightTrigger().WhileTrue(m_turretSubsystem.SetGoalAngle(225_deg));
-    joystick.RightBumper().WhileTrue(m_turretSubsystem.SetGoalAngle(180_deg));
-    //m_turretSubsystem.SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
+    joystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
+    joystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
+
+    joystick.A().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
+    joystick.B().WhileTrue(m_turretSubsystem.SetGoalAngle(180_deg));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
