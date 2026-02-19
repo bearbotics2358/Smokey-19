@@ -26,19 +26,17 @@ public:
 private:
     void GoToSpeed();
 
-    //find actual values for everything later
-    static constexpr int kFlywheelMotorId = 2;
+    static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
 
-    static constexpr int kFlywheelFollowerMotorId = 3;
+    static constexpr int kFlywheelFollowerMotorId = 36;
     ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
 
     frc::BangBangController m_shooterBangBang {};
 
     static constexpr double kMaxVolts = 12.0;
-    //units::revolutions_per_minute_t m_tolerance = 5_rpm;
 
-    units::revolutions_per_minute_t m_setSpeed = 3600_rpm;
+    units::revolutions_per_minute_t m_setSpeed = 0_rpm;
 
 
     ////////////////////////////
