@@ -9,6 +9,7 @@
 
 #define ELEVATION_ANGLE_MAX 75_deg
 #define ELEVATION_ANGLE_MIN 55_deg
+#define ELEVATION_ANGLE_MID 65_deg
 
 #define ROBOT_SPEED_THRESHOLD 0.01_fps  // minimum speed to enable speed compensation
 #define ROBOT_MAX_SPEED 19.9_fps // worst case based on Kraken X60, no FOC, 6000 RPM, R3

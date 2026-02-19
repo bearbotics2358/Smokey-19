@@ -64,49 +64,85 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 	int rpm_indx = 0;
 	int rpm_indx_best = 0;
 	int theta_indx = 0;
-
+	units::foot_t dist_error = 0_ft;
 
 	inputs.return_value = TRAJECTORY_SUCCESS;
 
+	// will the current values result in a successful shot?
+	elevation = inputs.elevation_angle;
+	theta_indx = (int)elevation.value();
+	rpm_indx = get_rpm_index(inputs.wheel_rpm);
+	dist = units::foot_t(table.data[theta_indx][rpm_indx]);
+
+	if(units::math::fabs(dist - inputs.distance) < SUCCESSFUL_SHOT_RADIUS) {
+		inputs.return_value = TRAJECTORY_SUCCESS;
+	} else if(dist < inputs.distance) {
+		inputs.return_value = TRAJECTORY_FAILURE_SHOT_SHORT;
+	} else {
+		inputs.return_value = TRAJECTORY_FAILURE_SHOT_LONG;
+	}
+
 	// Step 1 - compute the elevation angle with no limits
 	elevation = get_angle(inputs.distance, inputs.wheel_rpm);
-	// will the current values result in a successful shot?
-	// NOTE: wrong tests - need to see the distance for the current setting and compare to the hub distance
-	if((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX)) {
-		inputs.return_value = TRAJECTORY_SUCCESS;
-	} else if(elevation < ELEVATION_ANGLE_MIN) {
-		// will the shot still go in?
-		// distance the shot will go:
-		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
-		if(dist < inputs.distance - SUCCESSFUL_SHOT_RADIUS) {
-			inputs.return_value = TRAJECTORY_FAILURE_SHOT_SHORT;
-		} else {
-			inputs.return_value = TRAJECTORY_SUCCESS;
-		} 
-	} else {
-		// elevation angle is too high
-		// will the shot still go in?
-		// distance the shot will go:
-		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
-		if(dist > inputs.distance + SUCCESSFUL_SHOT_RADIUS) {
-			inputs.return_value = TRAJECTORY_FAILURE_SHOT_LONG;
-		} else {
-			inputs.return_value = TRAJECTORY_SUCCESS;
-		} 
-	}
 	inputs.elevation_angle = elevation;
+	theta_indx = (int)elevation.value();
+	rpm_indx = get_rpm_index(inputs.wheel_rpm);
+	dist = units::foot_t(table.data[theta_indx][rpm_indx]);
 
 	// Step 2 - update values based on robot moving at speed
 	if((units::math::fabs(inputs.vx) > ROBOT_SPEED_THRESHOLD) || (units::math::fabs(inputs.vy) > ROBOT_SPEED_THRESHOLD)) {
 		// compensate the elevation angle, turret angle, and wheel speed due to robot moving at speed
 	} 
 
-	// Step 3 - adjust for elevation angle limits
+	// Step 3 - adjust for elevation angle limits or 
 	if((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX)) {
-		// no adjustment needed
+		// no adjustment needed for angle
+		// check if distance is ok
+
+		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
+		if((inputs.distance - dist) > SUCCESSFUL_SHOT_RADIUS) {
+			// shot is too short to go into hub
+
+			// set the shot to a mid angle and look from lowest RPM to highest
+			// looking at table, this will find a solution for 7 ft to 20 ft
+			elevation = ELEVATION_ANGLE_MID;
+			theta_indx = (int)elevation.value();
+			inputs.elevation_angle = elevation;
+
+			// now step thru RPM's to find the best shot
+			printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
+
+			dist_best = -99_ft;
+			rpm_indx_best = 0;
+			// NOTE: looking at the data table, this will always find a solution before hitting the max RPM value in the table
+			// therefore no special action is taken for not finding a solution
+			for(rpm_indx = 0; rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
+				printf("theta: %d   rpm: %lf   dist: %lf\n", theta_indx, (rpm_indx * 25 + 1000.0), table.data[theta_indx][rpm_indx]);
+				dist = units::foot_t(table.data[theta_indx][rpm_indx]);		
+				printf("rpm_indx: %d dist: %lf\n", rpm_indx, dist.value());
+
+				// look for best match from 2 adjacent entries in the table
+				// now see which is closer
+				if(units::math::fabs(inputs.distance - dist) < units::math::fabs(inputs.distance - dist_best) + 0.01_ft) { // 0.01 'cause comparing floating point numbers
+					// this one is better
+					rpm_indx_best = rpm_indx;
+					dist_best = dist;
+					// go again
+					continue;
+	
+				} else {
+					// this one is worse, use the previous one
+					inputs.wheel_rpm = get_rpm(rpm_indx_best);
+					// done
+					break;
+				}
+			}
+		}
+		
 	} else {
 		// adjust motor speed to bring elevation angle within limits
-		if(elevation < ELEVATION_ANGLE_MIN) {
+		dist = units::foot_t(table.data[theta_indx][rpm_indx]);
+		if((elevation < ELEVATION_ANGLE_MIN)) {
 			// need to speed up motor
 
 			// search the table, at the minimum elevation angle, starting at the current wheel speed and moving to higher speeds,
@@ -114,10 +150,15 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			// stop once the table distance error:
 			// - is worse than the previous
 
-			elevation = ELEVATION_ANGLE_MIN;
+			// starting at ELEVATION_ANGLE_MIN can end up on the wrong side of the balistic arc
+			// starting at ELEVATION_ANGLE_MID looks to be on the correct side of the arc
+			elevation = ELEVATION_ANGLE_MID;
 			theta_indx = (int)elevation.value();
+			inputs.elevation_angle = elevation;
 			printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
 
+			dist_best = -99_ft;
+			rpm_indx_best = 0;
 			// NOTE: looking at the data table, this will always find a solution before hitting the max RPM value in the table
 			// therefore no special action is taken for not finding a solution
 			for(rpm_indx = get_rpm_index(inputs.wheel_rpm); rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
@@ -142,7 +183,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			}
 
 
-		} else if(elevation > ELEVATION_ANGLE_MAX) {
+		} else if((elevation > ELEVATION_ANGLE_MAX)){
 			// need to slow down motor
 
 			// search the table, at the maximum elevation angle, starting at the current wheel speed and moving to slower speeds,
@@ -152,7 +193,10 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 
 			elevation = ELEVATION_ANGLE_MAX;
 			theta_indx = (int)elevation.value();
+			inputs.elevation_angle = elevation;
 
+			dist_best = -99_ft;
+			rpm_indx_best = 0;
 			// NOTE: looking at the data table, this will always find a solution before hitting the min RPM values in the table
 			// therefore no special action is taken for not finding a solution
 			for(rpm_indx = get_rpm_index(inputs.wheel_rpm); rpm_indx >= 0 ; rpm_indx--) {
@@ -174,7 +218,6 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 				}
 			}
 		}
-		inputs.elevation_angle = elevation;
 	}
 
 	return inputs;

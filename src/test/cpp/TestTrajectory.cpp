@@ -14,6 +14,7 @@ struct TrajectoryParamsCompensated {
     units::revolutions_per_minute_t rpm;
     units::degree_t expected_angle;
     units::revolutions_per_minute_t expected_rpm;    
+	enum return_value_t expected_return_value;
 };
 
 class TestTrajectory : public testing::TestWithParam<TrajectoryParams> {
@@ -69,7 +70,7 @@ TEST_P(TestTrajectoryCompensated, ValidateAnglesFromTrajectoryTableWithKnownDist
 
     struct TrajectoryInfo trajInfo;
     
-    /*
+    /* For Reference:
     // TrajectoryInfo
 	units::degree_t elevation_angle;
 	units::revolutions_per_minute_t wheel_rpm;
@@ -86,6 +87,7 @@ TEST_P(TestTrajectoryCompensated, ValidateAnglesFromTrajectoryTableWithKnownDist
     units::revolutions_per_minute_t rpm;
     units::degree_t expected_angle;
     units::revolutions_per_minute_t expected_rpm;    
+	enum return_value_t expected_return_value;
     */
 
     trajInfo.distance = params.distance;
@@ -96,6 +98,7 @@ TEST_P(TestTrajectoryCompensated, ValidateAnglesFromTrajectoryTableWithKnownDist
 
     EXPECT_DOUBLE_EQ(trajInfo.elevation_angle.value(), params.expected_angle.value());
     EXPECT_DOUBLE_EQ(trajInfo.wheel_rpm.value(), params.expected_rpm.value());
+    EXPECT_EQ(trajInfo.return_value, params.expected_return_value);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -107,11 +110,26 @@ INSTANTIATE_TEST_SUITE_P(
         // a large number of them). We want a representative set to ensure that any possible code optimizations
         // (like for lookup or calculation speed) to the TrajectoryTable and TrajectoryCalc classes will give us the
         // same result.
-        TrajectoryParamsCompensated{20_ft, 67_deg, 3600_rpm, 67_deg, 3600_rpm},
-        TrajectoryParamsCompensated{20_ft, 52_deg, 3200_rpm, 55_deg, 3275_rpm},
-        TrajectoryParamsCompensated{7_ft, 65_deg, 3600_rpm, 75_deg, 2675_rpm},
-        TrajectoryParamsCompensated{20_ft, 65_deg, 3275_rpm, 55_deg, 3275_rpm},
-        TrajectoryParamsCompensated{20_ft, 65_deg, 2200_rpm, 55_deg, 3275_rpm} // causes a problem 'cause 55 deg 2200 RPM is 0 part of table
+        TrajectoryParamsCompensated{20_ft, 67_deg, 3600_rpm, 67_deg, 3600_rpm, TRAJECTORY_SUCCESS}, // #0
+        // TrajectoryParamsCompensated{20_ft, 52_deg, 3200_rpm, 55_deg, 3275_rpm}, // #1
+        TrajectoryParamsCompensated{20_ft, 52_deg, 3200_rpm, 65_deg, 3525_rpm, TRAJECTORY_SUCCESS}, // #1
+        TrajectoryParamsCompensated{7_ft, 65_deg, 3600_rpm, 75_deg, 2675_rpm, TRAJECTORY_FAILURE_SHOT_LONG}, // #2
+        // TrajectoryParamsCompensated{20_ft, 65_deg, 3275_rpm, 55_deg, 3275_rpm}, // #3
+        TrajectoryParamsCompensated{20_ft, 65_deg, 3275_rpm, 65_deg, 3525_rpm, TRAJECTORY_FAILURE_SHOT_SHORT}, // #3
+
+        // causes a problem 'cause 55 deg 2200 RPM is 0 part of table
+        // gives 67 2200
+        // FIXED with using 65 degrees
+        TrajectoryParamsCompensated{20_ft, 65_deg, 2200_rpm, 65_deg, 3525_rpm, TRAJECTORY_FAILURE_SHOT_SHORT}, // #4
+        TrajectoryParamsCompensated{7_ft, 65_deg, 2650_rpm, 74_deg, 2650_rpm, TRAJECTORY_FAILURE_SHOT_LONG}, // #5
+
+        // ends up on wrong side of the arc 55, 2450
+        // FIXED
+        // TrajectoryParamsCompensated{7_ft, 75_deg, 0_rpm, 74_deg, 2650_rpm}, // #6  
+        TrajectoryParamsCompensated{7_ft, 75_deg, 0_rpm, 65_deg, 2375_rpm, TRAJECTORY_FAILURE_SHOT_SHORT}, // #6  
+        // TrajectoryParamsCompensated{20_ft, 55_deg, 0_rpm, 74_deg, 2650_rpm} // #7
+        TrajectoryParamsCompensated{20_ft, 55_deg, 0_rpm, 65_deg, 3525_rpm, TRAJECTORY_FAILURE_SHOT_SHORT} // #7
+
     )
 );
 
