@@ -17,17 +17,15 @@ ShooterSubsystem::ShooterSubsystem() {
     auto& talonFXConfiguratorFollower = m_FlywheelFollowerMotor.GetConfigurator();
     motorConfigsFollower.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
     talonFXConfiguratorFollower.Apply(motorConfigsFollower);
-
-    ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs;
-    // Reset the current limit back to the default of 70 amps
-    limitConfigs.SupplyCurrentLimit = 70_A;
-    talonFXConfiguratorLead.Apply(limitConfigs);
-    talonFXConfiguratorFollower.Apply(limitConfigs);
 }
 
 void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
     BearLog::Log("Flywheel/Speed", CurrentSpeed());
+
+    BearLog::Log("Flywheel/Supply Current", m_FlywheelMotor.GetSupplyCurrent().GetValue());
+    BearLog::Log("Flywheel/Stator Current", m_FlywheelMotor.GetStatorCurrent().GetValue());
+    BearLog::Log("Flywheel/Torque Current", m_FlywheelMotor.GetTorqueCurrent().GetValue());
 
     GoToSpeed();
 }
