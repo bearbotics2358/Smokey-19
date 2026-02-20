@@ -1,4 +1,5 @@
 #include "subsystems/ShooterSubsystem.h"
+#include "LaunchHelper.h"
 #include "bearlog/bearlog.h"
 #include <frc/RobotController.h>
 #include <frc/simulation/BatterySim.h>
@@ -26,7 +27,7 @@ ShooterSubsystem::ShooterSubsystem() {
 
 void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
-    BearLog::Log("Flywheel/Speed", CurrentSpeed());
+    BearLog::Log("Flywheel/Speed", GetCurrentSpeed());
     BearLog::Log("Flywheel Follower/Speed", units::revolutions_per_minute_t(m_FlywheelFollowerMotor.GetVelocity().GetValue()));
     BearLog::Log("Flywheel/Voltage", m_FlywheelMotor.GetMotorVoltage().GetValue());
     BearLog::Log("Flywheel Follower/Voltage", m_FlywheelFollowerMotor.GetMotorVoltage().GetValue());
@@ -38,17 +39,22 @@ void ShooterSubsystem::Periodic() {
     GoToSpeed();
 }
 
-void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
-        m_setSpeed = speed;
+void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
+    m_setSpeed = speed;
 }
 
-units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
+units::revolutions_per_minute_t ShooterSubsystem::GetCurrentSpeed() {
     units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
 
+units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
+    // @todo Some code exists for this but hasn't been merged yet. Add it here and delete this comment!
+    return kFixedPositionHoodAngle;
+}
+
 void ShooterSubsystem::GoToSpeed() {
-    double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
+    double value = m_shooterBangBang.Calculate(GetCurrentSpeed().value(), m_setSpeed.value());
 
     // The motors move at around 5000 RPMs at 10 V
     static constexpr double kMaxVolts = 10.0;
@@ -61,13 +67,26 @@ void ShooterSubsystem::GoToSpeed() {
 
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
     return frc2::cmd::RunOnce([this] {
-        m_setSpeed = 5000_rpm;
+        m_setSpeed = kFixedPositionSpeed;
     });
 }
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
         m_setSpeed = 0_rpm;
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::RunHubTracking() {
+    return frc2::cmd::Run([this] {
+        TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+        SetGoals(parameters.wheel_rpm, parameters.elevation_angle);
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::RunFixedPosition() {
+    return frc2::cmd::RunOnce([this] {
+        SetGoals(kFixedPositionSpeed, kFixedPositionHoodAngle);
     });
 }
 

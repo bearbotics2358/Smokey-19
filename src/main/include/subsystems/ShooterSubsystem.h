@@ -18,15 +18,21 @@ class ShooterSubsystem : public frc2::SubsystemBase {
 public:
     ShooterSubsystem();
 
-    units::revolutions_per_minute_t CurrentSpeed();
-    void SetGoalSpeed(units::revolutions_per_minute_t speed);
+    units::revolutions_per_minute_t GetCurrentSpeed();
+    units::degree_t GetCurrentHoodAngle();
+    void SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle);
     void Periodic() override;
     void SimulationPeriodic() override;
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
+    frc2::CommandPtr RunHubTracking();
+    frc2::CommandPtr RunFixedPosition();
 
 private:
     void GoToSpeed();
+
+    static constexpr units::revolutions_per_minute_t kFixedPositionSpeed = 3600_rpm;
+    static constexpr units::degree_t kFixedPositionHoodAngle = 55_deg;
 
     static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
