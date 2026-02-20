@@ -12,6 +12,8 @@
 //simulation stuff i think
 #include <frc/simulation/FlywheelSim.h>
 
+using namespace ctre::phoenix6;
+
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
     ShooterSubsystem();
@@ -33,8 +35,6 @@ private:
     ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
 
     frc::BangBangController m_shooterBangBang {};
-
-    static constexpr double kMaxVolts = 12.0;
 
     units::revolutions_per_minute_t m_setSpeed = 0_rpm;
 
