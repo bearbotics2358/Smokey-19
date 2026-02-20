@@ -21,8 +21,9 @@ constexpr int kExtenderMotorID = 61;
 
 class IntakeSubsystem : public frc2::SubsystemBase {
 public:
-        IntakeSubsystem();
-        frc2::CommandPtr SpinMotor(units::volt_t volts);
+    IntakeSubsystem();
+    frc2::CommandPtr SpinMotor(units::volt_t volts);
+    units::degree_t CurrentAngle();
 
         void Periodic() override;
         void SimulationPeriodic() override;
@@ -65,9 +66,6 @@ private:
 
 
         void SimulationInit();
-        frc::Mechanism2d m_Mech{1, 1};
-        frc::MechanismRoot2d* m_MechRoot{m_Mech.GetRoot("intakeRoot", 0.5, 0.5)};
-        frc::MechanismLigament2d* m_IntakeMech;
         const units::meter_t kIntakeRadius = 1_in;
         frc::DCMotor m_IntakeGearbox{frc::DCMotor::KrakenX60(1)};
         frc::sim::SingleJointedArmSim m_IntakeSimModel{

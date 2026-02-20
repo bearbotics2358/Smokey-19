@@ -97,10 +97,6 @@ void IntakeSubsystem::GoToAngle() {
 
 // Runs in Simulation only!
 void IntakeSubsystem::SimulationInit() {
-    const double kSimIntakeLineWidth = 6;
-    m_IntakeMech = m_MechRoot->Append<frc::MechanismLigament2d>("Intake", kIntakeRadius.value(), 0_deg, kSimIntakeLineWidth, frc::Color8Bit{frc::Color::kPurple});
-    frc::SmartDashboard::PutData("Intake Sim", &m_Mech);
-
     auto& intake_sim = m_intakeSpinMotor.GetSimState();
     intake_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
     intake_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
