@@ -21,7 +21,9 @@ ShooterSubsystem::ShooterSubsystem() {
     m_FlywheelMotor.GetConfigurator().Apply(configs);
     m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
 
-    m_FlywheelFollowerMotor.SetControl(controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed});
+    m_FlywheelFollowerMotor.SetControl(
+        controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
+            .WithUpdateFreqHz(200_Hz));
 }
 
 void ShooterSubsystem::Periodic() {
