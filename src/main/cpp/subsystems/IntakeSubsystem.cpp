@@ -12,30 +12,26 @@ IntakeSubsystem::IntakeSubsystem():
     m_intakeSpinMotor(kIntakeMotorID),
     m_extenderMotor(kExtenderMotorID)
 {
-    ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
+  ctre::phoenix6::configs::HardwareLimitSwitchConfigs rotation_limit_config;
+  rotation_limit_config
+    .WithForwardLimitAutosetPositionEnable(true)
+    .WithForwardLimitEnable(true)
+    .WithForwardLimitAutosetPositionValue(0_tr);
 
-    ctre::phoenix6::configs::MotorOutputConfigs eMotorConfigs;
+  ctre::phoenix6::configs::Slot0Configs slot0Config;
+  slot0Config
+    .WithKP(2)
+    .WithKI(0)
+    .WithKD(0)
+    .WithKS(0)
+    .WithKV(0.2);
 
-    auto& talonFXConfigurator = m_intakeSpinMotor.GetConfigurator();
-    ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs{};
-    limitConfigs.SupplyCurrentLimit = units::current::ampere_t(1);
-    limitConfigs.SupplyCurrentLimitEnable = false;
-    talonFXConfigurator.Apply(limitConfigs);
+  ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
+  rotation_config
+    .WithHardwareLimitSwitch(rotation_limit_config)
+    .WithSlot0(slot0Config);
 
-    motorConfigs.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake)
-        .WithInverted(false);
-
-    eMotorConfigs.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake)
-        .WithInverted(false);
-
-    m_intakeSpinMotor.SetPosition(0_tr);
-
-    m_extenderMotor.SetPosition(0_tr);
-
-    m_intakeSpinMotor.GetConfigurator().Apply(motorConfigs);
-    m_extenderMotor.GetConfigurator().Apply(motorConfigs);
-
-    m_extenderPID.SetIntegratorRange(-0.4, 0.4);
+  m_extenderMotor.GetConfigurator().Apply(rotation_config);
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
@@ -89,14 +85,15 @@ units::turn_t IntakeSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 }
 
 void IntakeSubsystem::GoToAngle() {
-    double value = m_extenderPID.Calculate(CurrentAngle(), m_setpointAngle);
-    BearLog::Log("IntakeExtender/PIDValue", value);
-    BearLog::Log("IntakeExtender/Setpoint", m_setpointAngle);
-    m_extenderMotor.SetVoltage(units::volt_t(value));
+    units::turn_t turns = GetTurnsFromAngle(m_setpointAngle);
+
+    m_extenderMotor.SetControl(m_RotationVoltage.WithPosition(turns)
+.WithSlot(0));
 }
 
 // Runs in Simulation only!
 void IntakeSubsystem::SimulationInit() {
+    const double kSimIntakeLineWidth = 6;
     auto& intake_sim = m_intakeSpinMotor.GetSimState();
     intake_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
     intake_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
@@ -137,6 +134,5 @@ void IntakeSubsystem::SimulationPeriodic() {
     extender_sim.SetRotorVelocity(kEGearRatio * m_EIntakeSimModel.GetVelocity());
 
     // Update the simulated UI mechanism to the new angle based on the motor
-    m_IntakeMech->SetAngle(0_deg);
     m_EIntakeMech->SetAngle(CurrentAngle());
 }

@@ -22,38 +22,7 @@ ShooterSubsystem::ShooterSubsystem() {
 }
 
 void ShooterSubsystem::Periodic() {
-    BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
-    BearLog::Log("Flywheel/Speed", CurrentSpeed());
-
-    GoToSpeed();
-}
-
-void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
-        m_setSpeed = speed;
-}
-
-units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
-    units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
-    return speed;
-};
-
-void ShooterSubsystem::GoToSpeed() {
-    //m_shooterBangBang.SetTolerance(m_tolerance); 
-    double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
-    frc::SmartDashboard::PutNumber("Flywheel BangBang", value);
-    m_FlywheelMotor.SetVoltage(units::volt_t(value*kMaxVolts));
-}
-
-frc2::CommandPtr ShooterSubsystem::EnableShooter(){
-    return frc2::cmd::RunOnce([this] {
-        SetGoalSpeed(3600_rpm);
-    });
-}
-
-frc2::CommandPtr ShooterSubsystem::StopShooter(){
-    return frc2::cmd::RunOnce([this] {
-        SetGoalSpeed(0_rpm);
-    });
+    BearLog::Log("Flywheel/Speed", units::revolutions_per_minute_t(m_FlywheelMotor.GetVelocity().GetValue()));
 }
 
 void ShooterSubsystem::SimulationPeriodic() {

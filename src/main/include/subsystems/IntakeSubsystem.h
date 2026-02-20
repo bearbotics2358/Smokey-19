@@ -21,16 +21,16 @@ constexpr int kExtenderMotorID = 61;
 
 class IntakeSubsystem : public frc2::SubsystemBase {
 public:
-    IntakeSubsystem();
-    frc2::CommandPtr SpinMotor(units::volt_t volts);
-    units::degree_t CurrentAngle();
+        IntakeSubsystem();
+        frc2::CommandPtr SpinMotor(units::volt_t volts);
+        units::degree_t CurrentAngle();
 
         void Periodic() override;
         void SimulationPeriodic() override;
 
         frc2::CommandPtr SetGoalAngle();
-        units::degree_t CurrentAngle();
 private:
+        ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
         void GoToAngle();
 
         units::degree_t GetAngleFromTurns(units::turn_t rotations);
@@ -43,21 +43,6 @@ private:
         static constexpr double kGearRatio = 1;
 
         static constexpr double kEGearRatio = 1;
-
-        static constexpr units::turns_per_second_t kMaxVelocity = 1.5_tps;
-        static constexpr units::turns_per_second_squared_t kMaxAcceleration = 0.75_tr_per_s_sq;
-        double P = 3;
-        double I = 0.3;
-        double D = 0.0;
-
-
-        frc::TrapezoidProfile<units::turns>::Constraints m_constraints {
-            kMaxVelocity, kMaxAcceleration
-        };
-
-        frc::ProfiledPIDController<units::turns> m_extenderPID {
-            P, I, D, m_constraints
-        };
 
         units::degree_t m_setpointAngle;
         units::degree_t m_stowAngle = 0_deg;
