@@ -45,8 +45,8 @@ private:
         static constexpr double kEGearRatio = 1;
 
         units::degree_t m_setpointAngle;
-        units::degree_t m_stowAngle = 0_deg;
-        units::degree_t m_extendedAngle = 90_deg;
+        static constexpr units::degree_t kStowAngle = 0_deg;
+        static constexpr units::degree_t kExtendedAngle = 90_deg;
         bool isExtended = false;
 
 

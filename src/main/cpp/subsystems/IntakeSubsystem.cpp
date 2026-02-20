@@ -37,7 +37,7 @@ IntakeSubsystem::IntakeSubsystem():
         SimulationInit();
     }
 
-    m_setpointAngle = m_stowAngle;
+    m_setpointAngle = kStowAngle;
 }
 
 void IntakeSubsystem::Periodic() {
@@ -55,7 +55,7 @@ frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
 }
 
 units::degree_t IntakeSubsystem::CurrentAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_extenderMotor.GetPosition().GetValue()) * kGearRatio;
+    units::degree_t angle = GetAngleFromTurns(m_extenderMotor.GetPosition().GetValue()) * kEGearRatio;
     return angle;
 }
 
