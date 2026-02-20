@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <frc/smartdashboard/SendableChooser.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include "subsystems/CommandSwerveDrivetrain.h"
@@ -20,6 +21,8 @@
 class RobotContainer {
 private:
     RobotType m_RobotType{config::GetRobotType()};
+
+    frc::SendableChooser<frc2::Command *> m_autoChooser;
 
     double speedlimit = 1.0;
     units::meters_per_second_t MaxSpeed = speedlimit * TunerConstants::GetSpeedAt12Volts(m_RobotType); // kSpeedAt12Volts desired top speed
@@ -49,7 +52,7 @@ public:
 
     RobotContainer();
 
-    frc2::CommandPtr GetAutonomousCommand();
+    frc2::Command* GetAutonomousCommand();
 
 private:
     void ConfigureBindings();
