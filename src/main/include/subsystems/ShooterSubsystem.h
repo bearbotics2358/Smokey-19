@@ -16,6 +16,8 @@
 #include <frc/smartdashboard/MechanismLigament2d.h>
 #include <frc/smartdashboard/MechanismRoot2d.h>
 
+using namespace ctre::phoenix6;
+
 class ShooterSubsystem : public frc2::SubsystemBase {
 public:
     ShooterSubsystem();
@@ -34,19 +36,15 @@ public:
 private:
     void GoToSpeed();
 
-    //find actual values for everything later
-    static constexpr int kFlywheelMotorId = 2;
+    static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
 
-    static constexpr int kFlywheelFollowerMotorId = 3;
+    static constexpr int kFlywheelFollowerMotorId = 36;
     ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
 
     frc::BangBangController m_shooterBangBang {};
 
-    static constexpr double kMaxVolts = 12.0;
-    //units::revolutions_per_minute_t m_tolerance = 5_rpm;
-
-    units::revolutions_per_minute_t m_setSpeed = 3600_rpm;
+    units::revolutions_per_minute_t m_setSpeed = 0_rpm;
 
 
     ////////////////////////////
@@ -75,7 +73,7 @@ private:
 
     static constexpr double kGearRatio = 1;
 
-    units::degree_t m_setpointAngle = 90_deg;
+    units::degree_t m_setpointAngle = 65_deg;
 
     ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{2.2_tr};
 

@@ -10,17 +10,20 @@ using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem()
     : m_shooterElevationSpinMotor{kShooterElevationMotorID}
 {
-    m_FlywheelFollowerMotor.SetControl(controls::Follower(m_FlywheelMotor.GetDeviceID(),signals::MotorAlignmentValue::Opposed));
+    configs::TalonFXConfiguration configs{};
 
-    ctre::phoenix6::configs::MotorOutputConfigs motorConfigsLead;
-    auto& talonFXConfiguratorLead = m_FlywheelMotor.GetConfigurator();
-    motorConfigsLead.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast).WithInverted(false);
-    talonFXConfiguratorLead.Apply(motorConfigsLead);
+    static constexpr units::ampere_t kPeakTorqueCurrent = 40_A;
+    configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
+    configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
 
-    ctre::phoenix6::configs::MotorOutputConfigs motorConfigsFollower;
-    auto& talonFXConfiguratorFollower = m_FlywheelFollowerMotor.GetConfigurator();
-    motorConfigsFollower.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
-    talonFXConfiguratorFollower.Apply(motorConfigsFollower);
+    configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Coast;
+
+    configs.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
+
+    m_FlywheelMotor.GetConfigurator().Apply(configs);
+    m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
+
+    m_FlywheelFollowerMotor.SetControl(controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed});
 
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
@@ -44,12 +47,6 @@ ShooterSubsystem::ShooterSubsystem()
 void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
     BearLog::Log("Flywheel/Speed", CurrentSpeed());
-
-    GoToAngle();
-
-    
-    BearLog::Log("ShooterElevation/Setpoint", m_setpointAngle);
-    BearLog::Log("ShooterElevation/Angle", CurrentAngle());
 
     GoToSpeed();
 }
@@ -93,21 +90,26 @@ units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
 };
 
 void ShooterSubsystem::GoToSpeed() {
-    //m_shooterBangBang.SetTolerance(m_tolerance); 
     double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
-    frc::SmartDashboard::PutNumber("Flywheel BangBang", value);
-    m_FlywheelMotor.SetVoltage(units::volt_t(value*kMaxVolts));
+
+    // The motors move at around 5000 RPMs at 10 V
+    static constexpr double kMaxVolts = 10.0;
+    units::volt_t voltageToApply = units::volt_t(value * kMaxVolts);
+    BearLog::Log("Flywheel/BangBang", voltageToApply);
+
+    // The other motor is configured as an inverted follower and will follow the control of this lead motor
+    m_FlywheelMotor.SetVoltage(voltageToApply);
 }
 
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
     return frc2::cmd::RunOnce([this] {
-        SetGoalSpeed(3600_rpm);
+        m_setSpeed = 5000_rpm;
     });
 }
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
-        SetGoalSpeed(0_rpm);
+        m_setSpeed = 0_rpm;
     });
 }
 
