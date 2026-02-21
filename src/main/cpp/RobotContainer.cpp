@@ -47,6 +47,8 @@ void RobotContainer::ConfigureBindings()
         return point.WithModuleDirection(frc::Rotation2d{-joystick.GetLeftY(), -joystick.GetLeftX()});
     }));
 
+    joystick.X().OnTrue(m_intakeSubsystem.SetGoalAngle());
+
     joystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     joystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
 
