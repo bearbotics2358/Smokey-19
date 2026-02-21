@@ -36,6 +36,8 @@ void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/Torque Current", m_FlywheelMotor.GetTorqueCurrent().GetValue());
 
     GoToSpeed();
+
+    MoveSetpoint(units::meter_t(operatecontrol.GetLeftX() / 10), units::meter_t(operatecontrol.GetLeftY() / 10));
 }
 
 void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
@@ -69,6 +71,21 @@ frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
         m_setSpeed = 0_rpm;
     });
+}
+
+void ShooterSubsystem::MoveSetpoint(units::meter_t x, units::meter_t y) {
+    units::meter_t changeX = x;
+    units::meter_t changeY = y;
+    setpointX += changeX;
+    setpointY += changeY;
+    frc::Pose2d targetPose{setpointX, setpointY, frc::Rotation2d{}};
+    frc::Pose3d worldPose{
+        targetPose.Y(),
+        targetPose.X(),
+        0_m,
+        frc::Rotation3d{}
+    };
+    BearLog::Log("crosshair/target", worldPose);
 }
 
 void ShooterSubsystem::SimulationPeriodic() {

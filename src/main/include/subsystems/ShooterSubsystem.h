@@ -9,7 +9,7 @@
 #include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 #include <units/length.h>
-//simulation stuff i think
+#include <frc2/command/button/CommandXboxController.h>
 #include <frc/simulation/FlywheelSim.h>
 
 using namespace ctre::phoenix6;
@@ -25,8 +25,15 @@ public:
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
 
+    void MoveSetpoint(units::meter_t x, units::meter_t y);
+
 private:
     void GoToSpeed();
+
+    units::meter_t setpointX = 4_m;
+    units::meter_t setpointY = 4_m;
+
+    frc2::CommandXboxController operatecontrol{1};
 
     static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
