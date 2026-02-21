@@ -42,6 +42,9 @@ ShooterSubsystem::ShooterSubsystem()
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+    m_FlywheelFollowerMotor.SetControl(
+        controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
+            .WithUpdateFreqHz(200_Hz));
 }
 
 void ShooterSubsystem::Periodic() {
