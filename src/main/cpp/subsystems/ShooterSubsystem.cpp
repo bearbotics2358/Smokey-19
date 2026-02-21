@@ -36,6 +36,7 @@ void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/Torque Current", m_FlywheelMotor.GetTorqueCurrent().GetValue());
 
     GoToSpeed();
+    FeederGoToSpeed();
 }
 
 void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
@@ -46,6 +47,12 @@ units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
     units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
+
+units::revolutions_per_minute_t ShooterSubsystem::CurrentFeederSpeed() {
+    units::revolutions_per_minute_t speed = m_FeederMotor.GetVelocity().GetValue();
+    return speed;
+};
+
 
 void ShooterSubsystem::GoToSpeed() {
     double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
@@ -59,6 +66,15 @@ void ShooterSubsystem::GoToSpeed() {
     m_FlywheelMotor.SetVoltage(voltageToApply);
 }
 
+void ShooterSubsystem::FeederGoToSpeed() {
+    double value = m_feederPID.Calculate(CurrentFeederSpeed().value(), m_feederSetSpeed.value()); //do these need .value()?
+    // The motors move at around 5000 RPMs at 10 V
+    static constexpr double kMaxVolts = 10.0;
+    units::volt_t voltageToApply = units::volt_t(value * kMaxVolts);
+    BearLog::Log("FeederPID", voltageToApply);
+    m_FeederMotor.SetVoltage(voltageToApply);
+}
+
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
     return frc2::cmd::RunOnce([this] {
         m_setSpeed = 5000_rpm;
@@ -68,6 +84,13 @@ frc2::CommandPtr ShooterSubsystem::EnableShooter(){
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
         m_setSpeed = 0_rpm;
+        m_feederSetSpeed = 0_rpm; //should both be set here?
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::EnableFeeder(){
+    return frc2::cmd::RunOnce([this] {
+        m_feederSetSpeed = m_setSpeed * kFlywheelToFeeder; //should we use a scalar or link the speeds in another way?
     });
 }
 

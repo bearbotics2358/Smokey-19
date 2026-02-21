@@ -9,7 +9,6 @@
 #include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 #include <units/length.h>
-//simulation stuff i think
 #include <frc/simulation/FlywheelSim.h>
 
 using namespace ctre::phoenix6;
@@ -19,14 +18,17 @@ public:
     ShooterSubsystem();
 
     units::revolutions_per_minute_t CurrentSpeed();
+    units::revolutions_per_minute_t CurrentFeederSpeed();
     void SetGoalSpeed(units::revolutions_per_minute_t speed);
     void Periodic() override;
     void SimulationPeriodic() override;
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
+    frc2::CommandPtr EnableFeeder();
 
 private:
     void GoToSpeed();
+    void FeederGoToSpeed();
 
     static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
@@ -37,6 +39,21 @@ private:
     frc::BangBangController m_shooterBangBang {};
 
     units::revolutions_per_minute_t m_setSpeed = 0_rpm;
+
+    units::revolutions_per_minute_t m_feederSetSpeed = 0_rpm;
+
+    static constexpr int kFeederMotorId = 400;//fill in actual ID later
+    ctre::phoenix6::hardware::TalonFX m_FeederMotor{kFeederMotorId};
+
+    static constexpr double kFlywheelToFeeder = 0.1;
+
+    double P = 3;
+    double I = 0.3;
+    double D = 0.0;
+
+    frc::PIDController m_feederPID {
+      P, I, D
+    };
 
 
     ////////////////////////////
