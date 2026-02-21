@@ -54,9 +54,6 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
     driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
 
-    driverJoystick.A().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
-    driverJoystick.B().WhileTrue(m_turretSubsystem.SetGoalAngle(180_deg));
-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
     (driverJoystick.Back() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
