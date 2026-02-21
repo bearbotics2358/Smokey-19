@@ -50,6 +50,7 @@ void RobotContainer::ConfigureBindings()
     joystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     joystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
 
+    //m_turretSubsystem.SetGoalAngle(units::degree_t((joystick.GetLeftX() * 180) + 180));
     joystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
     joystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
 

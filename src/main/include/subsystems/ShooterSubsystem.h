@@ -9,8 +9,12 @@
 #include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 #include <units/length.h>
-//simulation stuff i think
+
+#include <frc/simulation/SingleJointedArmSim.h>
 #include <frc/simulation/FlywheelSim.h>
+#include <frc/smartdashboard/Mechanism2d.h>
+#include <frc/smartdashboard/MechanismLigament2d.h>
+#include <frc/smartdashboard/MechanismRoot2d.h>
 
 using namespace ctre::phoenix6;
 
@@ -24,6 +28,10 @@ public:
     void SimulationPeriodic() override;
     frc2::CommandPtr EnableShooter();
     frc2::CommandPtr StopShooter();
+
+    units::degree_t CurrentAngle();
+
+    frc2::CommandPtr SetGoalAngle(units::degree_t angle);
 
 private:
     void GoToSpeed();
@@ -53,4 +61,36 @@ private:
     frc::LinearSystem<1, 1, 1> m_Plant{frc::LinearSystemId::FlywheelSystem(
       m_ShooterGearbox, kFlywheelMomentOfInertia, kFlywheelGearing)};
     frc::sim::FlywheelSim m_FlywheelSimModel{m_Plant, m_ShooterGearbox};
+
+
+    //Elevation Motor Inits
+    void GoToAngle();
+    units::degree_t GetAngleFromTurns(units::turn_t rotations);
+    units::turn_t GetTurnsFromAngle(units::degree_t angle);
+
+    ctre::phoenix6::hardware::TalonFX m_shooterElevationSpinMotor;
+    static constexpr int kShooterElevationMotorID = 43;
+
+    static constexpr double kGearRatio = 1;
+
+    units::degree_t m_setpointAngle = 65_deg;
+
+    ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{2.2_tr};
+
+        void SimulationInit();
+        frc::Mechanism2d m_Mech{1, 1};
+        frc::MechanismRoot2d* m_MechRoot{m_Mech.GetRoot("shooterElevationRoot", 0.5, 0.5)};
+        frc::MechanismLigament2d* m_ShooterElevationMech;
+        const units::meter_t kShooterElevationRadius = 12_in;
+        frc::DCMotor m_ShooterElevationGearbox{frc::DCMotor::KrakenX60(1)};
+        frc::sim::SingleJointedArmSim m_ShooterElevationSimModel{
+          m_ShooterElevationGearbox,
+          kGearRatio,
+          frc::sim::SingleJointedArmSim::EstimateMOI(kShooterElevationRadius, 0.2_kg),
+          kShooterElevationRadius,
+          -360_deg,
+          360_deg,
+          false,
+          10_deg,
+        };
 };
