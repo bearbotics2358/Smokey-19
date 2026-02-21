@@ -111,4 +111,8 @@ int TrajectoryTable::get_rpm_inc() {
 	return m_rpm_inc;
 }
 
-	
+units::feet_per_second_t TrajectoryTable::fuel_velocity(units::revolutions_per_minute_t rpm) {
+	units::feet_per_second_t v = (units::feet_per_second_t)(M_PI * (m_wheel_diameter_in / 12.0) * rpm.value() / 60.0 / 2.0);	
+
+	return v;
+}

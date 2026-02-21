@@ -7,10 +7,17 @@
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/RobotModeTriggers.h>
 
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/auto/NamedCommands.h>
+
 RobotContainer::RobotContainer()
-    : m_cameraSubsystem(&m_drivetrain),
-      m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
+    : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
 {
+    m_drivetrain.ConfigureAutoBuilder();
+
+    m_autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
+    frc::SmartDashboard::PutData("Auto Mode", &m_autoChooser);
+
     ConfigureBindings();
 }
 
@@ -44,6 +51,11 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
+    driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
+    driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
+
+    driverJoystick.A().WhileTrue(m_turretSubsystem.SetGoalAngle(135_deg));
+    driverJoystick.B().WhileTrue(m_turretSubsystem.SetGoalAngle(180_deg));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -58,21 +70,7 @@ void RobotContainer::ConfigureBindings()
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand()
+frc2::Command* RobotContainer::GetAutonomousCommand()
 {
-    // Simple drive forward auton
-    return frc2::cmd::Sequence(
-        // Reset our field centric heading to match the robot
-        // facing away from our alliance station wall (0 deg).
-        m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(frc::Rotation2d{0_deg}); }),
-        // Then slowly drive forward (away from us) for 5 seconds.
-        m_drivetrain.ApplyRequest([this]() -> auto&& {
-            return drive.WithVelocityX(0.5_mps)
-                .WithVelocityY(0_mps)
-                .WithRotationalRate(0_tps);
-        })
-        .WithTimeout(5_s),
-        // Finally idle for the rest of auton
-        m_drivetrain.ApplyRequest([] { return swerve::requests::Idle{}; })
-    );
+    return m_autoChooser.GetSelected();
 }

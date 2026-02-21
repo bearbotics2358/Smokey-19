@@ -1,5 +1,7 @@
 // TrjectoryTable.h - class to hold the table of angle versus speed (actually wheel RPM) for the shooter
 
+#include <units/velocity.h>
+#include <units/angular_velocity.h>
 
 // hard coding the table to angles of 0 to 90 degrees inclusive with a step size of 1,
 // and speeds (wheel RPMs) from 1000 to 4000 inclusive with a step size of 25
@@ -12,7 +14,7 @@ class TrajectoryTable {
 
  public:
 
-	TrajectoryTable(double wheel_diameter_in = 4.0, double shooter_height_in = 17.15, double hub_height_in = 72.0);
+	TrajectoryTable(double wheel_diameter_in = 4.0, double shooter_height_in = 18.2817, double hub_height_in = 75.0);
 	~TrajectoryTable() {}
 
 	void init();
@@ -26,6 +28,7 @@ class TrajectoryTable {
 	int get_rpm_min();
 	int get_rpm_max();
 	int get_rpm_inc();
+	units::feet_per_second_t fuel_velocity(units::revolutions_per_minute_t rpm);
 
 	double data[TRAJECTORY_TABLE_ANGLES][TRAJECTORY_TABLE_SPEEDS];
 

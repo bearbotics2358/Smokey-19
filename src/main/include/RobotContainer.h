@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <frc/smartdashboard/SendableChooser.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include "subsystems/CommandSwerveDrivetrain.h"
@@ -12,12 +13,16 @@
 #include "subsystems/CameraSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
+#include "subsystems/IndexerSubsystem.h"
 #include "vision/VisionConstants.h"
 #include "vision/VisionSubsystem.h"
+#include "subsystems/ShooterSubsystem.h"
 
 class RobotContainer {
 private:
     RobotType m_RobotType{config::GetRobotType()};
+
+    frc::SendableChooser<frc2::Command *> m_autoChooser;
 
     double speedlimit = 1.0;
     units::meters_per_second_t MaxSpeed = speedlimit * TunerConstants::GetSpeedAt12Volts(m_RobotType); // kSpeedAt12Volts desired top speed
@@ -37,9 +42,10 @@ private:
     frc2::CommandXboxController driverJoystick{0};
     frc2::CommandXboxController operatorJoystick{1};
 
-    CameraSubsystem m_cameraSubsystem;
     TurretSubsystem m_turretSubsystem;
+    ShooterSubsystem m_shooterSubsystem;
     IntakeSubsystem m_intakeSubsystem;
+    IndexerSubsystem m_indexerSubsystem;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};
@@ -47,7 +53,7 @@ public:
 
     RobotContainer();
 
-    frc2::CommandPtr GetAutonomousCommand();
+    frc2::Command* GetAutonomousCommand();
 
 private:
     void ConfigureBindings();

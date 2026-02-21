@@ -41,7 +41,9 @@ units::degree_t CameraSubsystem::GetAngleToTag() {
         double forward = RP2toTarget.X().value();
         angle = units::degree_t(units::radian_t(atan(strafe/forward)));
         return angle;
-    }
+    }else {
+        return 0_deg;
+    } //this else statement was just for troubleshooting, not meant to be a permanent change
     frc::SmartDashboard::PutNumber("RP2 Angle Goal", angle.value());
 }
 
