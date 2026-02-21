@@ -10,7 +10,6 @@
 
 #include <ctre/phoenix6/TalonFX.hpp>
 
-#include <frc/DigitalInput.h>
 #include <frc/Encoder.h>
 
 #include <units/length.h>
@@ -26,48 +25,32 @@ class TurretSubsystem : public frc2::SubsystemBase {
     public:
         TurretSubsystem(std::function<frc::Pose2d()> getBotPose);
 
-        frc2::CommandPtr SetGoalAngle(units::degree_t angle);
+        void SetGoalAngle();
         units::degree_t CurrentAngle();
-        void goToAngle();
+
+        units::degree_t AngleToHub();
+
+        frc2::CommandPtr PointAtHub();
 
         void Periodic() override;
         void SimulationPeriodic() override;
 
-        bool motorLimit();
+        bool m_pointAtHubToggle = true;
 
-        bool getLimitSwitch();
-
-        void turretInit();
-
-        bool turretInitialized = false;
+        units::degree_t m_stowAngle = 0_deg;
     private:
         void GoToAngle();
         units::degree_t GetAngleFromTurns(units::turn_t rotations);
         units::turn_t GetTurnsFromAngle(units::degree_t angle);
 
-        frc::DigitalInput m_limitSwitch{1};
+        ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
 
         ctre::phoenix6::hardware::TalonFX m_turretSpinMotor;
         std::function<frc::Pose2d()> m_GetCurrentBotPose;
 
-        static constexpr double kGearRatio = 113.28;
+        static constexpr double kGearRatio = 1;
 
-        static constexpr units::turns_per_second_t kMaxVelocity = 1.5_tps;
-        static constexpr units::turns_per_second_squared_t kMaxAcceleration = 0.75_tr_per_s_sq;
-        double P = 3;
-        double I = 0.3;
-        double D = 0.0;
-
-
-        frc::TrapezoidProfile<units::turns>::Constraints m_constraints {
-            kMaxVelocity, kMaxAcceleration
-        };
-
-        frc::ProfiledPIDController<units::turns> m_turretPID {
-            P, I, D, m_constraints
-        };
-
-        units::degree_t m_setpointAngle = 90_deg;
+        units::degree_t m_setpointAngle = 0_deg;
 
         // Simulation specific items
         void SimulationInit();
@@ -81,8 +64,8 @@ class TurretSubsystem : public frc2::SubsystemBase {
           kGearRatio,
           frc::sim::SingleJointedArmSim::EstimateMOI(kTurretRadius, 0.1_kg),
           kTurretRadius,
-          -180_deg,
-          180_deg,
+          -360_deg,
+          360_deg,
           false,
           10_deg,
         };
