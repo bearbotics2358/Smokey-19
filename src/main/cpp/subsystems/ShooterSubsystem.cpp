@@ -90,7 +90,7 @@ frc2::CommandPtr ShooterSubsystem::StopShooter(){
 
 frc2::CommandPtr ShooterSubsystem::EnableFeeder(){
     return frc2::cmd::RunOnce([this] {
-        m_feederSetSpeed = m_setSpeed * kFlywheelToFeeder; //should we use a scalar or link the speeds in another way?
+        m_feederSetSpeed = m_feederMaxSpeed;
     });
 }
 

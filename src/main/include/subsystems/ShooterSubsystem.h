@@ -42,10 +42,10 @@ private:
 
     units::revolutions_per_minute_t m_feederSetSpeed = 0_rpm;
 
+    units::revolutions_per_minute_t m_feederMaxSpeed = 3 * m_setSpeed;
+
     static constexpr int kFeederMotorId = 400;//fill in actual ID later
     ctre::phoenix6::hardware::TalonFX m_FeederMotor{kFeederMotorId};
-
-    static constexpr double kFlywheelToFeeder = 0.1;
 
     double P = 3;
     double I = 0.3;
