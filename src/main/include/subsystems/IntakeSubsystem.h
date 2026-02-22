@@ -29,6 +29,10 @@ public:
         void SimulationPeriodic() override;
 
         frc2::CommandPtr SetGoalAngle();
+
+        frc2::CommandPtr SpinUntilExtendLimit();
+        frc2::CommandPtr SpinUntilStowLimit();
+        frc2::CommandPtr StopSpin();
 private:
         ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
         void GoToAngle();
@@ -72,10 +76,10 @@ private:
         frc::sim::SingleJointedArmSim m_EIntakeSimModel{
           m_EIntakeGearbox,
           kEGearRatio,
-          frc::sim::SingleJointedArmSim::EstimateMOI(kEIntakeRadius, 0.1_kg),
+          frc::sim::SingleJointedArmSim::EstimateMOI(kEIntakeRadius, 0.5_kg),
           kEIntakeRadius,
-          -180_deg,
-          180_deg,
+          0_deg,
+          90_deg,
           false,
           10_deg,
         };

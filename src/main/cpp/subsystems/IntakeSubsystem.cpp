@@ -20,7 +20,7 @@ IntakeSubsystem::IntakeSubsystem():
 
   ctre::phoenix6::configs::Slot0Configs slot0Config;
   slot0Config
-    .WithKP(2)
+    .WithKP(1)
     .WithKI(0)
     .WithKD(0)
     .WithKS(0)
@@ -43,7 +43,7 @@ IntakeSubsystem::IntakeSubsystem():
 void IntakeSubsystem::Periodic() {
     BearLog::Log("IntakeExtender/Angle", CurrentAngle());
 
-    GoToAngle();
+    BearLog::Log("TorqueCurrent", m_extenderMotor.GetTorqueCurrent().GetValue());
 }
 
 frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
@@ -88,7 +88,33 @@ void IntakeSubsystem::GoToAngle() {
     units::turn_t turns = GetTurnsFromAngle(m_setpointAngle);
 
     m_extenderMotor.SetControl(m_RotationVoltage.WithPosition(turns)
-.WithSlot(0));
+        .WithSlot(0));
+}
+
+frc2::CommandPtr IntakeSubsystem::SpinUntilExtendLimit() {
+    return frc2::cmd::Run([this] {
+        if (m_extenderMotor.GetTorqueCurrent().GetValue() < 10_A) {
+            m_extenderMotor.SetVoltage(0.25_V);
+        } else {
+            StopSpin();
+        }
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::SpinUntilStowLimit() {
+    return frc2::cmd::Run([this] {
+        if (m_extenderMotor.GetTorqueCurrent().GetValue() > -10_A) {
+            m_extenderMotor.SetVoltage(-0.25_V);
+        } else {
+            StopSpin();
+        }
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::StopSpin() {
+    return frc2::cmd::Run([this] {
+        m_extenderMotor.SetVoltage(0_V);
+    });
 }
 
 // Runs in Simulation only!
