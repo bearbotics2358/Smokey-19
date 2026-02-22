@@ -55,6 +55,28 @@ public:
 
     frc2::Command* GetAutonomousCommand();
 
+    double xMovement = -driverJoystick.GetLeftY();
+    double yMovement = -driverJoystick.GetLeftX();
+    double rotMovement = driverJoystick.GetRightX();
 private:
     void ConfigureBindings();
+
+    static constexpr double kP = 1.75;
+    static constexpr double kI = 0.0;
+    static constexpr double kD = 0.0;
+    
+    frc::PIDController m_YAlignmentPID {kP, kI, kD};
+
+    static constexpr double kRotationP = 0.05;
+    static constexpr double kRotationI = 0.0;
+    static constexpr double kRotationD = 0.001;
+    frc::PIDController m_rotationalPID {kRotationP, kRotationI, kRotationD};
+
+    static constexpr units::meters_per_second_t kMaxVelocity = 1.5_mps;
+    static constexpr units::radians_per_second_t kMaxAngularVelocity = 1_rad_per_s;
+
+    const units::meter_t kStrafeTolerance = units::meter_t(0.5_in);
+    const units::degree_t kRotationTolerance = 2_deg;
+
+    const units::meter_t kSetpointDistance = units::meter_t(20_in);
 };
