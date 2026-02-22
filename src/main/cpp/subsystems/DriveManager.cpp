@@ -6,8 +6,10 @@ DriveManager::DriveManager(std::function<frc::Pose2d()> getBotPose) :
 {}
 
 void DriveManager::Periodic() {
-    if (m_driverController.B().Get()) {
+    if (m_driverController.A().Get()) {
         GoThroughTrench();
+    } else if (m_driverController.B().Get()) {
+        AngleBump();
     } else {
         DefaultDrive();
     }
@@ -35,5 +37,22 @@ void DriveManager::GoThroughTrench() {
 
     xMovement = -m_driverController.GetLeftY();
     yMovement = -strafe;
+    rotMovement = rotation;
+}
+
+void DriveManager::AngleBump() {
+    frc::Pose2d botPose = m_GetCurrentBotPose();
+
+
+    units::degree_t currentDegrees = botPose.Rotation().Degrees();
+
+    double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (45_deg).value());
+    rotation = std::clamp(rotation, -1.0, 1.0);
+
+    BearLog::Log("Rotation PID", rotation);
+
+
+    xMovement = -m_driverController.GetLeftY();
+    yMovement = -m_driverController.GetLeftX();
     rotMovement = rotation;
 }

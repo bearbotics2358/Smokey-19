@@ -25,6 +25,7 @@ public:
 private:
     void GoThroughTrench();
     void DefaultDrive();
+    void AngleBump();
 
     
     frc2::CommandXboxController m_driverController{0};
@@ -49,5 +50,5 @@ private:
     const units::meter_t kStrafeTolerance = units::meter_t(0.5_in);
     const units::degree_t kRotationTolerance = 2_deg;
 
-    const units::meter_t kSetpointDistance = units::meter_t(20_in);
+    const units::meter_t kSetpointDistance = units::meter_t(27_in);
 };
