@@ -15,7 +15,8 @@
 #include "bearlog/bearlog.h"
 
 RobotContainer::RobotContainer()
-    : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
+    : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }},
+      m_driveManager{[this] { return m_drivetrain.GetState().Pose; }}
 {
     m_drivetrain.ConfigureAutoBuilder();
 
@@ -32,37 +33,11 @@ void RobotContainer::ConfigureBindings()
     m_drivetrain.SetDefaultCommand(
             // Drivetrain will execute this command periodically
             m_drivetrain.ApplyRequest([this]() -> auto&& {
-                return drive.WithVelocityX(xMovement * MaxSpeed) // Drive forward with negative Y (forward)
-                    .WithVelocityY(yMovement * MaxSpeed) // Drive left with negative X (left)
-                    .WithRotationalRate(rotMovement * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                return drive.WithVelocityX(m_driveManager.xMovement * MaxSpeed) // Drive forward with negative Y (forward)
+                    .WithVelocityY(m_driveManager.yMovement * MaxSpeed) // Drive left with negative X (left)
+                    .WithRotationalRate(m_driveManager.rotMovement * MaxAngularRate); // Drive counterclockwise with negative X (left)
             })
         );
-
-
-    driverJoystick.B().WhileTrue(frc2::cmd::Run([this] {
-        frc::Pose2d botPose = m_drivetrain.GetState().Pose;
-        double strafe = m_YAlignmentPID.Calculate(botPose.Y().value(), kSetpointDistance.value());
-        strafe = std::clamp(strafe, -1.0, 1.0);
-
-        BearLog::Log("Strafe PID", strafe);
-
-        units::degree_t currentDegrees = botPose.Rotation().Degrees();
-        double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (0_deg).value());
-        rotation = std::clamp(rotation, -1.0, 1.0);
-
-        BearLog::Log("Rotation PID", rotation);
-
-
-        xMovement = -driverJoystick.GetLeftY();
-        yMovement = -strafe;
-        rotMovement = rotation;
-    })).OnFalse(
-        frc2::cmd::Run([this] {
-            xMovement = -driverJoystick.GetLeftY();
-            yMovement = -driverJoystick.GetLeftX();
-            rotMovement = driverJoystick.GetRightX();
-        })
-    );
 
     
     // Idle while the robot is disabled. This ensures the configured
