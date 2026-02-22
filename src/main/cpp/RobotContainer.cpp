@@ -51,6 +51,8 @@ void RobotContainer::ConfigureBindings()
 
     joystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     joystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
+    joystick.LeftBumper().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
+    joystick.LeftBumper().OnTrue(m_intakeSubsystem.SpinMotor(-5_V));
 
     joystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
     joystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
