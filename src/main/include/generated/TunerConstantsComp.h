@@ -67,7 +67,7 @@ class TunerConstants {
     // Configs for the Pigeon 2; leave this nullopt to skip applying Pigeon 2 configs
     static constexpr std::optional<configs::Pigeon2Configuration> pigeonConfigs = std::nullopt;
 
-    static constexpr std::string_view kCANBusName = "";
+    static constexpr std::string_view kCANBusName = "drivetrain";
 
 public:
     // CAN bus that the devices are located on;
@@ -83,7 +83,9 @@ private:
     // This may need to be tuned to your individual robot
     static constexpr units::scalar_t kCoupleRatio = 3.857142857142857;
 
-    static constexpr units::scalar_t kDriveGearRatio = 5.27;
+    static constexpr units::scalar_t kDriveGearRatio2 = 6.026785714285714;
+    static constexpr units::scalar_t kDriveGearRatio3 = 5.2734375;
+    static constexpr units::scalar_t kDriveGearRatio = kDriveGearRatio2;
     static constexpr units::scalar_t kSteerGearRatio = 26.09090909090909;
     static constexpr units::inch_t kWheelRadius = 2_in;
 
@@ -131,48 +133,48 @@ private:
 
 
     // Front Left
-    static constexpr int kFrontLeftDriveMotorId = 5;
-    static constexpr int kFrontLeftSteerMotorId = 4;
-    static constexpr int kFrontLeftEncoderId = 18;
-    static constexpr units::turn_t kFrontLeftEncoderOffset = -0.177001953125_tr;
+    static constexpr int kFrontLeftDriveMotorId = 17;
+    static constexpr int kFrontLeftSteerMotorId = 16;
+    static constexpr int kFrontLeftEncoderId = 8;
+    static constexpr units::turn_t kFrontLeftEncoderOffset = -0.4365234375_tr;
     static constexpr bool kFrontLeftSteerMotorInverted = false;
     static constexpr bool kFrontLeftEncoderInverted = false;
 
-    static constexpr units::inch_t kFrontLeftXPos = 9.5_in;
-    static constexpr units::inch_t kFrontLeftYPos = 9.5_in;
+    static constexpr units::inch_t kFrontLeftXPos = 13.5_in;
+    static constexpr units::inch_t kFrontLeftYPos = 13.5_in;
 
     // Front Right
     static constexpr int kFrontRightDriveMotorId = 11;
     static constexpr int kFrontRightSteerMotorId = 10;
     static constexpr int kFrontRightEncoderId = 21;
-    static constexpr units::turn_t kFrontRightEncoderOffset = 0.127197265625_tr;
+    static constexpr units::turn_t kFrontRightEncoderOffset = 0.14111328125_tr;
     static constexpr bool kFrontRightSteerMotorInverted = false;
     static constexpr bool kFrontRightEncoderInverted = false;
 
-    static constexpr units::inch_t kFrontRightXPos = 9.5_in;
-    static constexpr units::inch_t kFrontRightYPos = -9.5_in;
+    static constexpr units::inch_t kFrontRightXPos = 13.5_in;
+    static constexpr units::inch_t kFrontRightYPos = -13.5_in;
 
     // Back Left
     static constexpr int kBackLeftDriveMotorId = 7;
     static constexpr int kBackLeftSteerMotorId = 6;
     static constexpr int kBackLeftEncoderId = 19;
-    static constexpr units::turn_t kBackLeftEncoderOffset = -0.232421875_tr;
+    static constexpr units::turn_t kBackLeftEncoderOffset = -0.2158203125_tr;
     static constexpr bool kBackLeftSteerMotorInverted = false;
     static constexpr bool kBackLeftEncoderInverted = false;
 
-    static constexpr units::inch_t kBackLeftXPos = -9.5_in;
-    static constexpr units::inch_t kBackLeftYPos = 9.5_in;
+    static constexpr units::inch_t kBackLeftXPos = -13.5_in;
+    static constexpr units::inch_t kBackLeftYPos = 13.5_in;
 
     // Back Right
-    static constexpr int kBackRightDriveMotorId = 17;
-    static constexpr int kBackRightSteerMotorId = 16;
-    static constexpr int kBackRightEncoderId = 8;
-    static constexpr units::turn_t kBackRightEncoderOffset = -0.44970703125_tr;
+    static constexpr int kBackRightDriveMotorId = 5;
+    static constexpr int kBackRightSteerMotorId = 4;
+    static constexpr int kBackRightEncoderId = 18;
+    static constexpr units::turn_t kBackRightEncoderOffset = -0.181640625_tr;
     static constexpr bool kBackRightSteerMotorInverted = false;
     static constexpr bool kBackRightEncoderInverted = false;
 
-    static constexpr units::inch_t kBackRightXPos = -9.5_in;
-    static constexpr units::inch_t kBackRightYPos = -9.5_in;
+    static constexpr units::inch_t kBackRightXPos = -13.5_in;
+    static constexpr units::inch_t kBackRightYPos = -13.5_in;
 
 
 public:
