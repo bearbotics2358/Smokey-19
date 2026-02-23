@@ -13,22 +13,23 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     : m_turretSpinMotor(kTurretMotorID),
       m_GetCurrentBotPose(getBotPose)
 {
-    ctre::phoenix6::configs::MotorOutputConfigs motorConfigs;
+    ctre::phoenix6::configs::Slot0Configs slot0Config;
+    slot0Config
+        .WithKP(1)
+        .WithKI(0)
+        .WithKD(0.2)
+        .WithKS(0)
+        .WithKV(0.2);
 
-    auto& talonFXConfigurator = m_turretSpinMotor.GetConfigurator();
-    ctre::phoenix6::configs::CurrentLimitsConfigs limitConfigs{};
-    limitConfigs.SupplyCurrentLimit = units::current::ampere_t(1);
-    limitConfigs.SupplyCurrentLimitEnable = true;
-    talonFXConfigurator.Apply(limitConfigs);
+    // In this config object, we can also apply other things such as current limits,
+    // brake mode, which direction is positive rotation, etc.
+    ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
+    rotation_config
+        .WithSlot0(slot0Config);
 
-    motorConfigs.WithNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake)
-        .WithInverted(false);
-
-    m_turretSpinMotor.GetConfigurator().Apply(motorConfigs);
-
-    m_turretSpinMotor.SetPosition(0_tr);
-
-    m_turretPID.SetIntegratorRange(-0.4, 0.4);
+    // Must apply the config to the motor during construction of this object and NOT within functions that
+    // run in the normal Periodic loop
+    m_turretSpinMotor.GetConfigurator().Apply(rotation_config);
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
@@ -36,26 +37,41 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 }
 
 void TurretSubsystem::Periodic() {
-    frc::SmartDashboard::PutBoolean("Get Limit Switch", getLimitSwitch());
-
     BearLog::Log("Turret/Setpoint", m_setpointAngle);
     BearLog::Log("Turret/Angle", CurrentAngle());
 
     GoToAngle();
 }
 
-frc2::CommandPtr TurretSubsystem::SetGoalAngle(units::degree_t angle) {
-    return frc2::cmd::RunOnce([this, angle] {
-        m_setpointAngle = angle;
+units::degree_t TurretSubsystem::AngleToHub() {
+    frc::Pose2d robotPose = m_GetCurrentBotPose();
+
+    //Angle to BLUE alliance hub
+    units::meter_t strafe = robotPose.Y() - 4.335_m;
+    units::meter_t forward = robotPose.X() - 4.615_m;
+    units::degree_t robotAngle = robotPose.Rotation().Degrees();
+    units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
+
+    return angleToHub;
+}
+
+frc2::CommandPtr TurretSubsystem::PointAtHub() {
+    return frc2::cmd::RunOnce([this] {
+        if (m_pointAtHubToggle == true) {
+            m_pointAtHubToggle = false;
+        } else {
+            m_pointAtHubToggle = true;
+        }
+        BearLog::Log("Turret/PointToggle", m_pointAtHubToggle);
     });
 }
 
-bool TurretSubsystem::motorLimit() {
-    if ((CurrentAngle().value() >= 180) || (CurrentAngle().value() < -180)) {
-        return true;
+void TurretSubsystem::SetGoalAngle() {
+    if (m_pointAtHubToggle == false) {
+        m_setpointAngle = m_stowAngle;
     } else {
-        return false;
-    };
+        m_setpointAngle = AngleToHub();
+    }
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
@@ -64,39 +80,23 @@ units::degree_t TurretSubsystem::CurrentAngle() {
 };
 
 units::degree_t TurretSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations.value() * kGearRatio);
+    units::degree_t angle = rotations;
     return angle;
 }
 
 units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t(angle.value() / kGearRatio);
+    units::turn_t rotations = angle;
     return rotations;
 }
 
-bool TurretSubsystem::getLimitSwitch() {
-    return !m_limitSwitch.Get();
-}
-
 void TurretSubsystem::GoToAngle() {
-    P = frc::SmartDashboard::GetNumber("PIDTuner/P", 3);
-    I = frc::SmartDashboard::GetNumber("PIDTuner/I", 0) / 3;
-    D = frc::SmartDashboard::GetNumber("PIDTuner/D", 0) / 3;
-    m_turretPID.SetPID(P, I, D);
-    double value = m_turretPID.Calculate(CurrentAngle(), m_setpointAngle);
-    frc::SmartDashboard::PutNumber("Turret PID", value);
-    m_turretSpinMotor.SetVoltage(units::volt_t(value));
-}
+    SetGoalAngle();
+  units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
 
-void TurretSubsystem::turretInit() {
-    //not tested yet
-    if (getLimitSwitch() == true) {
-        m_turretSpinMotor.SetVoltage(units::volt_t(0));
-        m_turretSpinMotor.SetPosition(0_tr);
-        turretInitialized = true;
-    } else {
-        m_turretSpinMotor.SetVoltage(units::volt_t(0.2));
-    };
-};
+  m_turretSpinMotor.SetControl(
+    m_RotationVoltage.WithPosition(position_in_motor_turns)
+      .WithSlot(0));
+}
 
 // Runs in Simulation only!
 void TurretSubsystem::SimulationInit() {

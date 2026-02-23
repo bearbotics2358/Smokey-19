@@ -2,7 +2,6 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <frc/system/plant/LinearSystemId.h>
-#include <frc/controller/BangBangController.h>
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc2/command/button/Trigger.h>
@@ -23,7 +22,6 @@ public:
     ShooterSubsystem();
 
     units::revolutions_per_minute_t CurrentSpeed();
-    void SetGoalSpeed(units::revolutions_per_minute_t speed);
     void Periodic() override;
     void SimulationPeriodic() override;
     frc2::CommandPtr EnableShooter();
@@ -34,15 +32,14 @@ public:
     frc2::CommandPtr SetGoalAngle(units::degree_t angle);
 
 private:
-    void GoToSpeed();
-
     static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
 
     static constexpr int kFlywheelFollowerMotorId = 36;
     ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
 
-    frc::BangBangController m_shooterBangBang {};
+    controls::VelocityVoltage m_VelocityVoltage{0_tps};
+    controls::NeutralOut m_Coast{};
 
     units::revolutions_per_minute_t m_setSpeed = 0_rpm;
 
@@ -69,7 +66,7 @@ private:
     units::turn_t GetTurnsFromAngle(units::degree_t angle);
 
     ctre::phoenix6::hardware::TalonFX m_shooterElevationSpinMotor;
-    static constexpr int kShooterElevationMotorID = 43;
+    static constexpr int kShooterElevationMotorID = 50;
 
     static constexpr double kGearRatio = 1;
 

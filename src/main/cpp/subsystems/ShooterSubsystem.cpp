@@ -12,13 +12,18 @@ ShooterSubsystem::ShooterSubsystem()
 {
     configs::TalonFXConfiguration configs{};
 
-    static constexpr units::ampere_t kPeakTorqueCurrent = 40_A;
+    static constexpr units::ampere_t kPeakTorqueCurrent = 100_A;
     configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
 
     configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Coast;
 
     configs.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
+
+    configs.Slot0.kP = 0.4;
+    configs.Slot0.kI = 0.0;
+    configs.Slot0.kD = 0.0;
+    configs.Slot0.kV = 0.12;
 
     m_FlywheelMotor.GetConfigurator().Apply(configs);
     m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
@@ -51,7 +56,9 @@ void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
     BearLog::Log("Flywheel/Speed", CurrentSpeed());
 
-    GoToSpeed();
+    BearLog::Log("ShooterElevation/SetpointAngle", m_setpointAngle);
+    BearLog::Log("ShooterElevation/CurrentAngle", CurrentAngle());
+    GoToAngle();
 }
 
 frc2::CommandPtr ShooterSubsystem::SetGoalAngle(units::degree_t angle) {
@@ -83,36 +90,25 @@ void ShooterSubsystem::GoToAngle() {
       .WithSlot(0));
 }
 
-void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
-        m_setSpeed = speed;
-}
-
 units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
     units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
 
-void ShooterSubsystem::GoToSpeed() {
-    double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
-
-    // The motors move at around 5000 RPMs at 10 V
-    static constexpr double kMaxVolts = 10.0;
-    units::volt_t voltageToApply = units::volt_t(value * kMaxVolts);
-    BearLog::Log("Flywheel/BangBang", voltageToApply);
-
-    // The other motor is configured as an inverted follower and will follow the control of this lead motor
-    m_FlywheelMotor.SetVoltage(voltageToApply);
-}
-
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
     return frc2::cmd::RunOnce([this] {
+        // @todo Soon we need to retrieve this value from the LaunchHelper class to decide how fast the wheel should spin
         m_setSpeed = 5000_rpm;
+
+        m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(m_setSpeed).WithSlot(0));
     });
 }
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
+        // Updating this value so the setpoint is logged
         m_setSpeed = 0_rpm;
+        m_FlywheelMotor.SetControl(m_Coast);
     });
 }
 

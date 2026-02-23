@@ -39,7 +39,8 @@ private:
      *       define a destructor to un-register the telemetry from the drivetrain */
     Telemetry logger{MaxSpeed};
 
-    frc2::CommandXboxController joystick{0};
+    frc2::CommandXboxController driverJoystick{0};
+    frc2::CommandXboxController operatorJoystick{1};
 
     TurretSubsystem m_turretSubsystem;
     ShooterSubsystem m_shooterSubsystem;
