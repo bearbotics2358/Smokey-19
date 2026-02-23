@@ -1,45 +1,32 @@
 #include <frc/geometry/Pose3d.h>
+#include <frc/geometry/Rectangle2d.h>
 
 static bool isRobotInBlueAllianceZone (frc::Pose2d botPose) {
-    units::meter_t blueAllianceEnd = 4.625594_m;
+    frc::Rectangle2d blueAllianceZone = frc::Rectangle2d(
+        frc::Pose2d(91.05_in, 158.84_in, 
+        frc::Rotation2d()), 
+        182.11_in, 317.69_in
+    );
 
-    if (botPose.X() < blueAllianceEnd) {
-        return true;
-    } else {
-        return false;
-    }
+    return blueAllianceZone.Contains(botPose.Translation());
 }
 
 static bool isRobotInRedAllianceZone (frc::Pose2d botPose) {
-    units::meter_t redAllianceEnd = 11.915394_m;
+    frc::Rectangle2d redAllianceZone = frc::Rectangle2d(
+        frc::Pose2d(560.17_in, 158.84_in, 
+        frc::Rotation2d()), 
+        182.11_in, 317.69_in
+    );
 
-    if (botPose.X() > redAllianceEnd) {
-        return true;
-    } else {
-        return false;
-    }
+    return redAllianceZone.Contains(botPose.Translation());
 }
 
 static bool isRobotInNeutralZone (frc::Pose2d botPose) {
-    units::meter_t blueAllianceEnd = 4.625594_m;
-    units::meter_t redAllianceEnd = 11.915394_m;
+    frc::Rectangle2d neutralZone = frc::Rectangle2d(
+        frc::Pose2d(325.61_in, 158.84_in, 
+        frc::Rotation2d()), 
+        287_in, 317.69_in
+    );
 
-    if ((botPose.X() < redAllianceEnd) && (botPose.X() > blueAllianceEnd)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-static std::string CurrentZone (frc::Pose2d botPose) {
-    units::meter_t blueAllianceEnd = 4.625594_m;
-    units::meter_t redAllianceEnd = 11.915394_m;
-
-    if ((botPose.X() > redAllianceEnd)) {
-        return "Red Alliance Zone";
-    } else if (botPose.X() < blueAllianceEnd) {
-        return "Blue Alliance Zone";
-    } else {
-        return "Neutral Zone";
-    }
+    return neutralZone.Contains(botPose.Translation());
 }
