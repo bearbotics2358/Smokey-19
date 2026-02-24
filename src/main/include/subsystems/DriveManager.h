@@ -23,9 +23,9 @@ public:
 
     void Periodic() override;
 private:
-    void GoThroughTrench();
+    bool GoThroughTrench();
+    bool AngleBump();
     void DefaultDrive();
-    void AngleBump();
 
     
     frc2::CommandXboxController m_driverController{0};
@@ -50,5 +50,7 @@ private:
     const units::meter_t kStrafeTolerance = units::meter_t(0.5_in);
     const units::degree_t kRotationTolerance = 2_deg;
 
-    const units::meter_t kSetpointDistance = units::meter_t(27_in);
+    const units::meter_t kLeftSetpointDistance = units::meter_t(291.47_in);
+    const units::meter_t kRightSetpointDistance = units::meter_t(26.22_in);
+    units::meter_t kSetpointDistance;
 };

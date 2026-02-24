@@ -1,17 +1,27 @@
 #include "subsystems/DriveManager.h"
 #include "bearlog/bearlog.h"
+#include "subsystems/RobotZoneHelper.h"
 
 DriveManager::DriveManager(std::function<frc::Pose2d()> getBotPose) :
     m_GetCurrentBotPose(getBotPose)
-{}
+{
+    kSetpointDistance = kLeftSetpointDistance;
+}
 
 void DriveManager::Periodic() {
     if (m_driverController.A().Get()) {
-        GoThroughTrench();
-    } else if (m_driverController.B().Get()) {
-        AngleBump();
+        if (GoThroughTrench() == false) {
+            if (AngleBump() == false) {
+                BearLog::Log("Driver Assist", std::string("No Avaiable Tool"));
+            } else {
+                BearLog::Log("Driver Assist", std::string("Turn For Bump"));
+            }
+        } else {
+            BearLog::Log("Driver Assist", std::string("Go Through Trench"));
+        }
     } else {
         DefaultDrive();
+        BearLog::Log("Driver Assist", std::string("Default Drive"));
     }
 }
 
@@ -21,38 +31,68 @@ void DriveManager::DefaultDrive() {
     rotMovement = m_driverController.GetRightX();
 }
 
-void DriveManager::GoThroughTrench() {
-    frc::Pose2d botPose = m_GetCurrentBotPose();
-    double robotY = m_YAlignmentPID.Calculate(botPose.Y().value(), kSetpointDistance.value());
-    robotY = std::clamp(robotY, -1.0, 1.0);
+bool DriveManager::GoThroughTrench() {
+    std::string inTrenchZone = RobotZoneHelper::isRobotInTrenchZone(m_GetCurrentBotPose());
 
-    BearLog::Log("Strafe PID", robotY);
+    BearLog::Log("CurrentZone/InTrenchZone", inTrenchZone);
 
-    units::degree_t currentDegrees = botPose.Rotation().Degrees();
-    double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (0_deg).value());
-    rotation = std::clamp(rotation, -1.0, 1.0);
+    if (!(inTrenchZone == "noTrenchZone")) {
+        if (inTrenchZone == "inRightTrenchZone") {
+            kSetpointDistance = kRightSetpointDistance;
+        } else {
+            kSetpointDistance = kLeftSetpointDistance;
+        }
 
-    BearLog::Log("Rotation PID", rotation);
+
+        frc::Pose2d botPose = m_GetCurrentBotPose();
+        double robotY = m_YAlignmentPID.Calculate(botPose.Y().value(), kSetpointDistance.value());
+        robotY = std::clamp(robotY, -1.0, 1.0);
+
+        BearLog::Log("Strafe PID", robotY);
+
+        units::degree_t currentDegrees = botPose.Rotation().Degrees();
+        double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (0_deg).value());
+        rotation = std::clamp(rotation, -1.0, 1.0);
+
+        BearLog::Log("Rotation PID", rotation);
 
 
-    xMovement = -m_driverController.GetLeftY();
-    yMovement = -robotY;
-    rotMovement = rotation;
+        xMovement = -m_driverController.GetLeftY();
+        yMovement = -robotY;
+        rotMovement = rotation;
+
+        return true;
+    } else {
+        DefaultDrive();
+
+        return false;
+    }
 }
 
-void DriveManager::AngleBump() {
-    frc::Pose2d botPose = m_GetCurrentBotPose();
+bool DriveManager::AngleBump() {
+    std::string inBumpZone = RobotZoneHelper::isRobotInBumpZone(m_GetCurrentBotPose());
+
+    BearLog::Log("CurrentZone/inBumpZone", inBumpZone);
+
+    if (!(inBumpZone == "noBumpZone")) {
+        frc::Pose2d botPose = m_GetCurrentBotPose();
+
+        units::degree_t currentDegrees = botPose.Rotation().Degrees();
+
+        double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (45_deg).value());
+        rotation = std::clamp(rotation, -1.0, 1.0);
+
+        BearLog::Log("Rotation PID", rotation);
 
 
-    units::degree_t currentDegrees = botPose.Rotation().Degrees();
+        xMovement = -m_driverController.GetLeftY();
+        yMovement = -m_driverController.GetLeftX();
+        rotMovement = rotation;
 
-    double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (45_deg).value());
-    rotation = std::clamp(rotation, -1.0, 1.0);
+        return true;
+    } else {
+        DefaultDrive();
 
-    BearLog::Log("Rotation PID", rotation);
-
-
-    xMovement = -m_driverController.GetLeftY();
-    yMovement = -m_driverController.GetLeftX();
-    rotMovement = rotation;
+        return false;
+    }
 }
