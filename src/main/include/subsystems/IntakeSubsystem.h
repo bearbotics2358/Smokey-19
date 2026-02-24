@@ -29,6 +29,8 @@ public:
         void SimulationPeriodic() override;
 
         frc2::CommandPtr SetGoalAngle();
+        frc2::CommandPtr ExtendHopper();
+        frc2::CommandPtr StowHopper();
 private:
         ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
         void GoToAngle();

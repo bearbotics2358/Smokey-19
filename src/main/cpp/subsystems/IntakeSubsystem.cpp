@@ -74,13 +74,35 @@ frc2::CommandPtr IntakeSubsystem::SetGoalAngle() {
     });
 }
 
+frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
+    return frc2::cmd::RunOnce([this] {
+    units::degree_t angle;
+    isExtended = true;
+    angle = 90_deg;
+    BearLog::Log("Is Extended?", isExtended);
+    m_setpointAngle = angle;
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::StowHopper() {
+    return frc2::cmd::RunOnce([this] {
+    units::degree_t angle;
+    isExtended = false;
+    angle = 0_deg;
+    BearLog::Log("Is Extended?", isExtended);
+    m_setpointAngle = angle;
+    });
+}
+
+
+
 units::degree_t IntakeSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations);
+    units::degree_t angle = units::degree_t(rotations.value() * kEGearRatio);
     return angle;
 }
 
 units::turn_t IntakeSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t(angle);
+    units::turn_t rotations = units::turn_t(angle.value() / kEGearRatio);
     return rotations;
 }
 

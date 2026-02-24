@@ -55,7 +55,6 @@ void ShooterSubsystem::GoToSpeed() {
     units::volt_t voltageToApply = units::volt_t(value * kMaxVolts);
     BearLog::Log("Flywheel/BangBang", voltageToApply);
 
-    // The other motor is configured as an inverted follower and will follow the control of this lead motor
     m_FlywheelMotor.SetVoltage(voltageToApply);
 }
 
@@ -81,16 +80,10 @@ void ShooterSubsystem::SimulationPeriodic() {
     auto& flywheel_follower_sim = m_FlywheelFollowerMotor.GetSimState();
     flywheel_follower_sim.SetSupplyVoltage(frc::RobotController::GetBatteryVoltage());
 
-
-    // controls::DutyCycleOut m_FlywheelMotorRequest{0.0};
-    // m_FlywheelMotor.SetControl(m_FlywheelMotorRequest.WithOutput(5));
-
-    // Simulate the 20ms run in the simulation model
     m_FlywheelSimModel.Update(20_ms);
 
     frc::sim::RoboRioSim::SetVInVoltage(frc::sim::BatterySim::Calculate({m_FlywheelSimModel.GetCurrentDraw()}));
 
-    // Update the simulated state for the flywheel motor
     flywheel_sim.SetRotorVelocity(m_FlywheelSimModel.GetAngularVelocity());
     flywheel_sim.SetRotorAcceleration(m_FlywheelSimModel.GetAngularAcceleration());
 }
