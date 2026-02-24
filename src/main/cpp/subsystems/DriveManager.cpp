@@ -23,10 +23,10 @@ void DriveManager::DefaultDrive() {
 
 void DriveManager::GoThroughTrench() {
     frc::Pose2d botPose = m_GetCurrentBotPose();
-    double strafe = m_YAlignmentPID.Calculate(botPose.Y().value(), kSetpointDistance.value());
-    strafe = std::clamp(strafe, -1.0, 1.0);
+    double robotY = m_YAlignmentPID.Calculate(botPose.Y().value(), kSetpointDistance.value());
+    robotY = std::clamp(robotY, -1.0, 1.0);
 
-    BearLog::Log("Strafe PID", strafe);
+    BearLog::Log("Strafe PID", robotY);
 
     units::degree_t currentDegrees = botPose.Rotation().Degrees();
     double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (0_deg).value());
@@ -36,7 +36,7 @@ void DriveManager::GoThroughTrench() {
 
 
     xMovement = -m_driverController.GetLeftY();
-    yMovement = -strafe;
+    yMovement = -robotY;
     rotMovement = rotation;
 }
 
