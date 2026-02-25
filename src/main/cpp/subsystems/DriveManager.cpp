@@ -8,27 +8,20 @@ DriveManager::DriveManager(std::function<frc::Pose2d()> getBotPose) :
     m_SetpointDistance = kLeftSetpointDistance;
 }
 
-void DriveManager::Periodic() {
-    if (m_driverController.A().Get()) {
-        if (GoThroughTrench() == false) {
-            if (AngleBump() == false) {
-                BearLog::Log("Driver Assist", std::string("No Avaiable Tool"));
-            } else {
-                BearLog::Log("Driver Assist", std::string("Turn For Bump"));
-            }
+bool DriveManager::AssistManagerA() {
+    BearLog::Log("assist", std::string("assist running"));
+    if (GoThroughTrench() == false) {
+        if (AngleBump() == false) {
+            BearLog::Log("Driver Assist", std::string("No Avaiable Tool"));
+            return false;
         } else {
-            BearLog::Log("Driver Assist", std::string("Go Through Trench"));
+            BearLog::Log("Driver Assist", std::string("Turn For Bump"));
+            return true;
         }
     } else {
-        DefaultDrive();
-        BearLog::Log("Driver Assist", std::string("Default Drive"));
-    }
-}
-
-void DriveManager::DefaultDrive() {
-    xMovement = -m_driverController.GetLeftY();
-    yMovement = -m_driverController.GetLeftX();
-    rotMovement = m_driverController.GetRightX();
+        BearLog::Log("Driver Assist", std::string("Go Through Trench"));
+        return true;
+    };
 }
 
 bool DriveManager::GoThroughTrench() {
@@ -61,8 +54,6 @@ bool DriveManager::GoThroughTrench() {
 
         return true;
     } else {
-        DefaultDrive();
-
         return false;
     }
 }
@@ -87,8 +78,6 @@ bool DriveManager::AngleBump() {
 
         return true;
     } else {
-        DefaultDrive();
-
         return false;
     }
 }

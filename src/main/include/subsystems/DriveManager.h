@@ -21,11 +21,11 @@ public:
     double yMovement = -m_driverController.GetLeftX();
     double rotMovement = m_driverController.GetRightX();
 
-    void Periodic() override;
-private:
+    bool AssistManagerA();
+
     bool GoThroughTrench();
     bool AngleBump();
-    void DefaultDrive();
+private:
 
     
     frc2::CommandXboxController m_driverController{0};

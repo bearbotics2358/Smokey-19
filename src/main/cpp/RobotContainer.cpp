@@ -33,12 +33,22 @@ void RobotContainer::ConfigureBindings()
     m_drivetrain.SetDefaultCommand(
             // Drivetrain will execute this command periodically
             m_drivetrain.ApplyRequest([this]() -> auto&& {
-                return drive.WithVelocityX(m_driveManager.xMovement * MaxSpeed) // Drive forward with negative Y (forward)
-                    .WithVelocityY(m_driveManager.yMovement * MaxSpeed) // Drive left with negative X (left)
-                    .WithRotationalRate(m_driveManager.rotMovement * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .WithRotationalRate(driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
             })
         );
 
+    driverJoystick.A().WhileTrue(
+        frc2::cmd::Run([this] {
+            if (m_driveManager.AssistManagerA() == true) {
+                m_drivetrain.SetControl(
+                    drive.WithVelocityX(m_driveManager.xMovement * MaxSpeed) // Drive forward with negative Y (forward)
+                        .WithVelocityY(m_driveManager.yMovement * MaxSpeed) // Drive left with negative X (left)
+                        .WithRotationalRate(m_driveManager.rotMovement * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                );
+            }
+        }));
     
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
