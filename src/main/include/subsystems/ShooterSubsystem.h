@@ -3,6 +3,7 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc/system/plant/LinearSystemId.h>
 #include <frc/controller/BangBangController.h>
+#include <frc/controller/PIDController.h>
 #include <frc2/command/Commands.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <frc2/command/button/Trigger.h>
