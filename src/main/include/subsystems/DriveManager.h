@@ -52,5 +52,5 @@ private:
 
     const units::meter_t kLeftSetpointDistance = units::meter_t(291.47_in);
     const units::meter_t kRightSetpointDistance = units::meter_t(26.22_in);
-    units::meter_t kSetpointDistance;
+    units::meter_t m_SetpointDistance;
 };

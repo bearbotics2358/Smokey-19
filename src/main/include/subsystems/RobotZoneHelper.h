@@ -7,6 +7,17 @@
 
 class RobotZoneHelper {
     public:
+        enum class BumpZone {
+            NoBumpZone,
+            InRightBumpZone,
+            InLeftBumpZone
+        };
+        enum class TrenchZone {
+            NoTrenchZone,
+            InRightTrenchZone,
+            InLeftTenchZone
+        };
+        
         static bool isRobotInBlueAllianceZone (frc::Pose2d botPose) {
             frc::Rectangle2d blueAllianceZone = frc::Rectangle2d(
                 frc::Pose2d(91.05_in, 158.84_in, 
@@ -47,7 +58,7 @@ class RobotZoneHelper {
             }
         }
 
-        static std::string isRobotInTrenchZone(frc::Pose2d botPose) {
+        static TrenchZone isRobotInTrenchZone(frc::Pose2d botPose) {
             frc::Rectangle2d blueRightTrench = frc::Rectangle2d(
                 frc::Pose2d(182.11_in, 26.22_in, 
                 frc::Rotation2d()), 
@@ -70,15 +81,15 @@ class RobotZoneHelper {
             );
 
             if (blueRightTrench.Contains(botPose.Translation()) || redRightTrench.Contains(botPose.Translation())) {
-                return "inRightTrenchZone";
+                return TrenchZone::InRightTrenchZone;
             } else if (blueLeftTrench.Contains(botPose.Translation()) || redLeftTrench.Contains(botPose.Translation())) {
-                return "inLeftTrenchZone";
+                return TrenchZone::InLeftTenchZone;
             } else {
-                return "noTrenchZone";
+                return TrenchZone::NoTrenchZone;
             }
         }
 
-        static std::string isRobotInBumpZone(frc::Pose2d botPose) {
+        static BumpZone isRobotInBumpZone(frc::Pose2d botPose) {
             frc::Rectangle2d blueRightBump = frc::Rectangle2d(
                 frc::Pose2d(182.11_in, 111.84_in, 
                 frc::Rotation2d()), 
@@ -101,11 +112,11 @@ class RobotZoneHelper {
             );
 
             if (blueRightBump.Contains(botPose.Translation()) || redRightBump.Contains(botPose.Translation())) {
-                return "inRightBumpZone";
+                return BumpZone::InRightBumpZone;
             } else if (blueLeftBump.Contains(botPose.Translation()) || redLeftBump.Contains(botPose.Translation())) {
-                return "inLeftBumpZone";
+                return BumpZone::InLeftBumpZone;
             } else {
-                return "noBumpZone";
+                return BumpZone::NoBumpZone;
             }
         }
 };

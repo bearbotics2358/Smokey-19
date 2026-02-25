@@ -5,7 +5,7 @@
 DriveManager::DriveManager(std::function<frc::Pose2d()> getBotPose) :
     m_GetCurrentBotPose(getBotPose)
 {
-    kSetpointDistance = kLeftSetpointDistance;
+    m_SetpointDistance = kLeftSetpointDistance;
 }
 
 void DriveManager::Periodic() {
@@ -32,20 +32,18 @@ void DriveManager::DefaultDrive() {
 }
 
 bool DriveManager::GoThroughTrench() {
-    std::string inTrenchZone = RobotZoneHelper::isRobotInTrenchZone(m_GetCurrentBotPose());
+    RobotZoneHelper::TrenchZone inTrenchZone = RobotZoneHelper::isRobotInTrenchZone(m_GetCurrentBotPose());
 
-    BearLog::Log("CurrentZone/InTrenchZone", inTrenchZone);
-
-    if (!(inTrenchZone == "noTrenchZone")) {
-        if (inTrenchZone == "inRightTrenchZone") {
-            kSetpointDistance = kRightSetpointDistance;
+    if (!(inTrenchZone == RobotZoneHelper::TrenchZone::NoTrenchZone)) {
+        if (inTrenchZone == RobotZoneHelper::TrenchZone::InRightTrenchZone) {
+            m_SetpointDistance = kRightSetpointDistance;
         } else {
-            kSetpointDistance = kLeftSetpointDistance;
+            m_SetpointDistance = kLeftSetpointDistance;
         }
 
 
         frc::Pose2d botPose = m_GetCurrentBotPose();
-        double robotY = m_YAlignmentPID.Calculate(botPose.Y().value(), kSetpointDistance.value());
+        double robotY = m_YAlignmentPID.Calculate(botPose.Y().value(), m_SetpointDistance.value());
         robotY = std::clamp(robotY, -1.0, 1.0);
 
         BearLog::Log("Strafe PID", robotY);
@@ -70,11 +68,9 @@ bool DriveManager::GoThroughTrench() {
 }
 
 bool DriveManager::AngleBump() {
-    std::string inBumpZone = RobotZoneHelper::isRobotInBumpZone(m_GetCurrentBotPose());
+    RobotZoneHelper::BumpZone inBumpZone = RobotZoneHelper::isRobotInBumpZone(m_GetCurrentBotPose());
 
-    BearLog::Log("CurrentZone/inBumpZone", inBumpZone);
-
-    if (!(inBumpZone == "noBumpZone")) {
+    if (!(inBumpZone == RobotZoneHelper::BumpZone::NoBumpZone)) {
         frc::Pose2d botPose = m_GetCurrentBotPose();
 
         units::degree_t currentDegrees = botPose.Rotation().Degrees();
