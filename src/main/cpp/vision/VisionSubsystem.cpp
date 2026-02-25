@@ -1,3 +1,4 @@
+#include "frc/DriverStation.h"
 #include "frc/RobotBase.h"
 #include "frc/geometry/Rotation3d.h"
 #include "frc/geometry/Transform3d.h"
@@ -37,14 +38,28 @@ void VisionSubsystem::Periodic()
     }
 
     for (auto observation : m_Inputs[camera_index].pose_observations) {
+      frc::Pose2d current_bot_pose = m_Drivetrain->GetState().Pose;
+      units::meter_t distance_to_observed_pose =
+        current_bot_pose.Translation().Distance(observation.pose.ToPose2d().Translation());
+
       bool reject_pose =
         observation.tag_count == 0
         || (observation.tag_count == 1 && observation.ambiguity > VisionConstants::kMaxAmbiguity)
+
+        // Reject poses that are more than the allowed Z error since we know the robot won't be under or over
+        // the floor during the match.
         || units::math::abs(observation.pose.Z()) > VisionConstants::kMaxZError
+
+        // Reject poses that are outside the field since those are definitely wrong
         || observation.pose.X() < 0_m
         || observation.pose.X() > VisionConstants::kAprilTagFieldLayout.GetFieldLength()
         || observation.pose.Y() < 0_m
-        || observation.pose.Y() > VisionConstants::kAprilTagFieldLayout.GetFieldWidth();
+        || observation.pose.Y() > VisionConstants::kAprilTagFieldLayout.GetFieldWidth()
+
+        // Reject poses that are greater than 1 meter away from where we think we currently are.
+        // The exception is if we are disabled. If disabled, it's possible the drive/field team has
+        // carried the robot somewhere to setup for the match.
+        || (units::math::abs(distance_to_observed_pose) > 1_m && frc::DriverStation::IsEnabled());
 
       if (reject_pose) {
         robot_poses_rejected.push_back(observation.pose);
