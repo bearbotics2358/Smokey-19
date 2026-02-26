@@ -63,6 +63,9 @@ void RobotContainer::ConfigureBindings()
         return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
     }));
 
+    driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
+    driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
+
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));

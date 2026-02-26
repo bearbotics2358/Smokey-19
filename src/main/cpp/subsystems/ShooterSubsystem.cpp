@@ -81,7 +81,6 @@ void ShooterSubsystem::SimulationPeriodic() {
 
     frc::sim::RoboRioSim::SetVInVoltage(frc::sim::BatterySim::Calculate({m_FlywheelSimModel.GetCurrentDraw()}));
 
-    // Update the simulated state for the flywheel motor
     flywheel_sim.SetRotorVelocity(m_FlywheelSimModel.GetAngularVelocity());
     flywheel_sim.SetRotorAcceleration(m_FlywheelSimModel.GetAngularAcceleration());
 }
