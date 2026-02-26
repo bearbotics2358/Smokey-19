@@ -6,11 +6,12 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
-#include "subsystems/CommandSwerveDrivetrain.h"
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/trajectory/TrapezoidProfile.h>
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/Commands.h>
+
+#include "subsystems/CommandSwerveDrivetrain.h"
 
 
 class DriveManager : public frc2::SubsystemBase {
@@ -25,8 +26,10 @@ public:
 
     bool GoThroughTrench();
     bool AngleBump();
+    bool TurnToHub();
 private:
-
+    frc::Pose2d blueHubPose = frc::Pose2d(4.625594_m, 4.034663_m, frc::Rotation2d{});
+    frc::Pose2d redHubPose = frc::Pose2d(11.915394_m, 4.034663_m, frc::Rotation2d{});
     
     frc2::CommandXboxController m_driverController{0};
 
