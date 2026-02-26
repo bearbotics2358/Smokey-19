@@ -17,6 +17,7 @@
 #include "vision/VisionConstants.h"
 #include "vision/VisionSubsystem.h"
 #include "subsystems/ShooterSubsystem.h"
+#include "subsystems/DriveManager.h"
 
 class RobotContainer {
 private:
@@ -39,12 +40,14 @@ private:
      *       define a destructor to un-register the telemetry from the drivetrain */
     Telemetry logger{MaxSpeed};
 
-    frc2::CommandXboxController joystick{0};
+    frc2::CommandXboxController driverJoystick{0};
+    frc2::CommandXboxController operatorJoystick{1};
 
     TurretSubsystem m_turretSubsystem;
     ShooterSubsystem m_shooterSubsystem;
     IntakeSubsystem m_intakeSubsystem;
     IndexerSubsystem m_indexerSubsystem;
+    DriveManager m_driveManager;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};
@@ -53,7 +56,6 @@ public:
     RobotContainer();
 
     frc2::Command* GetAutonomousCommand();
-
 private:
     void ConfigureBindings();
 };

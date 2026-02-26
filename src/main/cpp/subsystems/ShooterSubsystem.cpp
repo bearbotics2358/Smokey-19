@@ -7,10 +7,11 @@
 #include <frc/RobotBase.h>
 
 using namespace ctre::phoenix6;
+
 ShooterSubsystem::ShooterSubsystem() {
     configs::TalonFXConfiguration configs{};
 
-    static constexpr units::ampere_t kPeakTorqueCurrent = 40_A;
+    static constexpr units::ampere_t kPeakTorqueCurrent = 100_A;
     configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
 
@@ -18,10 +19,17 @@ ShooterSubsystem::ShooterSubsystem() {
 
     configs.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
+    configs.Slot0.kP = 0.4;
+    configs.Slot0.kI = 0.0;
+    configs.Slot0.kD = 0.0;
+    configs.Slot0.kV = 0.12;
+
     m_FlywheelMotor.GetConfigurator().Apply(configs);
     m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
 
-    m_FlywheelFollowerMotor.SetControl(controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed});
+    m_FlywheelFollowerMotor.SetControl(
+        controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
+            .WithUpdateFreqHz(200_Hz));
 }
 
 void ShooterSubsystem::Periodic() {
@@ -34,12 +42,6 @@ void ShooterSubsystem::Periodic() {
     BearLog::Log("Flywheel/Supply Current", m_FlywheelMotor.GetSupplyCurrent().GetValue());
     BearLog::Log("Flywheel/Stator Current", m_FlywheelMotor.GetStatorCurrent().GetValue());
     BearLog::Log("Flywheel/Torque Current", m_FlywheelMotor.GetTorqueCurrent().GetValue());
-
-    GoToSpeed();
-}
-
-void ShooterSubsystem::SetGoalSpeed(units::revolutions_per_minute_t speed) {
-        m_setSpeed = speed;
 }
 
 units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
@@ -47,26 +49,20 @@ units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
     return speed;
 };
 
-void ShooterSubsystem::GoToSpeed() {
-    double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
-
-    // The motors move at around 5000 RPMs at 10 V
-    static constexpr double kMaxVolts = 10.0;
-    units::volt_t voltageToApply = units::volt_t(value * kMaxVolts);
-    BearLog::Log("Flywheel/BangBang", voltageToApply);
-
-    m_FlywheelMotor.SetVoltage(voltageToApply);
-}
-
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
     return frc2::cmd::RunOnce([this] {
+        // @todo Soon we need to retrieve this value from the LaunchHelper class to decide how fast the wheel should spin
         m_setSpeed = 5000_rpm;
+
+        m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(m_setSpeed).WithSlot(0));
     });
 }
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
+        // Updating this value so the setpoint is logged
         m_setSpeed = 0_rpm;
+        m_FlywheelMotor.SetControl(m_Coast);
     });
 }
 
@@ -80,6 +76,7 @@ void ShooterSubsystem::SimulationPeriodic() {
     auto& flywheel_follower_sim = m_FlywheelFollowerMotor.GetSimState();
     flywheel_follower_sim.SetSupplyVoltage(frc::RobotController::GetBatteryVoltage());
 
+    // Simulate the 20ms run in the simulation model
     m_FlywheelSimModel.Update(20_ms);
 
     frc::sim::RoboRioSim::SetVInVoltage(frc::sim::BatterySim::Calculate({m_FlywheelSimModel.GetCurrentDraw()}));
