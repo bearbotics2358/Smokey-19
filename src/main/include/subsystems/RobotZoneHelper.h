@@ -62,22 +62,22 @@ class RobotZoneHelper {
             frc::Rectangle2d blueRightTrench = frc::Rectangle2d(
                 frc::Pose2d(182.11_in, 26.22_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                300_in, 69.84_in
             );
             frc::Rectangle2d blueLeftTrench = frc::Rectangle2d(
                 frc::Pose2d(182.11_in, 291.47_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                300_in, 69.84_in
             );
             frc::Rectangle2d redRightTrench = frc::Rectangle2d(
                 frc::Pose2d(469.11_in, 26.22_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                300_in, 69.84_in
             );
             frc::Rectangle2d redLeftTrench = frc::Rectangle2d(
                 frc::Pose2d(469.11_in, 291.47_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                300_in, 69.84_in
             );
 
             if (blueRightTrench.Contains(botPose.Translation()) || redRightTrench.Contains(botPose.Translation())) {
@@ -93,22 +93,22 @@ class RobotZoneHelper {
             frc::Rectangle2d blueRightBump = frc::Rectangle2d(
                 frc::Pose2d(182.11_in, 111.84_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                200_in, 1.854_m
             );
             frc::Rectangle2d blueLeftBump = frc::Rectangle2d(
                 frc::Pose2d(182.11_in, 205.85_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                200_in, 1.854_m
             );
             frc::Rectangle2d redRightBump = frc::Rectangle2d(
                 frc::Pose2d(469.11_in, 111.84_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                200_in, 1.854_m
             );
             frc::Rectangle2d redLeftBump = frc::Rectangle2d(
                 frc::Pose2d(469.11_in, 205.85_in, 
                 frc::Rotation2d()), 
-                200_in, 49.84_in
+                200_in, 1.854_m
             );
 
             if (blueRightBump.Contains(botPose.Translation()) || redRightBump.Contains(botPose.Translation())) {

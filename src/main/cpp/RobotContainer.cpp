@@ -58,8 +58,8 @@ void RobotContainer::ConfigureBindings()
         }).IgnoringDisable(true)
     );
 
-    operatorJoystick.A().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    operatorJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
+    driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
+    driverJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
         return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
     }));
 
