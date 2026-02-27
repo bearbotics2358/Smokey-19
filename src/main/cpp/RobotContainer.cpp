@@ -50,6 +50,17 @@ void RobotContainer::ConfigureBindings()
             }
         }));
     
+    driverJoystick.RightBumper().WhileTrue(
+        frc2::cmd::Run([this] {
+            if (m_driveManager.TurnToHub() == true) {
+                m_drivetrain.SetControl(
+                    drive.WithVelocityX(m_driveManager.xMovement * MaxSpeed) // Drive forward with negative Y (forward)
+                        .WithVelocityY(m_driveManager.yMovement * MaxSpeed) // Drive left with negative X (left)
+                        .WithRotationalRate(m_driveManager.rotMovement * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                );
+            }
+        }));
+    
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
     frc2::RobotModeTriggers::Disabled().WhileTrue(
