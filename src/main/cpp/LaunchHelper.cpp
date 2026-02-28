@@ -4,6 +4,7 @@
 #include "LaunchHelper.h"
 #include "bearlog/bearlog.h"
 #include <frc/Timer.h>
+#include <frc/RobotBase.h>
 
 LaunchHelper& LaunchHelper::GetInstance() {
     // Defining a static LaunchHelper object so it will only be created once
@@ -68,7 +69,9 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
     int retvalue = m_Cache.return_value;
     BearLog::Log("retvalue", retvalue);
 
-    DrawTrajectory();
+    if (frc::RobotBase::IsSimulation()) {
+        DrawTrajectory();
+    }
     return m_Cache;
 }
 
