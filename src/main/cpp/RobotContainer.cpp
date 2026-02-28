@@ -70,7 +70,7 @@ void RobotContainer::ConfigureBindings()
             }
         }));
     
-    driverJoystick.RightBumper().WhileTrue(
+    driverJoystick.LeftBumper().WhileTrue(
         frc2::cmd::Run([this] {
             if (m_driveManager.TurnToHub() == true) {
                 m_drivetrain.SetControl(
@@ -90,31 +90,27 @@ void RobotContainer::ConfigureBindings()
     );
 
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    driverJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
-        return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
-    }));
 
-    driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
-    driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
+    operatorJoystick.B().OnTrue(m_intakeSubsystem.ExtendHopper());
+    operatorJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
 
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
+
+    //Shoot (driver controller)
     driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
     driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
-
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
-    (driverJoystick.Back() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-    (driverJoystick.Back() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
-    (driverJoystick.Start() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-    (driverJoystick.Start() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+    //Shoot Override (Right Bumper, driver controller)
 
     // reset the field-centric heading on left bumper press
-    driverJoystick.LeftBumper().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
+    driverJoystick.POVDown().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+
+    //Left DPAD (blue alliance wins, operator controller)
+    //Right DPAD (red alliance wins, operator controller)
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand()
