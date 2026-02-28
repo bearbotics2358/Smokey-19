@@ -12,4 +12,16 @@ public:
     std::string AutoWinner();
 
     void Periodic() override;
+    
+    enum class allianceShift{
+        kNoShift,
+        kBlueShift,
+        kRedShift,
+        kBothShift
+    };
+
+    allianceShift CurrentShift();
+    
+    allianceShift m_autoWinner;
+    allianceShift m_autoLoser;
 };
