@@ -3,7 +3,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 FMSSubsystem::FMSSubsystem() {
-
+    m_manualShift = false;
 }
 
 void FMSSubsystem::Periodic() {
@@ -33,21 +33,37 @@ units::second_t FMSSubsystem::GetMatchTime() {
     return units::second_t(std::round(frc::DriverStation::GetMatchTime().value()));
 }
 
+frc2::CommandPtr FMSSubsystem::ManualShift(std::string roboalliance) {
+    return frc2::cmd::Run([this, roboalliance] {
+        if (roboalliance == "Red") {
+            m_autoWinner = allianceShift::kRedShift;
+            m_autoLoser = allianceShift::kBlueShift;
+        } else {
+            m_autoWinner = allianceShift::kBlueShift;
+            m_autoLoser = allianceShift::kRedShift;
+        }
+        m_manualShift = true;
+    });
+}
+
 enum FMSSubsystem::allianceShift FMSSubsystem::CurrentShift() {
     if (GetMatchTime() > 130_s){
         BearLog::Log("Next Shift", GetMatchTime() - 130_s);
-        BearLog::Log("AllianceColor", std::string("#ffffffff"));
+        BearLog::Log("Alliance Shift", std::string("#ffffffff"));
         return allianceShift::kBothShift;
     } else if ((GetMatchTime() <= 130_s) && (GetMatchTime() > 30_s)) {
-        if (AutoWinner() == "Red") {
-            m_autoWinner = allianceShift::kRedShift;
-            m_autoLoser = allianceShift::kBlueShift;
-        } else if (AutoWinner() == "Blue") {
-            m_autoWinner = allianceShift::kBlueShift;
-            m_autoLoser = allianceShift::kRedShift;
-        } else {
-            m_autoWinner = allianceShift::kNoShift;
-            m_autoLoser = allianceShift::kNoShift;
+        BearLog::Log("ManualShiftActivated?", m_manualShift);
+        if (m_manualShift == false) {
+            if (AutoWinner() == "Red") {
+                m_autoWinner = allianceShift::kRedShift;
+                m_autoLoser = allianceShift::kBlueShift;
+            } else if (AutoWinner() == "Blue") {
+                m_autoWinner = allianceShift::kBlueShift;
+                m_autoLoser = allianceShift::kRedShift;
+            } else {
+                m_autoWinner = allianceShift::kNoShift;
+                m_autoLoser = allianceShift::kNoShift;
+            }
         }
 
         int currentShift;
@@ -60,36 +76,36 @@ enum FMSSubsystem::allianceShift FMSSubsystem::CurrentShift() {
         } else if ((GetMatchTime() <= 80_s) && (GetMatchTime() > 55_s)) {
             BearLog::Log("Next Shift", GetMatchTime() - 55_s);
             currentShift = 2;
-        } else if ((GetMatchTime() <= 55_s) && (GetMatchTime() > 30_s)) {
+        } else if ((GetMatchTime() <= 55_s) && (GetMatchTime() >= 30_s)) {
             BearLog::Log("Next Shift", GetMatchTime() - 30_s);
             currentShift = 1;
         } else {
-            BearLog::Log("Next Shift", GetMatchTime());
             currentShift = 0;
         }
 
         if (!(currentShift == 0)) {
             if (currentShift % 2 == 0) {
                 if (m_autoLoser == allianceShift::kRedShift) {
-                    BearLog::Log("AllianceColor", std::string("#FF0000"));
+                    BearLog::Log("Alliance Shift", std::string("#FF0000"));
                 } else {
-                    BearLog::Log("AllianceColor", std::string("#0000FF"));
+                    BearLog::Log("Alliance Shift", std::string("#0000FF"));
                 }
                 return m_autoLoser;
             } else {
                 if (m_autoWinner == allianceShift::kRedShift) {
-                    BearLog::Log("AllianceColor", std::string("#FF0000"));
+                    BearLog::Log("Alliance Shift", std::string("#FF0000"));
                 } else {
-                    BearLog::Log("AllianceColor", std::string("#0000FF"));
+                    BearLog::Log("Alliance Shift", std::string("#0000FF"));
                 }
                 return m_autoWinner;
             }
         }
     } else if ((GetMatchTime() <= 30_s) && (GetMatchTime() >= 0_s)) {
-        BearLog::Log("AllianceColor", std::string("#ffffffff"));
+        BearLog::Log("Alliance Shift", std::string("#ffffffff"));
+        BearLog::Log("Next Shift", GetMatchTime());
         return allianceShift::kBothShift;
     } else {
-        BearLog::Log("AllianceColor", std::string("#000000ff"));
+        BearLog::Log("Alliance Shift", std::string("#000000ff"));
         return allianceShift::kNoShift;
     }
 }

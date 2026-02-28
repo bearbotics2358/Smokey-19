@@ -2,6 +2,7 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <frc/DriverStation.h>
+#include <frc2/command/Commands.h>
 
 
 class FMSSubsystem : public frc2::SubsystemBase {
@@ -24,4 +25,7 @@ public:
     
     allianceShift m_autoWinner;
     allianceShift m_autoLoser;
+
+    frc2::CommandPtr ManualShift(std::string alliance);
+    bool m_manualShift;
 };
