@@ -1,4 +1,5 @@
 #include "subsystems/ShooterSubsystem.h"
+#include "LaunchHelper.h"
 #include "bearlog/bearlog.h"
 #include <frc/RobotController.h>
 #include <frc/simulation/BatterySim.h>
@@ -48,62 +49,59 @@ ShooterSubsystem::ShooterSubsystem()
 }
 
 void ShooterSubsystem::Periodic() {
-    BearLog::Log("Flywheel/SetPointSpeed", m_setSpeed);
-    BearLog::Log("Flywheel/Speed", CurrentSpeed());
+    BearLog::Log("Shooter/Flywheel/SetPointSpeed", units::revolutions_per_minute_t(m_VelocityVoltage.Velocity));
+    BearLog::Log("Shooter/Flywheel/Speed", GetCurrentSpeed());
+    BearLog::Log("Shooter/Flywheel/Voltage", m_FlywheelMotor.GetMotorVoltage().GetValue());
 
-    BearLog::Log("ShooterElevation/SetpointAngle", m_setpointAngle);
-    BearLog::Log("ShooterElevation/CurrentAngle", CurrentAngle());
-    GoToAngle();
+    BearLog::Log("Shooter/Flywheel Follower/Speed", units::revolutions_per_minute_t(m_FlywheelFollowerMotor.GetVelocity().GetValue()));
+    BearLog::Log("Shooter/Flywheel Follower/Voltage", m_FlywheelFollowerMotor.GetMotorVoltage().GetValue());
+
+    BearLog::Log("Shooter/Elevation/SetpointAngle", GetAngleFromTurns(m_RotationVoltage.Position));
+    BearLog::Log("Shooter/Elevation/CurrentAngle", GetCurrentHoodAngle());
 }
 
-frc2::CommandPtr ShooterSubsystem::SetGoalAngle(units::degree_t angle) {
-    return frc2::cmd::RunOnce([this, angle] {
-        m_setpointAngle = angle;
-    });
-}
-
-units::degree_t ShooterSubsystem::CurrentAngle() {
+units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
     units::degree_t angle = GetAngleFromTurns(m_shooterElevationSpinMotor.GetPosition().GetValue());
     return angle;
 };
 
 units::degree_t ShooterSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations);
+    units::degree_t angle = units::degree_t(rotations.value() * 360 * kGearRatio);
     return angle;
 }
 
 units::turn_t ShooterSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t(angle);
+    units::turn_t rotations = units::turn_t((angle.value() / kGearRatio) / 360);
     return rotations;
 }
 
-void ShooterSubsystem::GoToAngle() {
-  units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
-
-  m_shooterElevationSpinMotor.SetControl(
-    m_RotationVoltage.WithPosition(position_in_motor_turns)
-      .WithSlot(0));
+void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
+    m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(speed));
+    m_shooterElevationSpinMotor.SetControl(m_RotationVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
 }
 
-units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
+units::revolutions_per_minute_t ShooterSubsystem::GetCurrentSpeed() {
     units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
 
-frc2::CommandPtr ShooterSubsystem::EnableShooter(){
-    return frc2::cmd::RunOnce([this] {
-        // @todo Soon we need to retrieve this value from the LaunchHelper class to decide how fast the wheel should spin
-        m_setSpeed = 5000_rpm;
-
-        m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(m_setSpeed).WithSlot(0));
+frc2::CommandPtr ShooterSubsystem::StopShooter(){
+    return RunOnce([this] {
+        m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(0_rpm));
     });
 }
 
-frc2::CommandPtr ShooterSubsystem::StopShooter(){
-    return frc2::cmd::RunOnce([this] {
-        // Updating this value so the setpoint is logged
-        m_setSpeed = 0_rpm;
-        m_FlywheelMotor.SetControl(m_Coast);
+frc2::CommandPtr ShooterSubsystem::EnableShooterWithHubTracking() {
+    return Run([this] {
+        TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+        SetGoals(parameters.wheel_rpm, parameters.elevation_angle);
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
+    return Run([this] {
+        TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+        SetGoals(parameters.wheel_rpm, kFixedPositionHoodAngle);
     });
 }
 
@@ -153,5 +151,5 @@ void ShooterSubsystem::SimulationPeriodic() {
     shooterElevation_sim.SetRotorVelocity(kGearRatio * m_ShooterElevationSimModel.GetVelocity());
 
     // Update the simulated UI mechanism to the new angle based on the motor
-    m_ShooterElevationMech->SetAngle(CurrentAngle());
+    m_ShooterElevationMech->SetAngle(GetCurrentHoodAngle());
 }
