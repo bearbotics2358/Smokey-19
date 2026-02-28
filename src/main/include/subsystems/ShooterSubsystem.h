@@ -44,11 +44,10 @@ private:
 
     static constexpr units::meter_t kFlywheelRadius = 0.05_m;
 
-    //find actual values for everything later
-    static constexpr int kFlywheelMotorId = 2;
+    static constexpr int kFlywheelMotorId = 37;
     ctre::phoenix6::hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
 
-    static constexpr int kFlywheelFollowerMotorId = 3;
+    static constexpr int kFlywheelFollowerMotorId = 36;
     ctre::phoenix6::hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
 
     frc::BangBangController m_shooterBangBang {};

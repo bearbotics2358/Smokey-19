@@ -8,8 +8,8 @@
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem(std::function<frc::Pose2d()> getBotPose, TurretSubsystem* turretSubsystem)
-    : m_shooterElevationSpinMotor{kShooterElevationMotorID},
-    m_GetCurrentBotPose(getBotPose),
+    : m_GetCurrentBotPose(getBotPose),
+    m_shooterElevationSpinMotor{kShooterElevationMotorID},
     m_turretSubsystem(turretSubsystem)
 {
     m_trajectoryCalc.init();
@@ -59,13 +59,11 @@ void ShooterSubsystem::Periodic() {
 
     GoToSpeed();
 
-    units::meter_t distance = DistanceToHub();
-
     struct TrajectoryInfo shooterInfo;
     bzero(&shooterInfo, sizeof(shooterInfo));
     shooterInfo.elevation_angle = CurrentAngle();
     shooterInfo.distance = DistanceToHub();
-    shooterInfo.wheel_rpm = m_setSpeed;
+    shooterInfo.wheel_rpm = CurrentSpeed();
 
     //20_ft, 52_deg, 3200_rpm, 55_deg, 3275_rpm
 
@@ -82,7 +80,7 @@ void ShooterSubsystem::Periodic() {
     m_setpointAngle = shooterGoal.elevation_angle;
     m_setSpeed = shooterGoal.wheel_rpm;
 
-    DrawTrajectory(RPMToVelocity(m_setSpeed), CurrentAngle());
+    DrawTrajectory(RPMToVelocity(CurrentSpeed()), CurrentAngle());
 }
 
 void ShooterSubsystem::DrawTrajectory(
@@ -93,7 +91,7 @@ void ShooterSubsystem::DrawTrajectory(
     std::vector<frc::Pose3d> poses;
     double timeBetweenPoses = 0.05;
 
-    units::meter_t shooterHeight = 18.2817_in;
+    units::meter_t shooterHeight = 10_in;
     frc::Pose2d botPose2d = m_GetCurrentBotPose();
     frc::Pose3d robotPose3d{
         botPose2d.X(),
@@ -111,8 +109,6 @@ void ShooterSubsystem::DrawTrajectory(
     //         (2.0 * gravity.value() * shooterHeight.value())
     //     )
     // ) / gravity.value());
-
-    double time = 0;
     double hDist = 0;
     double vDist = shooterHeight.value();
 
@@ -157,8 +153,6 @@ void ShooterSubsystem::DrawTrajectory(
         };
 
         poses.push_back(worldPose);
-        
-        time += timeBetweenPoses;
     }
 
     BearLog::Log("trajectory/trajectory", poses);
@@ -220,21 +214,26 @@ units::revolutions_per_minute_t ShooterSubsystem::CurrentSpeed() {
 };
 
 void ShooterSubsystem::GoToSpeed() {
-    //m_shooterBangBang.SetTolerance(m_tolerance); 
     double value = m_shooterBangBang.Calculate(CurrentSpeed().value(), m_setSpeed.value());
-    frc::SmartDashboard::PutNumber("Flywheel BangBang", value);
-    m_FlywheelMotor.SetVoltage(units::volt_t(value*kMaxVolts));
+
+    // The motors move at around 5000 RPMs at 10 V
+    static constexpr double kMaxVolts = 10.0;
+    units::volt_t voltageToApply = units::volt_t(value * kMaxVolts);
+    BearLog::Log("Flywheel/BangBang", voltageToApply);
+
+    // The other motor is configured as an inverted follower and will follow the control of this lead motor
+    m_FlywheelMotor.SetVoltage(voltageToApply);
 }
 
 frc2::CommandPtr ShooterSubsystem::EnableShooter(){
     return frc2::cmd::RunOnce([this] {
-        SetGoalSpeed(3600_rpm);
+        m_setSpeed = 5000_rpm;
     });
 }
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return frc2::cmd::RunOnce([this] {
-        SetGoalSpeed(0_rpm);
+        m_setSpeed = 0_rpm;
     });
 }
 
