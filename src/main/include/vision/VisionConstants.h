@@ -47,11 +47,15 @@ private:
    * Generate a list of cameras used for localization
    */
   static std::vector<std::unique_ptr<IVisionInput>> CreateLocalizationCameras() {
-    const frc::Transform3d kRobotToCameraFront{0.0_in, 0.0_in, 0.0_in, frc::Rotation3d{0.0_rad, 0.0_rad, 0.0_rad}};
-    const std::string kCameraNameFront{"Front"};
-
     std::vector<std::unique_ptr<IVisionInput>> localization_cameras;
-    localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(kCameraNameFront, kRobotToCameraFront));
+    localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(
+      "Front",
+      frc::Transform3d{-13.40625_in, 6.46875_in, 17.5_in, frc::Rotation3d{0.0_rad, 0.0_rad, 180_deg}}
+    ));
+    localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(
+      "Back",
+      frc::Transform3d{13.90625_in, 0.0_in, 17.25_in, frc::Rotation3d{0.0_rad, 0.0_rad, 0.0_deg}}
+    ));
 
     return localization_cameras;
   }

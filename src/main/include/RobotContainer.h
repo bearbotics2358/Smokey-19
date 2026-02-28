@@ -18,6 +18,7 @@
 #include "vision/VisionSubsystem.h"
 #include "subsystems/ShooterSubsystem.h"
 #include "subsystems/FMSSubsystem.h"
+#include "subsystems/DriveManager.h"
 
 class RobotContainer {
 private:
@@ -48,6 +49,7 @@ private:
     IntakeSubsystem m_intakeSubsystem;
     IndexerSubsystem m_indexerSubsystem;
     FMSSubsystem m_FMSSubsystem;
+    DriveManager m_driveManager;
 
 public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};
@@ -56,7 +58,6 @@ public:
     RobotContainer();
 
     frc2::Command* GetAutonomousCommand();
-
 private:
     void ConfigureBindings();
 };

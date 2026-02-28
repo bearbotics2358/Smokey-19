@@ -19,7 +19,7 @@ public:
     IndexerSubsystem();
     frc2::CommandPtr SpinMotorGoal(units::angular_velocity::turns_per_second_t tps);
 
-    units::angular_velocity::turns_per_second_t GetMotorVelocity();
+    units::revolutions_per_minute_t GetMotorVelocity();
 
     void Periodic() override;
     void SimulationPeriodic() override;
@@ -28,9 +28,9 @@ private:
     void GoToSpeed();
     ctre::phoenix6::hardware::TalonFX m_indexerSpinMotor;
 
-    units::turns_per_second_t m_setpointTPS;
+    units::revolutions_per_minute_t m_setpointSpeed;
 
-    ctre::phoenix6::controls::VelocityVoltage m_tpsRequest{0_tps};
+    ctre::phoenix6::controls::VelocityVoltage m_VelocityVoltage{0_rpm};
 
     static constexpr double kGearRatio = 7.5;
 

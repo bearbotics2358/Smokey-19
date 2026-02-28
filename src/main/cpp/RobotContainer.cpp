@@ -10,8 +10,13 @@
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/auto/NamedCommands.h>
 
+#include <frc2/command/RunCommand.h>
+
+#include "bearlog/bearlog.h"
+
 RobotContainer::RobotContainer()
-    : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }}
+    : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }},
+      m_driveManager{[this] { return m_drivetrain.GetState().Pose; }}
 {
     m_drivetrain.ConfigureAutoBuilder();
 
@@ -26,14 +31,36 @@ void RobotContainer::ConfigureBindings()
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     m_drivetrain.SetDefaultCommand(
-        // Drivetrain will execute this command periodically
-        m_drivetrain.ApplyRequest([this]() -> auto&& {
-            return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                .WithRotationalRate(-driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
-        })
-    );
+            // Drivetrain will execute this command periodically
+            m_drivetrain.ApplyRequest([this]() -> auto&& {
+                return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .WithRotationalRate(driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+            })
+        );
 
+    driverJoystick.A().WhileTrue(
+        frc2::cmd::Run([this] {
+            if (m_driveManager.AssistManagerA() == true) {
+                m_drivetrain.SetControl(
+                    drive.WithVelocityX(m_driveManager.xMovement * MaxSpeed) // Drive forward with negative Y (forward)
+                        .WithVelocityY(m_driveManager.yMovement * MaxSpeed) // Drive left with negative X (left)
+                        .WithRotationalRate(m_driveManager.rotMovement * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                );
+            }
+        }));
+    
+    driverJoystick.RightBumper().WhileTrue(
+        frc2::cmd::Run([this] {
+            if (m_driveManager.TurnToHub() == true) {
+                m_drivetrain.SetControl(
+                    drive.WithVelocityX(m_driveManager.xMovement * MaxSpeed) // Drive forward with negative Y (forward)
+                        .WithVelocityY(m_driveManager.yMovement * MaxSpeed) // Drive left with negative X (left)
+                        .WithRotationalRate(m_driveManager.rotMovement * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                );
+            }
+        }));
+    
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
     frc2::RobotModeTriggers::Disabled().WhileTrue(
@@ -42,10 +69,13 @@ void RobotContainer::ConfigureBindings()
         }).IgnoringDisable(true)
     );
 
-    driverJoystick.A().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
+    driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
     driverJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
         return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
     }));
+
+    driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
+    driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
 
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
