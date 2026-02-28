@@ -90,9 +90,7 @@ void RobotContainer::ConfigureBindings()
     );
 
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    driverJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
-        return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
-    }));
+    driverJoystick.B().WhileTrue(m_shooterSubsystem.EnableShooterWithFixedHoodAngle());
 
     driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
