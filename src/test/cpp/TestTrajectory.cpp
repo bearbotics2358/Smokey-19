@@ -11,6 +11,7 @@ struct TrajectoryParams {
 };
 
 struct TrajectoryParamsCompensated {
+    bool fixed_angle;
     enum model_t model;
     units::foot_t distance;
     units::degree_t angle;
@@ -111,6 +112,7 @@ TEST_P(TestTrajectoryCompensated, ValidateAnglesFromTrajectoryTableWithKnownDist
     trajInfo.elevation_angle = params.angle;
     trajInfo.wheel_rpm = params.rpm;
  
+    m_TrajectoryCalc.set_constant_shooter_elevation(params.fixed_angle);
     m_TrajectoryCalc.set_model(params.model);
     trajInfo = m_TrajectoryCalc.compute_trajectory(trajInfo);
 
@@ -129,35 +131,38 @@ INSTANTIATE_TEST_SUITE_P(
         // a large number of them). We want a representative set to ensure that any possible code optimizations
         // (like for lookup or calculation speed) to the TrajectoryTable and TrajectoryCalc classes will give us the
         // same result.
-        TrajectoryParamsCompensated{NO_AIR, 20_ft, 67_deg, 3600_rpm, 67_deg, 3600_rpm, 1.616_s, TRAJECTORY_SUCCESS}, // #0
+        TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 67_deg, 3600_rpm, 67_deg, 3600_rpm, 1.616_s, TRAJECTORY_SUCCESS}, // #0
         // TrajectoryParamsCompensated{20_ft, 52_deg, 3200_rpm, 55_deg, 3275_rpm}, // #1
-        TrajectoryParamsCompensated{NO_AIR, 20_ft, 52_deg, 3200_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_SUCCESS}, // #1
-        TrajectoryParamsCompensated{NO_AIR, 7_ft, 65_deg, 3600_rpm, 75_deg, 2675_rpm, 1.145_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #2
+        TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 52_deg, 3200_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_SUCCESS}, // #1
+        TrajectoryParamsCompensated{false, NO_AIR, 7_ft, 65_deg, 3600_rpm, 75_deg, 2675_rpm, 1.145_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #2
         // TrajectoryParamsCompensated{20_ft, 65_deg, 3275_rpm, 55_deg, 3275_rpm}, // #3
-        TrajectoryParamsCompensated{NO_AIR, 20_ft, 65_deg, 3275_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #3
+        TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 65_deg, 3275_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #3
 
         // causes a problem 'cause 55 deg 2200 RPM is 0 part of table
         // gives 67 2200
         // FIXED with using 65 degrees
-        TrajectoryParamsCompensated{NO_AIR, 20_ft, 65_deg, 2200_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #4
-        TrajectoryParamsCompensated{NO_AIR, 7_ft, 65_deg, 2650_rpm, 74_deg, 2650_rpm, 1.119_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #5
+        TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 65_deg, 2200_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #4
+        TrajectoryParamsCompensated{false, NO_AIR, 7_ft, 65_deg, 2650_rpm, 74_deg, 2650_rpm, 1.119_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #5
 
         // ends up on wrong side of the arc 55, 2450
         // FIXED
         // TrajectoryParamsCompensated{7_ft, 75_deg, 0_rpm, 74_deg, 2650_rpm}, // #6  
-        TrajectoryParamsCompensated{NO_AIR, 7_ft, 75_deg, 0_rpm, 65_deg, 2375_rpm, 0.801_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #6  
+        TrajectoryParamsCompensated{false, NO_AIR, 7_ft, 75_deg, 0_rpm, 65_deg, 2375_rpm, 0.801_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #6  
         // TrajectoryParamsCompensated{20_ft, 55_deg, 0_rpm, 74_deg, 2650_rpm} // #7
-        TrajectoryParamsCompensated{NO_AIR, 20_ft, 55_deg, 0_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #7
+        TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 55_deg, 0_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #7
 
 
-        TrajectoryParamsCompensated{AIR_DRAG, 20_ft, 67_deg, 3600_rpm, 59_deg, 3600_rpm, 1.377_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #8
-        TrajectoryParamsCompensated{AIR_DRAG, 20_ft, 52_deg, 3200_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #9
-        TrajectoryParamsCompensated{AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 75_deg, 2800_rpm, 1.166_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #10
-        TrajectoryParamsCompensated{AIR_DRAG, 20_ft, 65_deg, 3275_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #11
-        TrajectoryParamsCompensated{AIR_DRAG, 20_ft, 65_deg, 2200_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #12
-        TrajectoryParamsCompensated{AIR_DRAG, 7_ft, 65_deg, 2650_rpm, 72_deg, 2650_rpm, 1.045_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #13
-        TrajectoryParamsCompensated{AIR_DRAG, 7_ft, 75_deg, 0_rpm, 65_deg, 2450_rpm, 0.812_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #14  
-        TrajectoryParamsCompensated{AIR_DRAG, 20_ft, 55_deg, 0_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT} // #15
+        TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 67_deg, 3600_rpm, 59_deg, 3600_rpm, 1.377_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #8
+        TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 52_deg, 3200_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #9
+        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 75_deg, 2800_rpm, 1.166_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #10
+        TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 65_deg, 3275_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #11
+        TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 65_deg, 2200_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #12
+        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 2650_rpm, 72_deg, 2650_rpm, 1.045_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #13
+        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 75_deg, 0_rpm, 65_deg, 2450_rpm, 0.812_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #14  
+        TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 55_deg, 0_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #15
+
+        // for fixed angle
+        TrajectoryParamsCompensated{true, AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 65_deg, 2450_rpm, 0.812_s, TRAJECTORY_FAILURE_SHOT_LONG} // #16
     )
 );
 
