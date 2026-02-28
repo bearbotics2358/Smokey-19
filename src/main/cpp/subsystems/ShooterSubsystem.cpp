@@ -28,28 +28,23 @@ ShooterSubsystem::ShooterSubsystem()
     m_FlywheelMotor.GetConfigurator().Apply(configs);
     m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
 
-    m_FlywheelFollowerMotor.SetControl(controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed});
+    m_FlywheelFollowerMotor.SetControl(
+        controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
+            .WithUpdateFreqHz(200_Hz));
 
-    ctre::phoenix6::configs::Slot0Configs slot0Config;
-    slot0Config
-        .WithKP(0.6)
-        .WithKI(0)
-        .WithKD(0.2)
-        .WithKS(0)
-        .WithKV(0.2);
+    configs::TalonFXConfiguration rotation_config{};
 
-    ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
-    rotation_config
-        .WithSlot0(slot0Config);
+    rotation_config.Slot0.kP = 0.6;
+    rotation_config.Slot0.kI = 0.0;
+    rotation_config.Slot0.kD = 0.2;
+    rotation_config.Slot0.kS = 0.0;
+    rotation_config.Slot0.kV = 0.12;
 
     m_shooterElevationSpinMotor.GetConfigurator().Apply(rotation_config);
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
-    m_FlywheelFollowerMotor.SetControl(
-        controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
-            .WithUpdateFreqHz(200_Hz));
 }
 
 void ShooterSubsystem::Periodic() {
