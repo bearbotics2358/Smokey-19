@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "trajectory/model.h"
 #include "trajectory/TrajectoryCalc.h"
 
 struct TrajectoryParams {
@@ -24,6 +25,7 @@ protected:
 public:
     TestTrajectory() {
         m_TrajectoryCalc.init();
+        m_TrajectoryCalc.set_model(NO_AIR);
     }
 };
 
@@ -34,6 +36,7 @@ protected:
 public:
     TestTrajectoryCompensated() {
         m_TrajectoryCalc.init();
+        m_TrajectoryCalc.set_model(NO_AIR);
     }
 };
 
