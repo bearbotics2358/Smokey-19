@@ -9,6 +9,7 @@ FMSSubsystem::FMSSubsystem() {
 void FMSSubsystem::Periodic() {
     BearLog::Log("FMS/MatchTime", GetMatchTime());
     CurrentShift();
+    BearLog::Log("FMS/MyAllianceShift?", MyAllianceShift());
     std::string gameData = frc::DriverStation::GetGameSpecificMessage();
 
     BearLog::Log("FMS/AutoWinner", AutoWinner());
@@ -107,5 +108,23 @@ enum FMSSubsystem::allianceShift FMSSubsystem::CurrentShift() {
     } else {
         BearLog::Log("Alliance Shift", std::string("#000000ff"));
         return allianceShift::kNoShift;
+    }
+}
+
+bool FMSSubsystem::MyAllianceShift() {
+    using namespace frc;
+    allianceShift myAlliance;
+    if (DriverStation::GetAlliance() == DriverStation::Alliance::kRed) {
+        myAlliance = allianceShift::kRedShift;
+    } else if (DriverStation::GetAlliance() == DriverStation::Alliance::kBlue) {
+        myAlliance = allianceShift::kBlueShift;
+    } else {
+        myAlliance = allianceShift::kNoShift;
+    }
+
+    if (CurrentShift() == allianceShift::kBothShift) {
+        return true;
+    } else {
+        return (myAlliance == CurrentShift());
     }
 }

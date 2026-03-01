@@ -28,4 +28,6 @@ public:
 
     frc2::CommandPtr ManualShift(std::string alliance);
     bool m_manualShift;
+
+    bool MyAllianceShift();
 };
