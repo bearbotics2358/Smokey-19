@@ -38,6 +38,8 @@ RobotContainer::RobotContainer()
         [this] { return m_drivetrain.GetState().Pose; }
     );
 
+    AddPathPlannerCommands();
+
     m_drivetrain.ConfigureAutoBuilder();
 
     m_autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
@@ -69,7 +71,7 @@ void RobotContainer::ConfigureBindings()
                 );
             }
         }));
-    
+
     driverJoystick.RightBumper().WhileTrue(
         frc2::cmd::Run([this] {
             if (m_driveManager.TurnToHub() == true) {
@@ -80,7 +82,7 @@ void RobotContainer::ConfigureBindings()
                 );
             }
         }));
-    
+
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
     frc2::RobotModeTriggers::Disabled().WhileTrue(
@@ -95,10 +97,12 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
 
-    driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
-    driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
-    driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
-    driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
+    operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
+
+    driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
+    driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
+    driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.Stop());
+    driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.RunIndexerForLaunching());
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -121,4 +125,34 @@ void RobotContainer::ConfigureBindings()
 frc2::Command* RobotContainer::GetAutonomousCommand()
 {
     return m_autoChooser.GetSelected();
+}
+
+void RobotContainer::AddPathPlannerCommands() {
+    using namespace pathplanner;
+    NamedCommands::registerCommand(
+        "Extend Hopper",
+        std::move(m_intakeSubsystem.ExtendHopper())
+    );
+    NamedCommands::registerCommand(
+        "Run Intake",
+        std::move(m_intakeSubsystem.RunIntake())
+    );
+    NamedCommands::registerCommand(
+        "Stop Intake",
+        std::move(m_intakeSubsystem.StopIntake())
+    );
+    NamedCommands::registerCommand(
+        "Point Turret at Hub",
+        std::move(m_turretSubsystem.PointAtHub())
+    );
+    NamedCommands::registerCommand(
+        "Launch Fuel at Hub",
+        std::move(
+            frc2::cmd::Sequence(
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                frc2::cmd::Wait(40_ms),
+                m_indexerSubsystem.RunIndexerForLaunching()
+            )
+        )
+    );
 }
