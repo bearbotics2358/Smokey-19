@@ -12,6 +12,8 @@
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/trajectory/TrapezoidProfile.h>
 
+#include <frc2/command/button/Trigger.h>
+
 constexpr int kIndexerSpinMotorID = 55;
 
 class IndexerSubsystem : public frc2::SubsystemBase {
@@ -24,8 +26,12 @@ public:
     void Periodic() override;
     void SimulationPeriodic() override;
 
+    frc2::CommandPtr RunIndexer();
+    frc2::CommandPtr StopIndexer();
+
+    frc2::Trigger m_isHardStop;
 private:
-    void GoToSpeed();
+
     ctre::phoenix6::hardware::TalonFX m_indexerSpinMotor;
 
     units::revolutions_per_minute_t m_setpointSpeed;
@@ -46,4 +52,6 @@ private:
         m_Plant,
         m_IndexerGearbox
     };
+
+    ctre::phoenix6::controls::VelocityVoltage m_IndexerRequest = ctre::phoenix6::controls::VelocityVoltage(0_tps).WithSlot(0);
 };

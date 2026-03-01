@@ -99,8 +99,9 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
-    driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
-    driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
+
+    driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.StopIndexer());
+    driverJoystick.RightTrigger().WhileTrue(m_indexerSubsystem.RunIndexer());
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
