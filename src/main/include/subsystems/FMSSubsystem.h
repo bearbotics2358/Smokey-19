@@ -10,7 +10,6 @@ public:
     FMSSubsystem();
     
     units::second_t GetMatchTime();
-    std::string AutoWinner();
 
     void Periodic() override;
     
@@ -21,6 +20,14 @@ public:
         kBothShift
     };
 
+    enum class autoWinner{
+        kRed,
+        kBlue,
+        kInvalidInfo,
+        kNoInfo
+    };
+
+    autoWinner AutoWinner();
     allianceShift CurrentShift();
     
     allianceShift m_autoWinner;
