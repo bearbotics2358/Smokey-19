@@ -49,11 +49,7 @@ bool DriveManager::GoThroughTrench() {
 
 
         xMovement = -m_driverController.GetLeftY();
-        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-            yMovement = -robotY;
-        } else {
-            yMovement = robotY;
-        }
+        yMovement = robotY;
         rotMovement = rotation;
 
         return true;
