@@ -1,5 +1,9 @@
 #include <iostream>
 
+#if defined(_WIN32) || defined(_WIN64)
+#define _USE_MATH_DEFINES
+#endif
+
 #include "FieldConstants.h"
 #include "LaunchHelper.h"
 #include "bearlog/bearlog.h"
@@ -130,8 +134,8 @@ void LaunchHelper::DrawTrajectory()
             vDist += verticalVelocity * timeBetweenPoses;
 
             frc::Translation3d localPose{
-                units::meter_t(hDist), 
-                0_m, 
+                units::meter_t(hDist),
+                0_m,
                 units::meter_t(vDist)
             };
 
