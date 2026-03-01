@@ -22,7 +22,8 @@ constexpr int kExtenderMotorID = 61;
 class IntakeSubsystem : public frc2::SubsystemBase {
 public:
         IntakeSubsystem();
-        frc2::CommandPtr SpinMotor(units::volt_t volts);
+        frc2::CommandPtr RunIntake();
+        frc2::CommandPtr StopIntake();
         units::degree_t CurrentAngle();
 
         void Periodic() override;
@@ -33,11 +34,12 @@ public:
         frc2::CommandPtr StowHopper();
 private:
         ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
+        ctre::phoenix6::controls::VelocityVoltage m_IntakeVelocity =
+          ctre::phoenix6::controls::VelocityVoltage(0_rpm).WithSlot(0);
         void GoToAngle();
 
         units::degree_t GetAngleFromTurns(units::turn_t rotations);
         units::turn_t GetTurnsFromAngle(units::degree_t angle);
-
 
         ctre::phoenix6::hardware::TalonFX m_intakeSpinMotor;
         ctre::phoenix6::hardware::TalonFX m_extenderMotor;
