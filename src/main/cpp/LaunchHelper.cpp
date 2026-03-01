@@ -4,6 +4,7 @@
 #include "LaunchHelper.h"
 #include "bearlog/bearlog.h"
 #include <frc/Timer.h>
+#include <frc/RobotBase.h>
 
 LaunchHelper& LaunchHelper::GetInstance() {
     // Defining a static LaunchHelper object so it will only be created once
@@ -65,5 +66,94 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
 
     m_Cache = m_TrajectoryCalc.compute_trajectory(inputs);
 
+    int retvalue = m_Cache.return_value;
+    BearLog::Log("retvalue", retvalue);
+
+    if (frc::RobotBase::IsSimulation()) {
+        DrawTrajectory();
+    }
     return m_Cache;
+}
+
+void LaunchHelper::DrawTrajectory()
+{
+        units::meters_per_second_t velocity = RPMToVelocity(m_GetShooterSpeed());
+        units::degree_t angle = m_GetHoodAngle();
+        units::meters_per_second_squared_t gravity = 9.81_mps_sq;
+        std::vector<frc::Pose3d> poses;
+        double timeBetweenPoses = 0.05;
+
+        units::meter_t shooterHeight = 18.2817_in;
+        frc::Pose2d botPose2d = m_RobotPoseSupplier();
+        frc::Pose3d robotPose3d{
+            botPose2d.X(),
+            botPose2d.Y(),
+            0_m,
+            frc::Rotation3d{0_deg, 0_deg, botPose2d.Rotation().Degrees()}
+        };
+
+        units::radian_t degRad = units::radian_t(angle);
+
+        BearLog::Log("velocity", velocity);
+
+        // units::second_t timeOfFlight = units::second_t(((velocity.value() * sin(degRad.value())) +
+        //     std::sqrt(std::pow(velocity.value() * sin(degRad.value()), 2) +
+        //         (2.0 * gravity.value() * shooterHeight.value())
+        //     )
+        // ) / gravity.value());
+
+        double hDist = 0;
+        double vDist = shooterHeight.value();
+
+        double airDensity = 1.225;
+        double dragCoefficient = 0.47; //0.47
+        double crossSectionArea = M_PI * pow((0.150114 / 2.0), 2);
+        double mass = 0.227;
+
+        double dragConstant = 0.5 * airDensity * dragCoefficient * crossSectionArea;
+
+        double horizontalVelocity = velocity.value() * cos(degRad.value());
+        double verticalVelocity = velocity.value() * sin(degRad.value());
+        while ((vDist >= 0)) {
+            // hDist = velocity.value() * cos(degRad.value()) * time;
+            // vDist = shooterHeight.value() + (velocity.value() * sin(degRad.value()) * time) - (0.5 * gravity.value() * pow(time, 2));
+
+            double totalSpeed = sqrt(horizontalVelocity * horizontalVelocity + verticalVelocity * verticalVelocity);
+
+            double horizontalDrag = -(dragConstant * totalSpeed * horizontalVelocity) / mass;
+            double verticalDrag = -gravity.value() - (dragConstant * totalSpeed * verticalVelocity) / mass;
+
+            horizontalVelocity += horizontalDrag * timeBetweenPoses;
+            verticalVelocity += verticalDrag * timeBetweenPoses;
+
+            hDist += horizontalVelocity * timeBetweenPoses;
+            vDist += verticalVelocity * timeBetweenPoses;
+
+            frc::Translation3d localPose{
+                units::meter_t(hDist), 
+                0_m, 
+                units::meter_t(vDist)
+            };
+
+            frc::Translation3d rotated = localPose.RotateBy(
+            frc::Rotation3d{0_deg, 0_deg, botPose2d.Rotation().Degrees() + m_GetTurretAngle()});
+
+            frc::Pose3d worldPose{
+                robotPose3d.X() + rotated.X(),
+                robotPose3d.Y() + rotated.Y(),
+                robotPose3d.Z() + rotated.Z(),
+                frc::Rotation3d{}
+            };
+
+            poses.push_back(worldPose);
+        }
+
+        BearLog::Log("trajectory/trajectory", poses);
+}
+
+
+units::meters_per_second_t LaunchHelper::RPMToVelocity(units::revolutions_per_minute_t rpm) {
+    units::turns_per_second_t revPerSec = rpm;
+    units::meter_t flywheelCircumfrence = 2 * M_PI * kFlywheelRadius;
+    return units::meters_per_second_t(revPerSec.value() * flywheelCircumfrence.value() / 2);
 }

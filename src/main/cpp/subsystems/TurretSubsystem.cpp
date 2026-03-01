@@ -47,8 +47,8 @@ units::degree_t TurretSubsystem::AngleToHub() {
     frc::Pose2d robotPose = m_GetCurrentBotPose();
 
     //Angle to BLUE alliance hub
-    units::meter_t strafe = robotPose.Y() - 4.335_m;
-    units::meter_t forward = robotPose.X() - 4.615_m;
+    units::meter_t strafe = robotPose.Y() - 158.84_in;
+    units::meter_t forward = robotPose.X() - 182.11_in;
     units::degree_t robotAngle = robotPose.Rotation().Degrees();
     units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
 
