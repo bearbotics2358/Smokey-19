@@ -115,6 +115,11 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.LeftBumper().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+
+
+    operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
+    operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
+    operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand()
