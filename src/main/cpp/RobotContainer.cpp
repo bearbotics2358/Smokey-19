@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
+#include "LaunchHelper.h"
 
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/RobotModeTriggers.h>
@@ -18,6 +19,25 @@ RobotContainer::RobotContainer()
     : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }},
       m_driveManager{[this] { return m_drivetrain.GetState().Pose; }}
 {
+    // The LaunchHelper needs to be initialized when the robot code is booting up before any other calls to
+    // LaunchHelper are made
+    LaunchHelper::GetInstance().Init(
+        // Shooter/hood angle supplier
+        [this] { return m_shooterSubsystem.GetCurrentHoodAngle(); },
+
+        // Shooter speed supplier
+        [this] { return m_shooterSubsystem.GetCurrentSpeed(); },
+
+        // Turret angle supplier
+        [this] { return m_turretSubsystem.CurrentAngle(); },
+
+        // Robot speed supplier
+        [this] { return m_drivetrain.GetState().Speeds; },
+
+        // Robot pose supplier
+        [this] { return m_drivetrain.GetState().Pose; }
+    );
+
     m_drivetrain.ConfigureAutoBuilder();
 
     m_autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
@@ -70,9 +90,7 @@ void RobotContainer::ConfigureBindings()
     );
 
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    driverJoystick.B().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& {
-        return point.WithModuleDirection(frc::Rotation2d{-driverJoystick.GetLeftY(), -driverJoystick.GetLeftX()});
-    }));
+    driverJoystick.B().WhileTrue(m_shooterSubsystem.EnableShooterWithFixedHoodAngle());
 
     driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());

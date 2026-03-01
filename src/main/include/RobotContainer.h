@@ -51,10 +51,10 @@ private:
     FMSSubsystem m_FMSSubsystem;
     DriveManager m_driveManager;
 
-public:
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};
     VisionSubsystem m_VisionSubsystem{&m_drivetrain, VisionConstants::GetLocalizationCameras(&m_drivetrain)};
 
+public:
     RobotContainer();
 
     frc2::Command* GetAutonomousCommand();
