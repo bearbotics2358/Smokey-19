@@ -10,23 +10,20 @@ void FMSSubsystem::Periodic() {
     BearLog::Log("FMS/MatchTime", GetMatchTime());
     CurrentShift();
     BearLog::Log("FMS/MyAllianceShift?", MyAllianceShift());
-    std::string gameData = frc::DriverStation::GetGameSpecificMessage();
-
-    BearLog::Log("FMS/AutoWinner", AutoWinner());
 }
 
-std::string FMSSubsystem::AutoWinner() {
+FMSSubsystem::autoWinner FMSSubsystem::AutoWinner() {
     std::string gameData = frc::DriverStation::GetGameSpecificMessage();
     if (!gameData.empty()) {
         if (gameData[0] == 'R') {
-            return "Red";
+            return FMSSubsystem::autoWinner::kRed;
         } else if (gameData[0] == 'B') {
-            return "Blue";
+            return FMSSubsystem::autoWinner::kBlue;
         } else {
-            return "Invalid FMS Data";
+            return FMSSubsystem::autoWinner::kInvalidInfo;
         }
     } else {
-        return "No FMS Info";
+        return FMSSubsystem::autoWinner::kNoInfo;
     }
 }
 
@@ -55,10 +52,10 @@ enum FMSSubsystem::allianceShift FMSSubsystem::CurrentShift() {
     } else if ((GetMatchTime() <= 130_s) && (GetMatchTime() > 30_s)) {
         BearLog::Log("ManualShiftActivated?", m_manualShift);
         if (m_manualShift == false) {
-            if (AutoWinner() == "Red") {
+            if (AutoWinner() == FMSSubsystem::autoWinner::kRed) {
                 m_autoWinner = allianceShift::kRedShift;
                 m_autoLoser = allianceShift::kBlueShift;
-            } else if (AutoWinner() == "Blue") {
+            } else if (AutoWinner() == FMSSubsystem::autoWinner::kBlue) {
                 m_autoWinner = allianceShift::kBlueShift;
                 m_autoLoser = allianceShift::kRedShift;
             } else {
