@@ -6,6 +6,7 @@ DriveManager::DriveManager(std::function<frc::Pose2d()> getBotPose) :
     m_GetCurrentBotPose(getBotPose)
 {
     m_SetpointDistance = kLeftSetpointDistance;
+    m_rotationalPID.EnableContinuousInput(-180, 180);
 }
 
 bool DriveManager::AssistManagerA() {
@@ -106,14 +107,22 @@ bool DriveManager::TurnToHub() {
 
         units::meter_t strafe = botPose.Y() - HubPose.Y();
         units::meter_t forward = botPose.X() - HubPose.X();
-        units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) + offset;
+        units::degree_t angleToHub;
 
+        double rotation;
         units::degree_t currentDegrees = botPose.Rotation().Degrees();
-
-        double rotation = m_rotationalPID.Calculate(currentDegrees.value(), (angleToHub).value());
+        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+            angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + offset;
+            rotation = m_rotationalPID.Calculate(currentDegrees.value() + 180, (angleToHub).value());
+        } else {
+            angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + offset;
+            rotation = m_rotationalPID.Calculate(currentDegrees.value(), (angleToHub).value());
+        }
         rotation = std::clamp(rotation, -1.0, 1.0);
 
-        BearLog::Log("Rotation PID", rotation);
+        BearLog::Log("Debugging/Rotation PID", rotation);
+        BearLog::Log("Debugging/RobotAngle", botPose.Rotation().Degrees());
+        BearLog::Log("Debugging/AngleToHub", angleToHub);
 
 
         xMovement = -m_driverController.GetLeftY();
