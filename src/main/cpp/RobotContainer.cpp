@@ -14,6 +14,7 @@
 #include <frc2/command/RunCommand.h>
 
 #include "bearlog/bearlog.h"
+#include "subsystems/RobotZoneHelper.h"
 
 RobotContainer::RobotContainer()
     : m_turretSubsystem{[this] { return m_drivetrain.GetState().Pose; }},
@@ -70,7 +71,7 @@ void RobotContainer::ConfigureBindings()
             }
         }));
     
-    driverJoystick.RightBumper().WhileTrue(
+    driverJoystick.LeftBumper().WhileTrue(
         frc2::cmd::Run([this] {
             if (m_driveManager.TurnToHub() == true) {
                 m_drivetrain.SetControl(
@@ -97,8 +98,20 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.SpinMotor(0_V));
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.SpinMotor(5_V));
+    
     driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.SpinMotorGoal(0_tps));
     driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.SpinMotorGoal(2_tps));
+
+    driverJoystick.RightBumper().WhileTrue(
+        frc2::cmd::Run([this] {
+            if ((m_FMSSubsystem.MyAllianceShift()) && (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose))) {
+                BearLog::Log("Can Auto Shoot?", true);
+                TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+                m_shooterSubsystem.SetGoals(parameters.wheel_rpm, m_shooterSubsystem.kFixedPositionHoodAngle);
+            } else {
+                BearLog::Log("Can Auto Shoot?", false);
+            }
+        }));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -108,7 +121,7 @@ void RobotContainer::ConfigureBindings()
     (driverJoystick.Start() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
 
     // reset the field-centric heading on left bumper press
-    driverJoystick.LeftBumper().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
+    driverJoystick.POVDown().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 

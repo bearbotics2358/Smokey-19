@@ -28,6 +28,7 @@ public:
 
 
     void DrawTrajectory();
+    int canMakeShot;
 private:
     LaunchHelper();
 
