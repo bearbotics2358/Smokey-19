@@ -27,9 +27,15 @@ IndexerSubsystem::IndexerSubsystem():
     m_indexerSpinMotor.GetConfigurator().Apply(configs);
 }
 
-frc2::CommandPtr IndexerSubsystem::SpinMotorGoal(units::angular_velocity::turns_per_second_t tps) {
-    return frc2::cmd::RunOnce([this, tps] {
-        m_setpointSpeed = tps;
+frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
+    return RunOnce([this] {
+        // @todo Implement this! Run the feeder motor and the indexer at the desired speeds
+    });
+}
+
+frc2::CommandPtr IndexerSubsystem::Stop() {
+    return RunOnce([this] {
+        // @todo Implement this! Stop the feeder and indexer motors
     });
 }
 
