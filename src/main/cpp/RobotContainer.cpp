@@ -97,8 +97,6 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.B().OnTrue(m_intakeSubsystem.ExtendHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
 
-    operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
-
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
 
