@@ -21,42 +21,49 @@ class ShooterSubsystem : public frc2::SubsystemBase {
 public:
     ShooterSubsystem();
 
-    units::revolutions_per_minute_t GetCurrentSpeed();
+    units::revolutions_per_minute_t GetCurrentShooterSpeed();
     units::degree_t GetCurrentHoodAngle();
     void SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle);
     void Periodic() override;
     void SimulationPeriodic() override;
     frc2::CommandPtr StopShooter();
+    frc2::CommandPtr StopHood();
     frc2::CommandPtr EnableShooterWithHubTracking();
     frc2::CommandPtr EnableShooterWithFixedHoodAngle();
 
-    frc2::CommandPtr SetGoalAngle(units::degree_t angle);
+    frc2::CommandPtr TestRunShooter();
+    frc2::CommandPtr TestRunFeeder();
+    frc2::CommandPtr TestRunHoodAngle(units::degree_t angle);
+
     static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
 
 private:
+    void ConfigureShooterMotors();
+    void ConfigureHoodMotor();
+    void ConfigureFeederMotor();
+
     static constexpr int kFlywheelMotorId = 37;
     static constexpr int kFlywheelFollowerMotorId = 36;
     static constexpr int kShooterElevationMotorID = 50;
+    static constexpr int kFeederMotorId = 30;
+
     static constexpr units::revolutions_per_minute_t kFixedPositionSpeed = 3600_rpm;
 
     hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
-
     hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
+    hardware::TalonFX m_FeederMotor{kFeederMotorId};
+    hardware::TalonFX m_HoodMotor{kShooterElevationMotorID};
 
-    controls::VelocityVoltage m_VelocityVoltage = controls::VelocityVoltage(0_tps).WithSlot(0);
-
-    units::revolutions_per_minute_t m_setSpeed = 0_rpm;
-    units::degree_t m_setHoodAngle = kFixedPositionHoodAngle;
+    controls::VelocityVoltage m_ShooterVelocityVoltage = controls::VelocityVoltage(0_rpm).WithSlot(0);
+    controls::VelocityVoltage m_FeederVelocityVoltage = controls::VelocityVoltage(0_rpm).WithSlot(0);
+    controls::PositionVoltage m_HoodPositionVoltage = controls::PositionVoltage(2.2_tr).WithSlot(0);
+    controls::NeutralOut m_Stop;
 
     //Elevation Motor Inits
     units::degree_t GetAngleFromTurns(units::turn_t rotations);
     units::turn_t GetTurnsFromAngle(units::degree_t angle);
 
-    hardware::TalonFX m_shooterElevationSpinMotor{kShooterElevationMotorID};
-
     static constexpr double kGearRatio = 1;
-
-    controls::PositionVoltage m_RotationVoltage = controls::PositionVoltage(2.2_tr).WithSlot(0);
 
 
     ////////////////////////////

@@ -27,7 +27,7 @@ RobotContainer::RobotContainer()
         [this] { return m_shooterSubsystem.GetCurrentHoodAngle(); },
 
         // Shooter speed supplier
-        [this] { return m_shooterSubsystem.GetCurrentSpeed(); },
+        [this] { return m_shooterSubsystem.GetCurrentShooterSpeed(); },
 
         // Turret angle supplier
         [this] { return m_turretSubsystem.CurrentAngle(); },
