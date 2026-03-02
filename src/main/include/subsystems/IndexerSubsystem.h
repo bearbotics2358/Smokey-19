@@ -39,6 +39,7 @@ private:
     units::revolutions_per_minute_t m_setpointSpeed;
 
     ctre::phoenix6::controls::VelocityVoltage m_VelocityVoltage{0_rpm};
+    controls::NeutralOut m_Stop;
 
     static constexpr double kGearRatio = 7.5;
 
