@@ -111,10 +111,26 @@ void RobotContainer::ConfigureBindings()
                 BearLog::Log("Can Auto Shoot?", true);
                 TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
                 m_shooterSubsystem.SetGoals(parameters.wheel_rpm, m_shooterSubsystem.kFixedPositionHoodAngle);
+                m_indexerSubsystem.RunIndexerForLaunching();
             } else {
                 BearLog::Log("Can Auto Shoot?", false);
             }
         }));
+
+    driverJoystick.RightBumper().OnTrue(
+        frc2::cmd::Parallel(
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+            m_indexerSubsystem.RunIndexerForLaunching()
+        ).Until( [this] { 
+            if ((m_FMSSubsystem.MyAllianceShift()) && (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose))) {
+                return true;
+            }})
+    ).OnFalse(
+        frc2::cmd::Parallel(
+            m_shooterSubsystem.StopShooter(),
+            m_indexerSubsystem.Stop()
+        )
+    );
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
