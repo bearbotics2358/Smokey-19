@@ -16,18 +16,20 @@
 
 constexpr int kIndexerSpinMotorID = 55;
 
+using namespace ctre::phoenix6;
+
 class IndexerSubsystem : public frc2::SubsystemBase {
 public:
     IndexerSubsystem();
-    frc2::CommandPtr SpinMotorGoal(units::angular_velocity::turns_per_second_t tps);
+
+    frc2::CommandPtr RunIndexerForLaunching();
+    frc2::CommandPtr Stop();
+
 
     units::revolutions_per_minute_t GetMotorVelocity();
 
     void Periodic() override;
     void SimulationPeriodic() override;
-
-    frc2::CommandPtr RunIndexer();
-    frc2::CommandPtr StopIndexer();
 
     frc2::Trigger m_isHardStop;
 private:

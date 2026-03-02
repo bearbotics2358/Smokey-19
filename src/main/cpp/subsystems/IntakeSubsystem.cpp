@@ -8,30 +8,48 @@
 #include <frc/util/Color8Bit.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+using namespace ctre::phoenix6;
+
 IntakeSubsystem::IntakeSubsystem():
     m_intakeSpinMotor(kIntakeMotorID),
     m_extenderMotor(kExtenderMotorID)
 {
-  ctre::phoenix6::configs::HardwareLimitSwitchConfigs rotation_limit_config;
-  rotation_limit_config
-    .WithForwardLimitAutosetPositionEnable(true)
-    .WithForwardLimitEnable(true)
-    .WithForwardLimitAutosetPositionValue(0_tr);
+    ctre::phoenix6::configs::HardwareLimitSwitchConfigs rotation_limit_config;
+    rotation_limit_config
+        .WithForwardLimitAutosetPositionEnable(true)
+        .WithForwardLimitEnable(true)
+        .WithForwardLimitAutosetPositionValue(0_tr);
 
-  ctre::phoenix6::configs::Slot0Configs slot0Config;
-  slot0Config
-    .WithKP(2)
-    .WithKI(0)
-    .WithKD(0)
-    .WithKS(0)
-    .WithKV(0.2);
+    ctre::phoenix6::configs::Slot0Configs slot0Config;
+    slot0Config
+        .WithKP(2)
+        .WithKI(0)
+        .WithKD(0)
+        .WithKS(0)
+        .WithKV(0.2);
 
-  ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
-  rotation_config
-    .WithHardwareLimitSwitch(rotation_limit_config)
-    .WithSlot0(slot0Config);
+    ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
+    rotation_config
+        .WithHardwareLimitSwitch(rotation_limit_config)
+        .WithSlot0(slot0Config);
 
-  m_extenderMotor.GetConfigurator().Apply(rotation_config);
+    m_extenderMotor.GetConfigurator().Apply(rotation_config);
+
+    configs::TalonFXConfiguration configs{};
+
+    static constexpr units::ampere_t kPeakTorqueCurrent = 70_A;
+    configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
+    configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
+
+    configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
+    configs.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
+
+    configs.Slot0.kP = 0.4;
+    configs.Slot0.kI = 0.0;
+    configs.Slot0.kD = 0.0;
+    configs.Slot0.kV = 0.12;
+
+    m_intakeSpinMotor.GetConfigurator().Apply(configs);
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
@@ -42,16 +60,21 @@ IntakeSubsystem::IntakeSubsystem():
 
 void IntakeSubsystem::Periodic() {
     BearLog::Log("IntakeExtender/Angle", CurrentAngle());
+    BearLog::Log("Intake/Velocity", units::revolutions_per_minute_t(m_intakeSpinMotor.GetVelocity().GetValue()));
 
     GoToAngle();
 }
 
-frc2::CommandPtr IntakeSubsystem::SpinMotor(units::volt_t volts) {
-    return frc2::cmd::RunOnce([this, volts] {
-        BearLog::Log("Intake/Volts", volts);
-        m_intakeSpinMotor.SetVoltage(volts);
+frc2::CommandPtr IntakeSubsystem::RunIntake() {
+    return frc2::cmd::RunOnce([this] {
+        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(1000_rpm));
     });
-    CurrentAngle();
+}
+
+frc2::CommandPtr IntakeSubsystem::StopIntake() {
+    return frc2::cmd::RunOnce([this] {
+        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(0_rpm));
+    });
 }
 
 units::degree_t IntakeSubsystem::CurrentAngle() {
