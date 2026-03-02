@@ -24,7 +24,7 @@
         "y": 6.693894436519259
       },
       "nextControl": {
-        "x": 1.6421128851444917,
+        "x": 1.6421128851444915,
         "y": 5.038822012481516
       },
       "isLocked": false,
@@ -68,8 +68,8 @@
         "y": 0.6515406562054205
       },
       "prevControl": {
-        "x": 0.3774179743223962,
-        "y": 0.2633808844507852
+        "x": 0.37741797432239615,
+        "y": 0.2633808844507853
       },
       "nextControl": null,
       "isLocked": false,
@@ -102,7 +102,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Full Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -89.13194855025449
