@@ -25,27 +25,36 @@ IndexerSubsystem::IndexerSubsystem():
     configs.Slot0.kV = 0.8;
 
     m_indexerSpinMotor.GetConfigurator().Apply(configs);
+
+    m_isHardStop = frc2::Trigger([this] {
+        return abs(m_indexerSpinMotor.GetVelocity().GetValue().value()) < 1 &&
+            abs(m_indexerSpinMotor.GetTorqueCurrent().GetValue().value()) > 10;
+    }).Debounce(0.1_s);
 }
 
 frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
-    return RunOnce([this] {
-        // @todo Implement this! Run the feeder motor and the indexer at the desired speeds
-    });
+    return Run([this] {
+        m_indexerSpinMotor.SetControl(
+            m_IndexerRequest.WithVelocity(2_tps)
+        );
+    }).Until(
+        [this] { return m_isHardStop.Get(); }
+    ).AndThen(
+        Stop()
+    );
 }
 
 frc2::CommandPtr IndexerSubsystem::Stop() {
     return RunOnce([this] {
-        // @todo Implement this! Stop the feeder and indexer motors
+        m_indexerSpinMotor.SetControl(
+            m_IndexerRequest.WithVelocity(0_tps)
+        );
     });
 }
 
-void IndexerSubsystem::GoToSpeed() {
-    BearLog::Log("Indexer/SetpointMotorVelocity", m_setpointSpeed);
-    BearLog::Log("Indexer/MotorVelocity", GetMotorVelocity());
-}
-
 void IndexerSubsystem::Periodic() {
-    GoToSpeed();
+    BearLog::Log("Indexer/MotorVelocity", GetMotorVelocity());
+    BearLog::Log("Indexer/HardStop?", m_isHardStop.Get());
 }
 
 units::revolutions_per_minute_t IndexerSubsystem::GetMotorVelocity() {
