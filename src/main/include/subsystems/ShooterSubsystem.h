@@ -54,6 +54,8 @@ private:
     hardware::TalonFX m_FeederMotor{kFeederMotorId};
     hardware::TalonFX m_HoodMotor{kShooterElevationMotorID};
 
+    units::degree_t m_HoodOffset = 65_deg;
+
     controls::VelocityVoltage m_ShooterVelocityVoltage = controls::VelocityVoltage(0_rpm).WithSlot(0);
     controls::VelocityVoltage m_FeederVelocityVoltage = controls::VelocityVoltage(0_rpm).WithSlot(0);
     controls::PositionVoltage m_HoodPositionVoltage = controls::PositionVoltage(2.2_tr).WithSlot(0);

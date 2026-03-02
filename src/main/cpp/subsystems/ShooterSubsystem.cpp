@@ -97,7 +97,8 @@ void ShooterSubsystem::Periodic() {
 }
 
 units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue());
+    // @todo Add calibration to the hood motor
+    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + m_HoodOffset;
     return angle;
 };
 
@@ -116,7 +117,7 @@ void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::de
     m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(3000_rpm));
 
     // @todo Enable this when hood control is working
-    // m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
+    //m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
 }
 
 units::revolutions_per_minute_t ShooterSubsystem::GetCurrentShooterSpeed() {
