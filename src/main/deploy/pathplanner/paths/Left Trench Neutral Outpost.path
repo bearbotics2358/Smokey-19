@@ -12,7 +12,7 @@
         "y": 7.295683085062948
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Trench"
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 7.650952577136919,
-        "y": 2.7388571544370595
+        "y": 2.738857154437059
       },
       "isLocked": false,
       "linkedName": null
@@ -64,22 +64,86 @@
     },
     {
       "anchor": {
-        "x": 0.4938659058487873,
-        "y": 0.6386019971469341
+        "x": 0.8061458333333333,
+        "y": 0.637612612612612
       },
       "prevControl": {
-        "x": 1.3153824920973363,
-        "y": 0.7466424297509376
+        "x": 1.6276624195818823,
+        "y": 0.7456530452166156
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [],
-  "eventMarkers": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.5155555555555561,
+      "maxWaypointRelativePos": 3.3511111111111127,
+      "constraints": {
+        "maxVelocity": 1.2,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 0.0,
+        "y": -75.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.7555555555555542,
+      "maxWaypointRelativePos": 2.933333333333331,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 10.0,
+        "y": 7.5
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.035555555555555556,
+      "maxWaypointRelativePos": 0.5777777777777798,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 0.4,
+        "y": 0.4
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 3.21777777777778,
+      "maxWaypointRelativePos": 3.6000000000000005,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Extend Hopper",
+      "waypointRelativePos": 0.2222222222222222,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 0.4622222222222229,
+      "endWaypointRelativePos": 3.3066666666666693,
+      "command": null
+    },
+    {
+      "name": "Point Turret at Hub",
+      "waypointRelativePos": 3.662222222222221,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -90,10 +154,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 178.42535529678452
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Full Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

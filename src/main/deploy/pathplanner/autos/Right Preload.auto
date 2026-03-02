@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Trench 1"
+            "pathName": "Right Simple"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Trench to Neutral 1"
+            "name": "Launch Fuel at Hub"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Simple Preload",
   "choreoAuto": false
 }

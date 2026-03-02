@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52945945945946,
-        "y": 3.965867117117117
+        "x": 0.8061458333333333,
+        "y": 0.637612612612612
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.380791051800873,
-        "y": 3.908435498635174
+        "x": 1.215252138016615,
+        "y": 2.0337795369435074
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost"
     },
     {
       "anchor": {
-        "x": 1.534481981981982,
-        "y": 3.768344594594594
+        "x": 2.365052083333333,
+        "y": 2.3658680555555556
       },
       "prevControl": {
-        "x": 1.2848716871289105,
-        "y": 3.75439107520475
+        "x": 1.2093844153707003,
+        "y": 1.3471356115221191
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,20 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Point Turret at Hub",
+      "waypointRelativePos": 0.4155555555555559,
+      "endWaypointRelativePos": 1.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -42,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 35.13419305691567
   },
   "reversed": false,
-  "folder": "Full Paths",
+  "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.6271470170821288
+    "rotation": 178.42535529678452
   },
   "useDefaultConstraints": true
 }

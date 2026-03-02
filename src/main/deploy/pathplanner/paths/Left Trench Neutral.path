@@ -12,7 +12,7 @@
         "y": 7.254534793287897
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Trench"
     },
     {
       "anchor": {
@@ -69,17 +69,87 @@
       },
       "prevControl": {
         "x": 1.9818116975748925,
-        "y": 0.5997860199714707
+        "y": 0.5997860199714706
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right1"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [],
-  "eventMarkers": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.5777777777777775,
+      "maxWaypointRelativePos": 3.137777777777779,
+      "constraints": {
+        "maxVelocity": 1.2,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 7.0,
+        "y": 7.2
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.5688888888888893,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 7.0,
+        "y": 0.4
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.7644444444444455,
+      "maxWaypointRelativePos": 2.835555555555555,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 0.4,
+        "y": 0.4
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 3.19111111111111,
+      "maxWaypointRelativePos": 3.6533333333333315,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Extend Hopper",
+      "waypointRelativePos": 0.26666666666666666,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 0.7733333333333342,
+      "endWaypointRelativePos": 3.155555555555558,
+      "command": null
+    },
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 3.2622222222222246,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Point Turret at Hub",
+      "waypointRelativePos": 3.6888888888888896,
+      "endWaypointRelativePos": 4.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -93,7 +163,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Full Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

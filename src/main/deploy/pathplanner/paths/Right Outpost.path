@@ -8,30 +8,43 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9232909165793393,
-        "y": 0.6367077083522648
+        "x": 3.913446868393703,
+        "y": 0.6236447603525831
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.507364864864865,
+        "x": 0.8061458333333333,
         "y": 0.637612612612612
       },
       "prevControl": {
-        "x": 0.19278400484572572,
-        "y": 0.6335425045896398
+        "x": 1.6092187500000001,
+        "y": 0.63375
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Extend Hopper",
+      "waypointRelativePos": 0.05,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Run Intake",
+      "waypointRelativePos": 0.15,
+      "endWaypointRelativePos": 1.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -42,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 178.42535529678452
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -179.72158679056028
   },
   "useDefaultConstraints": true
 }
