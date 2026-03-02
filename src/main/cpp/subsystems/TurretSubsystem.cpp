@@ -9,6 +9,9 @@
 #include <frc/util/Color8Bit.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+#include "subsystems/RobotZoneHelper.h"
+#include "FieldConstants.h"
+
 TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     : m_turretSpinMotor(kTurretMotorID),
       m_GetCurrentBotPose(getBotPose)
@@ -45,12 +48,33 @@ void TurretSubsystem::Periodic() {
 
 units::degree_t TurretSubsystem::AngleToHub() {
     frc::Pose2d robotPose = m_GetCurrentBotPose();
+    frc::Translation2d myHubPose = FieldConstants::GetHubCenterForMyAlliance();
 
-    //Angle to BLUE alliance hub
-    units::meter_t strafe = robotPose.Y() - 158.84_in;
-    units::meter_t forward = robotPose.X() - 182.11_in;
+    units::meter_t strafe = robotPose.Y() - myHubPose.Y();
+    units::meter_t forward = robotPose.X() - myHubPose.X();
     units::degree_t robotAngle = robotPose.Rotation().Degrees();
-    units::degree_t angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
+    units::degree_t angleToHub;
+
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+        angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle - 180_deg;
+    } else {
+        angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
+    }
+
+    return angleToHub;
+}
+
+units::degree_t TurretSubsystem::AngleToAllianceZone() {
+    frc::Pose2d robotPose = m_GetCurrentBotPose();
+
+    units::degree_t robotAngle = robotPose.Rotation().Degrees();
+    units::degree_t angleToHub;
+
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+        angleToHub = - robotAngle;
+    } else {
+        angleToHub = 180_deg - robotAngle;
+    }
 
     return angleToHub;
 }
@@ -70,7 +94,11 @@ void TurretSubsystem::SetGoalAngle() {
     if (m_pointAtHubToggle == false) {
         m_setpointAngle = m_stowAngle;
     } else {
-        m_setpointAngle = AngleToHub();
+        if (RobotZoneHelper::isRobotInMyAllianceZone(m_GetCurrentBotPose())) {
+            m_setpointAngle = AngleToHub();
+        } else if (RobotZoneHelper::isRobotInNeutralZone(m_GetCurrentBotPose())) {
+            m_setpointAngle = AngleToAllianceZone();
+        }
     }
 }
 

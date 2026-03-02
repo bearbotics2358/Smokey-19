@@ -29,6 +29,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
         units::degree_t CurrentAngle();
 
         units::degree_t AngleToHub();
+        units::degree_t AngleToAllianceZone();
 
         frc2::CommandPtr PointAtHub();
 

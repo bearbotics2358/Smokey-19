@@ -70,9 +70,6 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
 
     m_Cache = m_TrajectoryCalc.compute_trajectory(inputs);
 
-    int retvalue = m_Cache.return_value;
-    BearLog::Log("retvalue", retvalue);
-
     if (frc::RobotBase::IsSimulation()) {
         DrawTrajectory();
     }

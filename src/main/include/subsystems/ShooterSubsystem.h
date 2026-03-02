@@ -31,13 +31,13 @@ public:
     frc2::CommandPtr EnableShooterWithFixedHoodAngle();
 
     frc2::CommandPtr SetGoalAngle(units::degree_t angle);
+    static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
 
 private:
     static constexpr int kFlywheelMotorId = 37;
     static constexpr int kFlywheelFollowerMotorId = 36;
     static constexpr int kShooterElevationMotorID = 50;
     static constexpr units::revolutions_per_minute_t kFixedPositionSpeed = 3600_rpm;
-    static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
 
     hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
 
