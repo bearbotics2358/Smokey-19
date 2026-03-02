@@ -110,9 +110,14 @@ void RobotContainer::ConfigureBindings()
             m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
             m_indexerSubsystem.RunIndexerForLaunching()
         ).Until( [this] { 
-            if (!((m_FMSSubsystem.MyAllianceShift()) && (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose)))) {
+            if (((m_FMSSubsystem.MyAllianceShift() == false) || (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose) == false))) {
                 return true;
-            }})
+            }}).AndThen(
+                frc2::cmd::Parallel(
+                    m_shooterSubsystem.StopShooter(),
+                    m_indexerSubsystem.Stop()
+                )
+            )
     ).OnFalse(
         frc2::cmd::Parallel(
             m_shooterSubsystem.StopShooter(),
