@@ -105,24 +105,12 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.Stop());
     driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.RunIndexerForLaunching());
 
-    driverJoystick.RightBumper().WhileTrue(
-        frc2::cmd::Run([this] {
-            if ((m_FMSSubsystem.MyAllianceShift()) && (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose))) {
-                BearLog::Log("Can Auto Shoot?", true);
-                TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
-                m_shooterSubsystem.SetGoals(parameters.wheel_rpm, m_shooterSubsystem.kFixedPositionHoodAngle);
-                m_indexerSubsystem.RunIndexerForLaunching();
-            } else {
-                BearLog::Log("Can Auto Shoot?", false);
-            }
-        }));
-
     driverJoystick.RightBumper().OnTrue(
         frc2::cmd::Parallel(
             m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
             m_indexerSubsystem.RunIndexerForLaunching()
         ).Until( [this] { 
-            if ((m_FMSSubsystem.MyAllianceShift()) && (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose))) {
+            if (!((m_FMSSubsystem.MyAllianceShift()) && (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose)))) {
                 return true;
             }})
     ).OnFalse(
