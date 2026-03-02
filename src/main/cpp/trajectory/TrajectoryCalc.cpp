@@ -21,6 +21,11 @@ enum model_t TrajectoryCalc::set_model(enum model_t model)
 	return m_model;
 }
 
+enum model_t TrajectoryCalc::get_model()
+{
+	return m_model;
+}
+
 void TrajectoryCalc::set_shoot_on_the_move_enabled(bool enable)
 {
 	m_shoot_on_the_move_enabled = enable;
@@ -56,9 +61,16 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 	for(theta_indx = TRAJECTORY_TABLE_ANGLES - 1; theta_indx >= 0; theta_indx -= 1) {
 		dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);
 
+		/*
+		if(rpm.value() < 10) {
+			printf("  in get_angle: theta: %2d distance-dist %6.3lf distance-dist_best: %6.3lf distance: % 6.3lf\n", theta_indx, 
+				units::math::fabs(distance-dist) + 0.01_ft, units::math::fabs(distance-dist_best), distance);
+		}
+		*/
+
 		// look for best match from 2 adjacent entries in the table
 		// now see which is closer
-		if(units::math::fabs(distance - dist) < units::math::fabs(distance - dist_best) + 0.01_ft) { // 0.01 'cause comparing floating point numbers
+		if(units::math::fabs(distance - dist) + 0.01_ft < units::math::fabs(distance - dist_best)) { // 0.01 'cause comparing floating point numbers
 			// this one is better
 			theta_indx_best = theta_indx;
 			dist_best = dist;
@@ -104,6 +116,11 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 	// Step 1 - compute the elevation angle with no limits
 	if(!m_constant_shooter_elevation_enabled) {
 		elevation = get_angle(inputs.distance, inputs.wheel_rpm);
+		/*
+		if(inputs.wheel_rpm.value() < 10) {
+			printf("  get_angle: %lf input: %lf\n", elevation.value(), inputs.elevation_angle.value());
+		}
+			*/
 		inputs.elevation_angle = elevation;
 		theta_indx = (int)elevation.value();
 		rpm_indx = get_rpm_index(inputs.wheel_rpm);
@@ -166,9 +183,11 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		}
 		
 	} else {
+		// elevation angle not acceptable
 		// adjust motor speed to bring elevation angle within limits
 		dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);
-		if((elevation < ELEVATION_ANGLE_MIN)) {
+		if(dist < inputs.distance) {
+			// shot not going far enough
 			// need to speed up motor
 
 			// search the table, at the minimum elevation angle, starting at the current wheel speed and moving to higher speeds,
@@ -187,10 +206,12 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			rpm_indx_best = 0;
 			// NOTE: looking at the data table, @ 65 degrees this will always find a solution before hitting the max RPM value in the table
 			// therefore no special action is taken for not finding a solution
-			for(rpm_indx = get_rpm_index(inputs.wheel_rpm); rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
+			for(rpm_indx = 0; rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
 				// printf("theta: %d   rpm: %lf   dist: %lf\n", theta_indx, (rpm_indx * 25 + 1000.0), data.distance[m_model][theta_indx][rpm_indx]);
 				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);		
 				// printf("rpm_indx: %d dist: %lf\n", rpm_indx, dist.value());
+
+				// printf(" was short - theta_indx: %d rpm_indx: %d dist: %6.3lf distance: %6.3lf\n", theta_indx, rpm_indx, dist, inputs.distance);
 
 				// look for best match from 2 adjacent entries in the table
 				// now see which is closer
@@ -209,7 +230,8 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			}
 
 
-		} else if((elevation > ELEVATION_ANGLE_MAX)){
+		} else {
+			// shot too long
 			// need to slow down motor
 
 			// search the table, at the maximum elevation angle, starting at the current wheel speed and moving to slower speeds,
@@ -217,7 +239,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			// stop once the table distance error:
 			// - is worse than the previous
 
-			elevation = ELEVATION_ANGLE_MAX;
+			elevation = ELEVATION_ANGLE_MID;
 			theta_indx = (int)elevation.value();
 			inputs.elevation_angle = elevation;
 
@@ -225,8 +247,10 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			rpm_indx_best = 0;
 			// NOTE: looking at the data table, this will always find a solution before hitting the min RPM values in the table
 			// therefore no special action is taken for not finding a solution
-			for(rpm_indx = get_rpm_index(inputs.wheel_rpm); rpm_indx >= 0 ; rpm_indx--) {
+			for(rpm_indx = 0; rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
 				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);		
+
+				// printf(" was long - theta_indx: %d rpm_indx: %d dist: %6.3lf distance: %6.3lf\n", theta_indx, rpm_indx, dist, inputs.distance);
 
 				// look for best match from 2 adjacent entries in the table
 				// now see which is closer
