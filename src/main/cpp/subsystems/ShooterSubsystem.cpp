@@ -9,7 +9,17 @@
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem()
-    : m_shooterElevationSpinMotor{kShooterElevationMotorID}
+{
+    ConfigureShooterMotors();
+    ConfigureHoodMotor();
+    ConfigureFeederMotor();
+
+    if (frc::RobotBase::IsSimulation()) {
+        SimulationInit();
+    }
+}
+
+void ShooterSubsystem::ConfigureShooterMotors()
 {
     configs::TalonFXConfiguration configs{};
 
@@ -32,36 +42,62 @@ ShooterSubsystem::ShooterSubsystem()
     m_FlywheelFollowerMotor.SetControl(
         controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
             .WithUpdateFreqHz(200_Hz));
+}
 
-    configs::TalonFXConfiguration rotation_config{};
+void ShooterSubsystem::ConfigureHoodMotor()
+{
+    configs::TalonFXConfiguration hood_config{};
 
-    rotation_config.Slot0.kP = 0.6;
-    rotation_config.Slot0.kI = 0.0;
-    rotation_config.Slot0.kD = 0.2;
-    rotation_config.Slot0.kS = 0.0;
-    rotation_config.Slot0.kV = 0.12;
+    hood_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
 
-    m_shooterElevationSpinMotor.GetConfigurator().Apply(rotation_config);
+    hood_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
-    if (frc::RobotBase::IsSimulation()) {
-        SimulationInit();
-    }
+    hood_config.Slot0.kP = 0.6;
+    hood_config.Slot0.kI = 0.0;
+    hood_config.Slot0.kD = 0.2;
+    hood_config.Slot0.kS = 0.0;
+    hood_config.Slot0.kV = 0.12;
+
+    m_HoodMotor.GetConfigurator().Apply(hood_config);
+}
+
+void ShooterSubsystem::ConfigureFeederMotor()
+{
+    configs::TalonFXConfiguration feeder_configs{};
+
+    static constexpr units::ampere_t kPeakTorqueCurrent = 70_A;
+    feeder_configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
+    feeder_configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
+
+    feeder_configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Coast;
+
+    feeder_configs.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
+
+    feeder_configs.Slot0.kP = 0.4;
+    feeder_configs.Slot0.kI = 0.0;
+    feeder_configs.Slot0.kD = 0.0;
+    feeder_configs.Slot0.kV = 0.12;
+
+    m_FeederMotor.GetConfigurator().Apply(feeder_configs);
 }
 
 void ShooterSubsystem::Periodic() {
-    BearLog::Log("Shooter/Flywheel/SetPointSpeed", units::revolutions_per_minute_t(m_VelocityVoltage.Velocity));
-    BearLog::Log("Shooter/Flywheel/Speed", GetCurrentSpeed());
+    BearLog::Log("Shooter/Flywheel/SetPointSpeed", units::revolutions_per_minute_t(m_ShooterVelocityVoltage.Velocity));
+    BearLog::Log("Shooter/Flywheel/Speed", GetCurrentShooterSpeed());
     BearLog::Log("Shooter/Flywheel/Voltage", m_FlywheelMotor.GetMotorVoltage().GetValue());
 
     BearLog::Log("Shooter/Flywheel Follower/Speed", units::revolutions_per_minute_t(m_FlywheelFollowerMotor.GetVelocity().GetValue()));
     BearLog::Log("Shooter/Flywheel Follower/Voltage", m_FlywheelFollowerMotor.GetMotorVoltage().GetValue());
 
-    BearLog::Log("Shooter/Elevation/SetpointAngle", GetAngleFromTurns(m_RotationVoltage.Position));
+    BearLog::Log("Shooter/Elevation/SetpointAngle", GetAngleFromTurns(m_HoodPositionVoltage.Position));
     BearLog::Log("Shooter/Elevation/CurrentAngle", GetCurrentHoodAngle());
+
+    BearLog::Log("Shooter/Feeder/Speed", units::revolutions_per_minute_t(m_FeederMotor.GetVelocity().GetValue()));
+    BearLog::Log("Shooter/Feeder/SetPointSpeed", units::revolutions_per_minute_t(m_FeederVelocityVoltage.Velocity));
 }
 
 units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_shooterElevationSpinMotor.GetPosition().GetValue());
+    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue());
     return angle;
 };
 
@@ -76,18 +112,28 @@ units::turn_t ShooterSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 }
 
 void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
-    m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(speed));
-    m_shooterElevationSpinMotor.SetControl(m_RotationVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
+    m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed));
+    m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(3000_rpm));
+
+    // @todo Enable this when hood control is working
+    // m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
 }
 
-units::revolutions_per_minute_t ShooterSubsystem::GetCurrentSpeed() {
+units::revolutions_per_minute_t ShooterSubsystem::GetCurrentShooterSpeed() {
     units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return RunOnce([this] {
-        m_FlywheelMotor.SetControl(m_VelocityVoltage.WithVelocity(0_rpm));
+        m_FlywheelMotor.SetControl(m_Stop);
+        m_FeederMotor.SetControl(m_Stop);
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::StopHood() {
+    return RunOnce([this] {
+        m_HoodMotor.SetControl(m_Stop);
     });
 }
 
@@ -105,12 +151,30 @@ frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
     });
 }
 
+frc2::CommandPtr ShooterSubsystem::TestRunShooter() {
+    return RunOnce([this] {
+        m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(1000_rpm));
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::TestRunFeeder() {
+    return RunOnce([this] {
+        m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(1000_rpm));
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::TestRunHoodAngle(units::degree_t angle) {
+    return RunOnce([this, angle] {
+        m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(angle)));
+    });
+}
+
 void ShooterSubsystem::SimulationInit() {
     const double kSimShooterElevationLineWidth = 6;
     m_ShooterElevationMech = m_MechRoot->Append<frc::MechanismLigament2d>("ShooterElevation", kShooterElevationRadius.value(), 0_deg, kSimShooterElevationLineWidth, frc::Color8Bit{frc::Color::kPurple});
     frc::SmartDashboard::PutData("ShooterElevation Sim", &m_Mech);
 
-    auto& shooterElevation_sim = m_shooterElevationSpinMotor.GetSimState();
+    auto& shooterElevation_sim = m_HoodMotor.GetSimState();
     shooterElevation_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
     shooterElevation_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
 }
@@ -135,7 +199,7 @@ void ShooterSubsystem::SimulationPeriodic() {
 
 
     //Shooter Elevation Sim
-    auto& shooterElevation_sim = m_shooterElevationSpinMotor.GetSimState();
+    auto& shooterElevation_sim = m_HoodMotor.GetSimState();
     shooterElevation_sim.SetSupplyVoltage(frc::RobotController::GetBatteryVoltage());
 
     auto sMotor_voltage = shooterElevation_sim.GetMotorVoltage();
