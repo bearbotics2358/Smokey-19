@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Squeeze Hopper"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Launch Fuel at Hub"
           }
         }
