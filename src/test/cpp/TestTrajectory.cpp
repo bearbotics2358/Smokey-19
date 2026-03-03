@@ -108,18 +108,50 @@ TEST_P(TestTrajectoryCompensated, ValidateAnglesFromTrajectoryTableWithKnownDist
 	enum return_value_t expected_return_value;
     */
 
+	units::degree_t elevation_angle = params.angle;
+	units::revolutions_per_minute_t wheel_rpm = params.rpm;
+
     trajInfo.distance = params.distance;
     trajInfo.elevation_angle = params.angle;
     trajInfo.wheel_rpm = params.rpm;
- 
+    double alpha = 0.9;
+    double max_runs;
+
     m_TrajectoryCalc.set_constant_shooter_elevation(params.fixed_angle);
     m_TrajectoryCalc.set_model(params.model);
+
+    if(trajInfo.wheel_rpm.value() < 1.0) {
+        max_runs = 500;
+    } else {
+        max_runs = 200;
+    }
+
+    printf("test initial command: elevation angle: %6.3lf  rpm: %6.3lf  dist: %6.3lf  result: %d",
+        trajInfo.elevation_angle.value(), trajInfo.wheel_rpm.value(), trajInfo.distance.value(), trajInfo.return_value);
+    printf(" expect: elevation angle: %6.3lf  rpm: %6.3lf  result: %d\n",
+        params.expected_angle.value(), params.expected_rpm.value(), params.expected_return_value);
+    
     trajInfo = m_TrajectoryCalc.compute_trajectory(trajInfo);
 
     EXPECT_DOUBLE_EQ(trajInfo.elevation_angle.value(), params.expected_angle.value());
     EXPECT_DOUBLE_EQ(trajInfo.wheel_rpm.value(), params.expected_rpm.value());
     EXPECT_DOUBLE_EQ(trajInfo.t.value(), params.expected_t.value());
     EXPECT_EQ(trajInfo.return_value, params.expected_return_value);
+
+    for(int i = 0; i <= max_runs; i++) {
+        elevation_angle = alpha * elevation_angle + (1.0 - alpha) * trajInfo.elevation_angle;
+        trajInfo.elevation_angle = elevation_angle;
+        wheel_rpm = alpha * wheel_rpm + (1.0 - alpha) * trajInfo.wheel_rpm;
+        trajInfo.wheel_rpm = wheel_rpm;
+        if((i < 5) || (i > max_runs - 5)) {
+            printf("test #%d: model: %d elevation angle: %6.3lf  rpm: %6.3lf  dist: %6.3lf  result: %d\n", i, m_TrajectoryCalc.get_model(), trajInfo.elevation_angle, trajInfo.wheel_rpm, trajInfo.distance, trajInfo.return_value);
+        }
+        if(i == 5) {
+            printf("...\n");
+        }
+        trajInfo = m_TrajectoryCalc.compute_trajectory(trajInfo);
+    }
+
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -134,7 +166,7 @@ INSTANTIATE_TEST_SUITE_P(
         TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 67_deg, 3600_rpm, 67_deg, 3600_rpm, 1.616_s, TRAJECTORY_SUCCESS}, // #0
         // TrajectoryParamsCompensated{20_ft, 52_deg, 3200_rpm, 55_deg, 3275_rpm}, // #1
         TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 52_deg, 3200_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_SUCCESS}, // #1
-        TrajectoryParamsCompensated{false, NO_AIR, 7_ft, 65_deg, 3600_rpm, 75_deg, 2675_rpm, 1.145_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #2
+        TrajectoryParamsCompensated{false, NO_AIR, 7_ft, 65_deg, 3600_rpm, 65_deg, 2375_rpm, 0.801_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #2
         // TrajectoryParamsCompensated{20_ft, 65_deg, 3275_rpm, 55_deg, 3275_rpm}, // #3
         TrajectoryParamsCompensated{false, NO_AIR, 20_ft, 65_deg, 3275_rpm, 65_deg, 3525_rpm, 1.543_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #3
 
@@ -154,11 +186,11 @@ INSTANTIATE_TEST_SUITE_P(
 
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 67_deg, 3600_rpm, 59_deg, 3600_rpm, 1.377_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #8
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 52_deg, 3200_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #9
-        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 75_deg, 2800_rpm, 1.166_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #10
+        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 65_deg, 2450_rpm, 0.812_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #10
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 65_deg, 3275_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #11
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 65_deg, 2200_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #12
         TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 2650_rpm, 72_deg, 2650_rpm, 1.045_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #13
-        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 75_deg, 0_rpm, 65_deg, 2450_rpm, 0.812_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #14  
+        TrajectoryParamsCompensated{false, NO_AIR, 7_ft, 75_deg, 0_rpm, 65_deg, 2375_rpm, 0.801_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #14  
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 55_deg, 0_rpm, 65_deg, 3825_rpm, 1.589_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #15
 
         // for fixed angle

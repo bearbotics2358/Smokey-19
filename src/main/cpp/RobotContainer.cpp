@@ -155,8 +155,16 @@ void RobotContainer::ConfigureBindings()
 
 
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
+<<<<<<< shooterBindingsFix
     operatorJoystick.POVLeft().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
     operatorJoystick.POVRight().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
+=======
+    operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
+    operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
+
+    //Don't use until tested
+    //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
+>>>>>>> main
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand()
