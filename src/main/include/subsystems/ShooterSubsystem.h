@@ -35,7 +35,13 @@ public:
     frc2::CommandPtr TestRunFeeder();
     frc2::CommandPtr TestRunHoodAngle(units::degree_t angle);
 
+    frc2::CommandPtr CalibrateHoodMotor();
+
     static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
+    
+    units::degree_t m_HoodOffset = 75_deg;
+
+    frc2::Trigger m_isHardStop;
 
 private:
     void ConfigureShooterMotors();
@@ -65,6 +71,10 @@ private:
 
     static constexpr double kGearRatio = 1;
 
+    controls::DutyCycleOut calibrationRequest = controls::DutyCycleOut(-0.1)
+        .WithIgnoreHardwareLimits(true)
+        .WithIgnoreSoftwareLimits(true);
+
 
     ////////////////////////////
     // Simulation related values
@@ -92,8 +102,8 @@ private:
       kGearRatio,
       frc::sim::SingleJointedArmSim::EstimateMOI(kShooterElevationRadius, 0.2_kg),
       kShooterElevationRadius,
-      -360_deg,
-      360_deg,
+      55_deg,
+      75_deg,
       false,
       10_deg,
     };
