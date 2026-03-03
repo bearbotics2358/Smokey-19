@@ -93,22 +93,38 @@ void RobotContainer::ConfigureBindings()
     );
 
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
-    driverJoystick.B().WhileTrue(m_shooterSubsystem.EnableShooterWithFixedHoodAngle());
 
-    driverJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
+    driverJoystick.B().OnTrue(m_intakeSubsystem.ExtendHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
-
-    operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
-    driverJoystick.RightTrigger().OnFalse(m_indexerSubsystem.Stop());
-    driverJoystick.RightTrigger().OnTrue(m_indexerSubsystem.RunIndexerForLaunching());
+
+
 
     driverJoystick.RightBumper().OnTrue(
+        frc2::cmd::Sequence(
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
+            m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
+        ).AndThen(
+            frc2::cmd::Parallel(
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                m_indexerSubsystem.RunIndexerForLaunching())
+        )).OnFalse(
         frc2::cmd::Parallel(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
-            m_indexerSubsystem.RunIndexerForLaunching()
+            m_shooterSubsystem.StopShooter(),
+            m_indexerSubsystem.Stop()
+        )
+    );
+
+    driverJoystick.RightTrigger().WhileTrue(
+        frc2::cmd::Sequence(
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
+            m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
+        ).AndThen(
+            frc2::cmd::Parallel(
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                m_indexerSubsystem.RunIndexerForLaunching())
         ).Until( [this] { 
             if (((m_FMSSubsystem.MyAllianceShift() == false) || (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose) == false))) {
                 return true;
@@ -139,8 +155,8 @@ void RobotContainer::ConfigureBindings()
 
 
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
-    operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
-    operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
+    operatorJoystick.POVLeft().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
+    operatorJoystick.POVRight().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
 
     //Don't use until tested
     //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
