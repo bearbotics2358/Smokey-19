@@ -58,7 +58,7 @@ void RobotContainer::ConfigureBindings()
             m_drivetrain.ApplyRequest([this]() -> auto&& {
                 return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .WithRotationalRate(driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                    .WithRotationalRate(-driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
             })
         );
 
