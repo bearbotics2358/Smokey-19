@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.440156918687589,
-        "y": 7.340827389443652
+        "x": 4.364861111111111,
+        "y": 7.43625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.992635757333824,
-        "y": 7.254534793287897
+        "x": 5.917339949757346,
+        "y": 7.349957403844245
       },
       "isLocked": false,
       "linkedName": "Left Trench"
@@ -69,7 +69,7 @@
       },
       "prevControl": {
         "x": 1.9818116975748925,
-        "y": 0.5997860199714706
+        "y": 0.5997860199714707
       },
       "nextControl": null,
       "isLocked": false,
@@ -140,6 +140,12 @@
     {
       "name": "Stop Intake",
       "waypointRelativePos": 3.2622222222222246,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Squeeze Hopper",
+      "waypointRelativePos": 3.6545961002785456,
       "endWaypointRelativePos": null,
       "command": null
     },
