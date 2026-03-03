@@ -119,10 +119,6 @@ void ShooterSubsystem::Periodic() {
 }
 
 units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
-<<<<<<< shooterBindingsFix
-    // @todo Add calibration to the hood motor
-=======
->>>>>>> main
     units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + m_HoodOffset;
     return angle;
 };
