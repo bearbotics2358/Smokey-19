@@ -48,6 +48,7 @@ class TrajectoryCalc {
 
 	void init();
 	enum model_t set_model(enum model_t model);
+	enum model_t get_model();
 	void set_shoot_on_the_move_enabled(bool enable);
 	void set_constant_shooter_elevation(bool enable);
 	units::degree_t get_angle(units::foot_t distance, units::revolutions_per_minute_t rpm);
