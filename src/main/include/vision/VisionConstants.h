@@ -49,12 +49,16 @@ private:
   static std::vector<std::unique_ptr<IVisionInput>> CreateLocalizationCameras() {
     std::vector<std::unique_ptr<IVisionInput>> localization_cameras;
     localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(
-      "Front",
-      frc::Transform3d{-13.40625_in, 6.46875_in, 17.5_in, frc::Rotation3d{0.0_rad, 0.0_rad, 180_deg}}
+      "Back",
+      frc::Transform3d{-13.5_in, -8.5_in, 17.5_in, frc::Rotation3d{0.0_rad, 20_deg, 180_deg}}
     ));
     localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(
-      "Back",
-      frc::Transform3d{13.90625_in, 0.0_in, 17.25_in, frc::Rotation3d{0.0_rad, 0.0_rad, 0.0_deg}}
+      "Left",
+      frc::Transform3d{-1.375_in, 13_in, 17.625_in, frc::Rotation3d{0.0_rad, 20_deg, 90_deg}}
+    ));
+    localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(
+      "Right",
+      frc::Transform3d{-1.5_in, -13_in, 17.75_in, frc::Rotation3d{0.0_rad, 20_deg, -90_deg}}
     ));
 
     return localization_cameras;
