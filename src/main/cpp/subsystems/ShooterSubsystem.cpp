@@ -14,9 +14,29 @@ ShooterSubsystem::ShooterSubsystem()
     ConfigureHoodMotor();
     ConfigureFeederMotor();
 
+    m_isHardStop =  frc2::Trigger([this] {
+        return abs(m_HoodMotor.GetVelocity().GetValue().value()) < 1 &&
+            abs(m_HoodMotor.GetTorqueCurrent().GetValue().value()) > 10;
+    }).Debounce(0.1_s);
+
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+}
+
+frc2::CommandPtr ShooterSubsystem::CalibrateHoodMotor() {
+    return Run([this] {
+        m_HoodMotor.SetControl(calibrationRequest);
+    }
+    ).Until(
+        [this] { return m_isHardStop.Get(); } 
+    ).AndThen(
+        StopHood()
+    ).AndThen(
+        frc2::cmd::RunOnce([this] {
+            m_HoodOffset = -GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + 75_deg;
+        })
+    );
 }
 
 void ShooterSubsystem::ConfigureShooterMotors()
@@ -91,13 +111,15 @@ void ShooterSubsystem::Periodic() {
 
     BearLog::Log("Shooter/Elevation/SetpointAngle", GetAngleFromTurns(m_HoodPositionVoltage.Position));
     BearLog::Log("Shooter/Elevation/CurrentAngle", GetCurrentHoodAngle());
+    BearLog::Log("Shooter/Elevation/HoodOffset", m_HoodOffset);
+    BearLog::Log("Shooter/Elevation/HardStop", m_isHardStop.Get());
 
     BearLog::Log("Shooter/Feeder/Speed", units::revolutions_per_minute_t(m_FeederMotor.GetVelocity().GetValue()));
     BearLog::Log("Shooter/Feeder/SetPointSpeed", units::revolutions_per_minute_t(m_FeederVelocityVoltage.Velocity));
 }
 
 units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue());
+    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + m_HoodOffset;
     return angle;
 };
 
@@ -116,7 +138,7 @@ void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::de
     m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(3000_rpm));
 
     // @todo Enable this when hood control is working
-    // m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
+    //m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
 }
 
 units::revolutions_per_minute_t ShooterSubsystem::GetCurrentShooterSpeed() {
