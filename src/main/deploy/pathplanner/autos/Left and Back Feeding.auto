@@ -11,7 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Trench Neutral Feed"
+                  "pathName": "Left Trench Neutral Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Squeeze Hopper"
                 }
               },
               {

@@ -58,7 +58,20 @@
       "name": "Point Towards Zone"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Point Turret at Hub",
+      "waypointRelativePos": 1.3816155988857917,
+      "endWaypointRelativePos": 2.0,
+      "command": null
+    },
+    {
+      "name": "Squeeze Hopper",
+      "waypointRelativePos": 1.7604456824512538,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -69,7 +82,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -47.489552921999156
+    "rotation": -47.48955292199916
   },
   "reversed": false,
   "folder": "Full Paths",
