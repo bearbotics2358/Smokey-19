@@ -95,7 +95,9 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
 
     driverJoystick.B().OnTrue(m_intakeSubsystem.ExtendHopper());
+    driverJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
+    driverJoystick.Y().OnFalse(m_intakeSubsystem.StopHopper());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
