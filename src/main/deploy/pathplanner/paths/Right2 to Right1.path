@@ -64,6 +64,12 @@
       "waypointRelativePos": 1.1142061281337057,
       "endWaypointRelativePos": 2.0,
       "command": null
+    },
+    {
+      "name": "Squeeze Hopper",
+      "waypointRelativePos": 1.4261838440111416,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {

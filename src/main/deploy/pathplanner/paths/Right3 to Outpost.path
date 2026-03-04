@@ -3,45 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6877604166666664,
-        "y": 0.7754687499999999
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 4.566420854598735,
-        "y": 0.6127473344659022
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 1.7666840277777776,
         "y": 2.1611631944444447
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9550950486077983,
+        "y": 1.8574874601031746
+      },
+      "isLocked": false,
+      "linkedName": "Right3"
+    },
+    {
+      "anchor": {
+        "x": 0.8061458333333333,
+        "y": 0.637612612612612
+      },
       "prevControl": {
-        "x": 1.4730352440544252,
-        "y": 2.1706673795274045
+        "x": 1.3033379540119108,
+        "y": 0.6759797132640422
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right3"
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 0.0,
+        "y": 0.5
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.6239554317548751,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
-      "name": "Point Turret at Hub",
-      "waypointRelativePos": 0,
+      "name": "Run Intake",
+      "waypointRelativePos": 0.5598885793871882,
       "endWaypointRelativePos": 1.0,
-      "command": null
-    },
-    {
-      "name": "Squeeze Hopper",
-      "waypointRelativePos": 0.5543175487465185,
-      "endWaypointRelativePos": null,
       "command": null
     }
   ],
@@ -55,10 +60,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 178.42535529678452
   },
   "reversed": false,
-  "folder": "Full Paths",
+  "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
