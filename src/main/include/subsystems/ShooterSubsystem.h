@@ -30,6 +30,7 @@ public:
     frc2::CommandPtr StopHood();
     frc2::CommandPtr EnableShooterWithHubTracking();
     frc2::CommandPtr EnableShooterWithFixedHoodAngle();
+    frc2::CommandPtr EnableShooterForFeeding();
 
     frc2::CommandPtr TestRunShooter();
     frc2::CommandPtr TestRunFeeder();

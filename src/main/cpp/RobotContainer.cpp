@@ -103,14 +103,21 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
 
 
-
     driverJoystick.RightBumper().OnTrue(
         frc2::cmd::Sequence(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
+            frc2::cmd::Either(
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
+                m_shooterSubsystem.EnableShooterForFeeding().WithTimeout(0.05_s),
+                [this] {return RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose);}
+            ),
             m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
         ).AndThen(
             frc2::cmd::Parallel(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                frc2::cmd::Either(
+                    m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                    m_shooterSubsystem.EnableShooterForFeeding(),
+                    [this] {return RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose);}
+                ),
                 m_indexerSubsystem.RunIndexerForLaunching())
         )).OnFalse(
         frc2::cmd::Parallel(
