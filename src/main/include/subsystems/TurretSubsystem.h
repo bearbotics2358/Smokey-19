@@ -19,6 +19,8 @@
 
 #include <frc2/command/button/Trigger.h>
 
+#include <frc/DigitalInput.h>
+
 constexpr int kTurretMotorID = 60;
 
 class TurretSubsystem : public frc2::SubsystemBase {
@@ -43,6 +45,9 @@ class TurretSubsystem : public frc2::SubsystemBase {
         void GoToAngle();
         units::degree_t GetAngleFromTurns(units::turn_t rotations);
         units::turn_t GetTurnsFromAngle(units::degree_t angle);
+
+        frc::DigitalInput m_turretReset{0};
+        units::degree_t turretOffset = 0_deg;
 
         ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
 

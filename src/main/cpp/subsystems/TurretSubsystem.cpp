@@ -43,6 +43,10 @@ void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Setpoint", m_setpointAngle);
     BearLog::Log("Turret/Angle", CurrentAngle());
 
+    if (frc::DriverStation::IsDisabled()) {
+        turretOffset = -GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + 65_deg;
+    }
+
     GoToAngle();
 }
 
@@ -103,7 +107,7 @@ void TurretSubsystem::SetGoalAngle() {
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + turretOffset;
     return angle;
 };
 
