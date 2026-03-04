@@ -58,7 +58,7 @@ void RobotContainer::ConfigureBindings()
             m_drivetrain.ApplyRequest([this]() -> auto&& {
                 return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .WithRotationalRate(driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                    .WithRotationalRate(-driverJoystick.GetRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
             })
         );
 
@@ -95,7 +95,9 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
 
     driverJoystick.B().OnTrue(m_intakeSubsystem.ExtendHopper());
+    driverJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
     driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
+    driverJoystick.Y().OnFalse(m_intakeSubsystem.StopHopper());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());

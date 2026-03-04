@@ -70,7 +70,7 @@ void ShooterSubsystem::ConfigureHoodMotor()
 
     hood_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
 
-    hood_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
+    hood_config.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
 
     hood_config.Slot0.kP = 0.6;
     hood_config.Slot0.kI = 0.0;

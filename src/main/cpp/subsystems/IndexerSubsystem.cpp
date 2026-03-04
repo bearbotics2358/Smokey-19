@@ -34,9 +34,7 @@ IndexerSubsystem::IndexerSubsystem():
 
 frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
     return Run([this] {
-        m_indexerSpinMotor.SetControl(
-            m_IndexerRequest.WithVelocity(2_tps)
-        );
+        m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(750_rpm));
     }).Until(
         [this] { return m_isHardStop.Get(); }
     ).AndThen(
@@ -46,9 +44,7 @@ frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
 
 frc2::CommandPtr IndexerSubsystem::Stop() {
     return RunOnce([this] {
-        m_indexerSpinMotor.SetControl(
-            m_IndexerRequest.WithVelocity(0_tps)
-        );
+        m_indexerSpinMotor.SetControl(m_Stop);
     });
 }
 

@@ -2,6 +2,7 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/CANcoder.hpp>
 #include <frc2/command/Commands.h>
 
 #include <frc/simulation/SingleJointedArmSim.h>
@@ -11,19 +12,17 @@
 
 #include <units/length.h>
 
-#include <frc/controller/ProfiledPIDController.h>
-#include <frc/trajectory/TrapezoidProfile.h>
-
 #include <frc2/command/button/Trigger.h>
 
-constexpr int kIntakeMotorID = 62;
-constexpr int kExtenderMotorID = 61;
+using namespace ctre::phoenix6;
 
 class IntakeSubsystem : public frc2::SubsystemBase {
 public:
         IntakeSubsystem();
         frc2::CommandPtr RunIntake();
+        frc2::CommandPtr RunIntakeToHelpIndexer();
         frc2::CommandPtr StopIntake();
+        frc2::CommandPtr AgitateToHelpIndexer();
         units::degree_t CurrentAngle();
 
         void Periodic() override;
@@ -32,17 +31,25 @@ public:
         frc2::CommandPtr SetGoalAngle();
         frc2::CommandPtr ExtendHopper();
         frc2::CommandPtr StowHopper();
+        frc2::CommandPtr StopHopper();
 private:
-        ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
-        ctre::phoenix6::controls::VelocityVoltage m_IntakeVelocity =
-          ctre::phoenix6::controls::VelocityVoltage(0_rpm).WithSlot(0);
-        void GoToAngle();
+        controls::PositionVoltage m_ExtenderPositionVoltage = controls::PositionVoltage(0_tr);
+        controls::VelocityVoltage m_IntakeVelocity = controls::VelocityVoltage(0_rpm).WithSlot(0);
+        controls::NeutralOut m_Stop;
 
         units::degree_t GetAngleFromTurns(units::turn_t rotations);
         units::turn_t GetTurnsFromAngle(units::degree_t angle);
 
-        ctre::phoenix6::hardware::TalonFX m_intakeSpinMotor;
-        ctre::phoenix6::hardware::TalonFX m_extenderMotor;
+        void ConfigureExtenderMotor();
+        void ConfigureExtenderCANCoder();
+        void ConfigureIntakeMotor();
+
+        static constexpr int kIntakeMotorID = 62;
+        static constexpr int kExtenderMotorID = 61;
+        static constexpr int kExtenderCANCoderID = 33;
+        hardware::TalonFX m_intakeSpinMotor{kIntakeMotorID};
+        hardware::TalonFX m_extenderMotor{kExtenderMotorID};
+        hardware::CANcoder m_ExtenderCANCoder{kExtenderCANCoderID};
 
         static constexpr double kGearRatio = 1;
 
@@ -53,6 +60,7 @@ private:
         static constexpr units::degree_t kExtendedAngle = 90_deg;
         bool isExtended = false;
 
+        frc2::Trigger m_ExtenderHardStop;
 
         void SimulationInit();
         const units::meter_t kIntakeRadius = 1_in;
