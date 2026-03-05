@@ -94,10 +94,10 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
 
-    driverJoystick.B().OnTrue(m_intakeSubsystem.ExtendHopper());
-    driverJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
-    driverJoystick.Y().OnTrue(m_intakeSubsystem.StowHopper());
-    driverJoystick.Y().OnFalse(m_intakeSubsystem.StopHopper());
+    operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
+    operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
+    operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
+    operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
@@ -197,11 +197,19 @@ void RobotContainer::AddPathPlannerCommands() {
     NamedCommands::registerCommand(
         "Launch Fuel at Hub",
         std::move(
-            frc2::cmd::Sequence(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
-                frc2::cmd::Wait(40_ms),
-                m_indexerSubsystem.RunIndexerForLaunching()
-            )
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle()
+        )
+    );
+    NamedCommands::registerCommand(
+        "Run Indexer",
+        std::move(
+            m_indexerSubsystem.RunIndexerForLaunching()
+        )
+    );
+    NamedCommands::registerCommand(
+        "Stop Indexer",
+        std::move(
+            m_indexerSubsystem.Stop()
         )
     );
     NamedCommands::registerCommand(

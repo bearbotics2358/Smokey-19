@@ -116,12 +116,12 @@ units::degree_t TurretSubsystem::CurrentAngle() {
 };
 
 units::degree_t TurretSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = rotations;
+    units::degree_t angle = rotations / kGearRatio;
     return angle;
 }
 
 units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = angle;
+    units::turn_t rotations = angle * kGearRatio;
     return rotations;
 }
 
