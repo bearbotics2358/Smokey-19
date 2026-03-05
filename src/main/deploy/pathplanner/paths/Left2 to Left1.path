@@ -56,22 +56,19 @@
       "minWaypointRelativePos": 0.6128133704735386,
       "maxWaypointRelativePos": 1.3983286908077994,
       "name": "Point Towards Zone"
-    }
-  ],
-  "eventMarkers": [
-    {
-      "name": "Point Turret at Hub",
-      "waypointRelativePos": 1.3816155988857917,
-      "endWaypointRelativePos": 2.0,
-      "command": null
     },
     {
-      "name": "Squeeze Hopper",
-      "waypointRelativePos": 1.7604456824512538,
-      "endWaypointRelativePos": null,
-      "command": null
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.5883565989847723,
+      "maxWaypointRelativePos": 2.0,
+      "name": "Point Towards Zone"
     }
   ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

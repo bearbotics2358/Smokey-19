@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.593090277777777,
-        "y": 0.16135416666666746
+        "x": 4.877668834033312,
+        "y": 0.5279424983512389
       },
       "isLocked": false,
       "linkedName": null
@@ -95,39 +95,49 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 7.5,
-        "y": 0.7
+        "x": 7.0,
+        "y": 0.5
       },
       "rotationOffset": 0.0,
       "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.41225626740947074,
+      "maxWaypointRelativePos": 0.40303775380710677,
       "name": "Point Towards Zone"
     },
     {
       "fieldPosition": {
-        "x": 7.5,
-        "y": 0.4
+        "x": 7.8,
+        "y": 7.5
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 3.2869080779944277,
+      "minWaypointRelativePos": 0.6516497461928942,
+      "maxWaypointRelativePos": 1.877934644670049,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 3.0,
+        "y": 7.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 2.99337722081218,
+      "maxWaypointRelativePos": 3.570034898477157,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 3.0,
+        "y": 1.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 3.607074873096446,
       "maxWaypointRelativePos": 4.0,
-      "name": "Point Towards Zone"
-    },
-    {
-      "fieldPosition": {
-        "x": 8.0,
-        "y": 7.8
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.6488888888888884,
-      "maxWaypointRelativePos": 2.8635097493036232,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
     {
       "name": "Extend Hopper",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
     },

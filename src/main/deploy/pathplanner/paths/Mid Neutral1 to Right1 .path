@@ -20,12 +20,12 @@
         "y": 0.5865104166666675
       },
       "prevControl": {
-        "x": 6.54258555852922,
-        "y": 0.7902534985891344
+        "x": 6.80857526703743,
+        "y": 0.5932995122704801
       },
       "nextControl": {
-        "x": 2.664236111111111,
-        "y": 0.36605902777777843
+        "x": 2.652226328762495,
+        "y": 0.5800441253444257
       },
       "isLocked": false,
       "linkedName": null
@@ -70,6 +70,16 @@
       "minWaypointRelativePos": 0.8077994428969383,
       "maxWaypointRelativePos": 1.253481894150418,
       "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.632515069796955,
+      "maxWaypointRelativePos": 2.0,
+      "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
@@ -102,7 +112,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 46.647824035254104
   },
   "reversed": false,
   "folder": "Path Parts",

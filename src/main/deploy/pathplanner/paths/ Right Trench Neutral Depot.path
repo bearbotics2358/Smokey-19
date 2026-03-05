@@ -122,6 +122,16 @@
       "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 0.5688888888888898,
       "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 3.814443210659898,
+      "maxWaypointRelativePos": 4.0,
+      "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
@@ -153,12 +163,6 @@
       "waypointRelativePos": 3.7155555555555573,
       "endWaypointRelativePos": null,
       "command": null
-    },
-    {
-      "name": "Squeeze Hopper",
-      "waypointRelativePos": 3.8551532033426237,
-      "endWaypointRelativePos": null,
-      "command": null
     }
   ],
   "globalConstraints": {
@@ -171,7 +175,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -32.17636519108424
   },
   "reversed": false,
   "folder": "Full Paths",

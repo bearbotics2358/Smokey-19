@@ -53,8 +53,18 @@
         "y": 0.4
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.584958217270196,
-      "maxWaypointRelativePos": 1.6100278551532012,
+      "minWaypointRelativePos": 0.7769273477157359,
+      "maxWaypointRelativePos": 1.2846407043147205,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.4119804885786797,
+      "maxWaypointRelativePos": 2.0,
       "name": "Point Towards Zone"
     }
   ],
@@ -63,12 +73,6 @@
       "name": "Point Turret at Hub",
       "waypointRelativePos": 1.1142061281337057,
       "endWaypointRelativePos": 2.0,
-      "command": null
-    },
-    {
-      "name": "Squeeze Hopper",
-      "waypointRelativePos": 1.4261838440111416,
-      "endWaypointRelativePos": null,
       "command": null
     }
   ],
@@ -82,7 +86,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 46.647824035254104
   },
   "reversed": false,
   "folder": "Full Paths",

@@ -55,7 +55,7 @@
   "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 46.647824035254104
   },
   "useDefaultConstraints": true
 }

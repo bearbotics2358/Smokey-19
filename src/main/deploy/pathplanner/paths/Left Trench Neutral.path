@@ -119,8 +119,18 @@
         "y": 0.4
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 3.19111111111111,
-      "maxWaypointRelativePos": 3.6533333333333315,
+      "minWaypointRelativePos": 3.1693369289340105,
+      "maxWaypointRelativePos": 3.538824555837564,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 3.7340577411167515,
+      "maxWaypointRelativePos": 4.0,
       "name": "Point Towards Zone"
     }
   ],
@@ -166,7 +176,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 46.647824035254104
   },
   "reversed": false,
   "folder": "Full Paths",

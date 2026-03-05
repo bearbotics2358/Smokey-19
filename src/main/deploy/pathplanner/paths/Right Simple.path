@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.566420854598735,
-        "y": 0.6127473344659022
+        "x": 2.1015131201447748,
+        "y": 0.2750115311617226
       },
       "isLocked": false,
       "linkedName": null
@@ -20,17 +20,28 @@
         "y": 2.1611631944444447
       },
       "prevControl": {
-        "x": 1.4730352440544252,
-        "y": 2.1706673795274045
+        "x": 1.8100797801906783,
+        "y": 1.870467536193503
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right3"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.6033173381979711,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "Point Turret at Hub",
@@ -55,7 +66,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 35.94736733029207
   },
   "reversed": false,
   "folder": "Full Paths",

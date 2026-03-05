@@ -80,6 +80,16 @@
       "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 0.5292479108635092,
       "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.6263285215736036,
+      "maxWaypointRelativePos": 2.0,
+      "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
@@ -118,7 +128,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -32.17636519108424
   },
   "reversed": false,
   "folder": "Path Parts",
