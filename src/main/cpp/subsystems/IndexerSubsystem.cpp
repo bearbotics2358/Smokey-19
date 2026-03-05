@@ -15,6 +15,9 @@ IndexerSubsystem::IndexerSubsystem():
     configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
 
+    configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    configs.CurrentLimits.StatorCurrentLimitEnable = true;
+
     configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 
     configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;

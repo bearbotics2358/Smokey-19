@@ -79,6 +79,9 @@ void IntakeSubsystem::ConfigureIntakeMotor() {
     configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     configs.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
 
+    configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    configs.CurrentLimits.StatorCurrentLimitEnable = true;
+
     configs.Slot0.kP = 0.5;
     configs.Slot0.kI = 0.0;
     configs.Slot0.kD = 0.0;

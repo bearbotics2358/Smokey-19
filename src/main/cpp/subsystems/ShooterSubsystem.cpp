@@ -72,6 +72,9 @@ void ShooterSubsystem::ConfigureHoodMotor()
 
     hood_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
+    hood_config.CurrentLimits.StatorCurrentLimit = 70_A;
+    hood_config.CurrentLimits.StatorCurrentLimitEnable = true;
+
     hood_config.Slot0.kP = 0.6;
     hood_config.Slot0.kI = 0.0;
     hood_config.Slot0.kD = 0.2;
@@ -88,6 +91,9 @@ void ShooterSubsystem::ConfigureFeederMotor()
     static constexpr units::ampere_t kPeakTorqueCurrent = 70_A;
     feeder_configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
     feeder_configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
+
+    feeder_configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    feeder_configs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     feeder_configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Coast;
 
