@@ -45,7 +45,7 @@ void TurretSubsystem::Periodic() {
 
     if (frc::DriverStation::IsDisabled()) {
         BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
-        if (m_turretReset.Get() == false) {
+        if (m_turretReset.Get()) {
             turretOffset = -GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + 65_deg;
         }
     }

@@ -36,15 +36,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Devin2"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Squeeze Hopper"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Devin2"
           }
         },
         {
@@ -89,6 +89,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Squeeze Hopper"
           }
         },
         {
