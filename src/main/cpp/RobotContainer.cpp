@@ -204,4 +204,14 @@ void RobotContainer::AddPathPlannerCommands() {
             )
         )
     );
+    NamedCommands::registerCommand(
+        "Launch Fuel at Alliance Zone",
+        std::move(
+            frc2::cmd::Sequence(
+                m_shooterSubsystem.EnableShooterForFeeding(),
+                frc2::cmd::Wait(40_ms),
+                m_indexerSubsystem.RunIndexerForLaunching()
+            )
+        )
+    );
 }
