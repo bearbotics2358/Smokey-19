@@ -29,7 +29,7 @@ frc2::CommandPtr ShooterSubsystem::CalibrateHoodMotor() {
         m_HoodMotor.SetControl(calibrationRequest);
     }
     ).Until(
-        [this] { return m_isHardStop.Get(); } 
+        [this] { return m_isHardStop.Get(); }
     ).AndThen(
         StopHood()
     ).AndThen(
@@ -51,7 +51,7 @@ void ShooterSubsystem::ConfigureShooterMotors()
 
     configs.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
-    configs.Slot0.kP = 0.4;
+    configs.Slot0.kP = 2.0;
     configs.Slot0.kI = 0.0;
     configs.Slot0.kD = 0.0;
     configs.Slot0.kV = 0.12;
@@ -99,7 +99,7 @@ void ShooterSubsystem::ConfigureFeederMotor()
 
     feeder_configs.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
 
-    feeder_configs.Slot0.kP = 0.4;
+    feeder_configs.Slot0.kP = 1.0;
     feeder_configs.Slot0.kI = 0.0;
     feeder_configs.Slot0.kD = 0.0;
     feeder_configs.Slot0.kV = 0.12;
@@ -141,7 +141,7 @@ units::turn_t ShooterSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 
 void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
     m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed));
-    m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(3000_rpm));
+    m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(1500_rpm));
 
     // @todo Enable this when hood control is working
     //m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));

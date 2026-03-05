@@ -72,7 +72,7 @@ void RobotContainer::ConfigureBindings()
                 );
             }
         }));
-    
+
     driverJoystick.LeftBumper().WhileTrue(
         frc2::cmd::Run([this] {
             if (m_driveManager.TurnToHub() == true) {
@@ -134,7 +134,7 @@ void RobotContainer::ConfigureBindings()
             frc2::cmd::Parallel(
                 m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
                 m_indexerSubsystem.RunIndexerForLaunching())
-        ).Until( [this] { 
+        ).Until( [this] {
             if (((m_FMSSubsystem.MyAllianceShift() == false) || (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose) == false))) {
                 return true;
             }}).AndThen(
@@ -180,7 +180,7 @@ void RobotContainer::AddPathPlannerCommands() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_intakeSubsystem.ExtendHopper())
+        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(1_s))
     );
     NamedCommands::registerCommand(
         "Run Intake",
