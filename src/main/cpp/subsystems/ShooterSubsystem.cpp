@@ -70,7 +70,7 @@ void ShooterSubsystem::ConfigureHoodMotor()
 
     hood_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
 
-    hood_config.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
+    hood_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
     hood_config.Slot0.kP = 0.6;
     hood_config.Slot0.kI = 0.0;
@@ -120,7 +120,7 @@ void ShooterSubsystem::Periodic() {
 
 units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
     units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + m_HoodOffset;
-    return angle;
+    return 65_deg;
 };
 
 units::degree_t ShooterSubsystem::GetAngleFromTurns(units::turn_t rotations) {
@@ -170,6 +170,13 @@ frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
     return Run([this] {
         TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
         SetGoals(parameters.wheel_rpm, kFixedPositionHoodAngle);
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::EnableShooterForFeeding() {
+    return Run([this] {
+        TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+        SetGoals(3500_rpm, kFixedPositionHoodAngle);
     });
 }
 
