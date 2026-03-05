@@ -50,7 +50,8 @@ void TurretSubsystem::Periodic() {
         }
     }
 
-    GoToAngle();
+    // Disabled for now until the turret functionality is working
+    // GoToAngle();
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
