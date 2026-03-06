@@ -181,7 +181,7 @@ frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
 
 frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAndFixedSpeed() {
     return Run([this] {
-        SetGoals(4000_rpm, kFixedPositionHoodAngle);
+        SetGoals(4500_rpm, kFixedPositionHoodAngle);
     });
 }
 

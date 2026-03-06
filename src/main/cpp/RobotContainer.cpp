@@ -194,7 +194,7 @@ void RobotContainer::AddPathPlannerCommands() {
     NamedCommands::registerCommand(
         "Launch Fuel at Hub",
         std::move(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(5.0_s)
+            m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed().WithTimeout(7.5_s)
         )
     );
     NamedCommands::registerCommand(
