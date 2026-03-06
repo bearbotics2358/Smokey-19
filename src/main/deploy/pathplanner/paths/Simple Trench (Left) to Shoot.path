@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.859500187588276,
-        "y": 0.6552829272598866
+        "x": 3.6650652431791224,
+        "y": 7.397247924080664
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.659121582773656,
-        "y": 0.6543060735009225
+        "x": 2.3847212336892056,
+        "y": 7.41876631079478
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.8461565836298937,
-        "y": 0.6552829272598866
+        "x": 2.7935705812574145,
+        "y": 5.374519572953736
       },
       "prevControl": {
-        "x": 0.5011309271363893,
-        "y": 0.6554519111395761
+        "x": 2.642941874258601,
+        "y": 6.224495848161329
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Simple Trench (Left side) Hub"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.5,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 179.59566997265784
+    "rotation": 145.92280471986922
   },
   "reversed": false,
   "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.78406215489167
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

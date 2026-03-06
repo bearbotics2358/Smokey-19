@@ -15,6 +15,9 @@ IndexerSubsystem::IndexerSubsystem():
     configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
 
+    configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    configs.CurrentLimits.StatorCurrentLimitEnable = true;
+
     configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 
     configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
@@ -51,6 +54,8 @@ frc2::CommandPtr IndexerSubsystem::Stop() {
 void IndexerSubsystem::Periodic() {
     BearLog::Log("Indexer/MotorVelocity", GetMotorVelocity());
     BearLog::Log("Indexer/HardStop?", m_isHardStop.Get());
+    BearLog::Log("Indexer/TorqueCurrent", m_indexerSpinMotor.GetTorqueCurrent().GetValue());
+    BearLog::Log("Indexer/SupplyCurrent", m_indexerSpinMotor.GetStatorCurrent().GetValue());
 }
 
 units::revolutions_per_minute_t IndexerSubsystem::GetMotorVelocity() {
