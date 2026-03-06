@@ -219,6 +219,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 					// this one is better
 					rpm_indx_best = rpm_indx;
 					dist_best = dist;
+					inputs.wheel_rpm = get_rpm(rpm_indx_best);
 					// go again
 					continue;
 				} else {
