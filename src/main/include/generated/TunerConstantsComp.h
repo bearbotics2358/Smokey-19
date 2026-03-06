@@ -54,13 +54,18 @@ class TunerConstants {
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `With*InitialConfigs()` API documentation.
-    static constexpr configs::TalonFXConfiguration driveInitialConfigs{};
+    static constexpr configs::TalonFXConfiguration driveInitialConfigs = configs::TalonFXConfiguration{}
+        .WithCurrentLimits(
+            configs::CurrentLimitsConfigs{}
+                .WithStatorCurrentLimit(30_A)
+                .WithStatorCurrentLimitEnable(true)
+        );
     static constexpr configs::TalonFXConfiguration steerInitialConfigs = configs::TalonFXConfiguration{}
         .WithCurrentLimits(
             configs::CurrentLimitsConfigs{}
                 // Swerve azimuth does not require much torque output, so we can set a relatively low
                 // stator current limit to help avoid brownouts without impacting performance.
-                .WithStatorCurrentLimit(60_A)
+                .WithStatorCurrentLimit(30_A)
                 .WithStatorCurrentLimitEnable(true)
         );
     static constexpr configs::CANcoderConfiguration encoderInitialConfigs{};
