@@ -175,7 +175,7 @@ frc2::CommandPtr ShooterSubsystem::EnableShooterWithHubTracking() {
 frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
     return Run([this] {
         TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
-        SetGoals(parameters.wheel_rpm, kFixedPositionHoodAngle);
+        SetGoals(parameters.wheel_rpm + 500_rpm, kFixedPositionHoodAngle);
     });
 }
 
