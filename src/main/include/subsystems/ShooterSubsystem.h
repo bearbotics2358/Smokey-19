@@ -30,7 +30,7 @@ public:
     frc2::CommandPtr StopHood();
     frc2::CommandPtr EnableShooterWithHubTracking();
     frc2::CommandPtr EnableShooterWithFixedHoodAngle();
-    frc2::CommandPtr EnableShooterForFeeding();
+    frc2::CommandPtr EnableShooterWithFixedHoodAndFixedSpeed();
 
     frc2::CommandPtr TestRunShooter();
     frc2::CommandPtr TestRunFeeder();
@@ -39,7 +39,7 @@ public:
     frc2::CommandPtr CalibrateHoodMotor();
 
     static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
-    
+
     units::degree_t m_HoodOffset = 75_deg;
 
     frc2::Trigger m_isHardStop;

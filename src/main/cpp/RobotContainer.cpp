@@ -107,7 +107,7 @@ void RobotContainer::ConfigureBindings()
         frc2::cmd::Sequence(
             frc2::cmd::Either(
                 m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
-                m_shooterSubsystem.EnableShooterForFeeding().WithTimeout(0.05_s),
+                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed().WithTimeout(0.05_s),
                 [this] {return RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose);}
             ),
             m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
@@ -115,7 +115,7 @@ void RobotContainer::ConfigureBindings()
             frc2::cmd::Parallel(
                 frc2::cmd::Either(
                     m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
-                    m_shooterSubsystem.EnableShooterForFeeding(),
+                    m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
                     [this] {return RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose);}
                 ),
                 m_indexerSubsystem.RunIndexerForLaunching())
@@ -128,22 +128,13 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.RightTrigger().WhileTrue(
         frc2::cmd::Sequence(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
+            m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed().WithTimeout(0.05_s),
             m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
         ).AndThen(
             frc2::cmd::Parallel(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
                 m_indexerSubsystem.RunIndexerForLaunching())
-        ).Until( [this] {
-            if (((m_FMSSubsystem.MyAllianceShift() == false) || (RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose) == false))) {
-                return true;
-            }}).AndThen(
-                frc2::cmd::Parallel(
-                    m_shooterSubsystem.StopShooter(),
-                    m_indexerSubsystem.Stop()
-                )
-            )
-    ).OnFalse(
+        )).OnFalse(
         frc2::cmd::Parallel(
             m_shooterSubsystem.StopShooter(),
             m_indexerSubsystem.Stop()
@@ -216,7 +207,7 @@ void RobotContainer::AddPathPlannerCommands() {
         "Launch Fuel at Alliance Zone",
         std::move(
             frc2::cmd::Sequence(
-                m_shooterSubsystem.EnableShooterForFeeding(),
+                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
                 frc2::cmd::Wait(40_ms),
                 m_indexerSubsystem.RunIndexerForLaunching()
             )
