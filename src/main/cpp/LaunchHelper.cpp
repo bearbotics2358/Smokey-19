@@ -59,7 +59,7 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
 
     frc::Translation2d hub_center = FieldConstants::GetHubCenterForMyAlliance();
     units::meter_t distance_to_hub_center = units::math::abs(m_RobotPoseSupplier().Translation().Distance(hub_center));
-    inputs.distance = distance_to_hub_center * 2;
+    inputs.distance = distance_to_hub_center;
 
     BearLog::Log("LaunchHelper/Distance to Hub", units::foot_t(distance_to_hub_center));
 
