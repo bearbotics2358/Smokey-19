@@ -11,7 +11,7 @@ void TrajectoryCalc::init()
 {
 	set_model(AIR_DRAG);
 	set_shoot_on_the_move_enabled(true);
-	set_constant_shooter_elevation(false);
+	set_constant_shooter_elevation(true);
 }
 
 enum model_t TrajectoryCalc::set_model(enum model_t model)
