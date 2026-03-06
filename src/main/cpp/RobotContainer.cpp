@@ -182,6 +182,10 @@ void RobotContainer::AddPathPlannerCommands() {
         std::move(m_intakeSubsystem.StopIntake())
     );
     NamedCommands::registerCommand(
+        "Stop Shooter",
+        std::move(m_shooterSubsystem.StopShooter())
+    );
+    NamedCommands::registerCommand(
         "Point Turret at Hub",
         std::move(m_turretSubsystem.PointAtHub())
     );
