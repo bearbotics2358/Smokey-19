@@ -23,7 +23,7 @@ IntakeSubsystem::IntakeSubsystem()
 
     m_ExtenderHardStop = frc2::Trigger([this] {
         return (units::math::abs(m_extenderMotor.GetVelocity().GetValue()) < 1_tps &&
-            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 35_A);
+            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 30_A);
     }).Debounce(0.1_s);
 }
 
@@ -133,6 +133,18 @@ frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
             StopIntake()
         )
     );
+}
+
+frc2::CommandPtr IntakeSubsystem::RunExtenderInReverseVolts() {
+    return Run([this] {
+        m_extenderMotor.SetVoltage(1.0_V);
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::RunExtenderForwardVolts() {
+    return Run([this] {
+        m_extenderMotor.SetVoltage(-1.0_V);
+    });
 }
 
 frc2::CommandPtr IntakeSubsystem::StopIntake() {

@@ -98,7 +98,8 @@ void RobotContainer::ConfigureBindings()
 
     operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
-    operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
+    // operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
+    operatorJoystick.B().OnTrue(m_intakeSubsystem.RunExtenderForwardVolts());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
@@ -194,7 +195,7 @@ void RobotContainer::AddPathPlannerCommands() {
     NamedCommands::registerCommand(
         "Launch Fuel at Hub",
         std::move(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed().WithTimeout(7.5_s)
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(7.5_s)
         )
     );
     NamedCommands::registerCommand(
