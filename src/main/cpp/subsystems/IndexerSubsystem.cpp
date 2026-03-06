@@ -37,7 +37,7 @@ IndexerSubsystem::IndexerSubsystem():
 
 frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
     return Run([this] {
-        m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(1500_rpm));
+        m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(750_rpm));
     }).Until(
         [this] { return m_isHardStop.Get(); }
     ).AndThen(
@@ -54,6 +54,8 @@ frc2::CommandPtr IndexerSubsystem::Stop() {
 void IndexerSubsystem::Periodic() {
     BearLog::Log("Indexer/MotorVelocity", GetMotorVelocity());
     BearLog::Log("Indexer/HardStop?", m_isHardStop.Get());
+    BearLog::Log("Indexer/TorqueCurrent", m_indexerSpinMotor.GetTorqueCurrent().GetValue());
+    BearLog::Log("Indexer/SupplyCurrent", m_indexerSpinMotor.GetStatorCurrent().GetValue());
 }
 
 units::revolutions_per_minute_t IndexerSubsystem::GetMotorVelocity() {
