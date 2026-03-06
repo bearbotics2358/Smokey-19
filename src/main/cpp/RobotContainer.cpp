@@ -93,6 +93,8 @@ void RobotContainer::ConfigureBindings()
     );
 
     driverJoystick.X().WhileTrue(m_drivetrain.ApplyRequest([this]() -> auto&& { return brake; }));
+    driverJoystick.Y().OnTrue(m_intakeSubsystem.RunIntakeInReverse());
+    driverJoystick.Y().OnFalse(m_intakeSubsystem.StopIntake());
 
     operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());

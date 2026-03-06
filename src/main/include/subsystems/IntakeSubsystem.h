@@ -21,6 +21,7 @@ public:
         IntakeSubsystem();
         frc2::CommandPtr RunIntake();
         frc2::CommandPtr RunIntakeToHelpIndexer();
+        frc2::CommandPtr RunIntakeInReverse();
         frc2::CommandPtr StopIntake();
         frc2::CommandPtr AgitateToHelpIndexer();
         units::degree_t CurrentAngle();

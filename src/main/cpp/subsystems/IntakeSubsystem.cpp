@@ -115,6 +115,12 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeToHelpIndexer() {
     });
 }
 
+frc2::CommandPtr IntakeSubsystem::RunIntakeInReverse() {
+    return RunOnce([this] {
+        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(-2000_rpm));
+    });
+}
+
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
     return Run([this] {
         m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
