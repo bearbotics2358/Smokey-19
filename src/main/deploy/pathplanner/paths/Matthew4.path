@@ -45,6 +45,7 @@
     }
   ],
   "rotationTargets": [],
+<<<<<<< HEAD
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -72,6 +73,10 @@
       "name": "Point Towards Zone"
     }
   ],
+=======
+  "constraintZones": [],
+  "pointTowardsZones": [],
+>>>>>>> main
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,

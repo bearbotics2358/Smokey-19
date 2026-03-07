@@ -7,6 +7,7 @@
 #include <units/velocity.h>
 
 #include "trajectory/model.h"
+#include "trajectory/trajectory_table_defs.h"
 
 #define ELEVATION_ANGLE_MAX 75_deg
 #define ELEVATION_ANGLE_MIN 55_deg

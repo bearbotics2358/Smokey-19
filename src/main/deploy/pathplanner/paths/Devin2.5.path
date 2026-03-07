@@ -29,38 +29,8 @@
     }
   ],
   "rotationTargets": [],
-<<<<<<< HEAD
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.47140704314720727,
-      "constraints": {
-        "maxVelocity": 1.2,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 7.8,
-        "y": 7.0
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.03353029822335022,
-      "maxWaypointRelativePos": 0.32960223667512684,
-      "name": "Point Towards Zone"
-    }
-  ],
-=======
   "constraintZones": [],
   "pointTowardsZones": [],
->>>>>>> main
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -72,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -73.9917350086449
+    "rotation": 1.0072972907871298
   },
   "reversed": false,
   "folder": "Path Parts",

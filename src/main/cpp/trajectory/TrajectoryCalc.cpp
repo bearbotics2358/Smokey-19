@@ -11,7 +11,7 @@ void TrajectoryCalc::init()
 {
 	set_model(AIR_DRAG);
 	set_shoot_on_the_move_enabled(true);
-	set_constant_shooter_elevation(false);
+	set_constant_shooter_elevation(true);
 }
 
 enum model_t TrajectoryCalc::set_model(enum model_t model)
@@ -63,7 +63,7 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 
 		/*
 		if(rpm.value() < 10) {
-			printf("  in get_angle: theta: %2d distance-dist %6.3lf distance-dist_best: %6.3lf distance: % 6.3lf\n", theta_indx, 
+			printf("  in get_angle: theta: %2d distance-dist %6.3lf distance-dist_best: %6.3lf distance: % 6.3lf\n", theta_indx,
 				units::math::fabs(distance-dist) + 0.01_ft, units::math::fabs(distance-dist_best), distance);
 		}
 		*/
@@ -87,7 +87,7 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 	return theta_ret;
 }
 
-TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs) 
+TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 {
 	units::degree_t elevation = 0_deg;
 	units::foot_t dist = 0_ft;
@@ -130,9 +130,9 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 	// Step 2 - update values based on robot moving at speed
 	if(m_shoot_on_the_move_enabled && (units::math::fabs(inputs.vx) > ROBOT_SPEED_THRESHOLD) || (units::math::fabs(inputs.vy) > ROBOT_SPEED_THRESHOLD)) {
 		// compensate the elevation angle, turret angle, and wheel speed due to robot moving at speed
-	} 
+	}
 
-	// Step 3 - adjust for elevation angle limits or 
+	// Step 3 - adjust for elevation angle limits or
 	if(m_constant_shooter_elevation_enabled || ((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX))) {
 		// no adjustment needed for angle
 		// check if distance is ok
@@ -161,7 +161,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			// therefore no special action is taken for not finding a solution
 			for(rpm_indx = 0; rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
 				// printf("theta: %d   rpm: %lf   dist: %lf\n", theta_indx, (rpm_indx * 25 + 1000.0), data.distance[m_model][theta_indx][rpm_indx]);
-				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);		
+				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);
 				// printf("rpm_indx: %d dist: %lf\n", rpm_indx, dist.value());
 
 				// look for best match from 2 adjacent entries in the table
@@ -170,9 +170,10 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 					// this one is better
 					rpm_indx_best = rpm_indx;
 					dist_best = dist;
+					inputs.wheel_rpm = get_rpm(rpm_indx_best);
 					// go again
 					continue;
-	
+
 				} else {
 					// this one is worse, use the previous one
 					inputs.wheel_rpm = get_rpm(rpm_indx_best);
@@ -181,7 +182,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 				}
 			}
 		}
-		
+
 	} else {
 		// elevation angle not acceptable
 		// adjust motor speed to bring elevation angle within limits
@@ -208,7 +209,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			// therefore no special action is taken for not finding a solution
 			for(rpm_indx = 0; rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
 				// printf("theta: %d   rpm: %lf   dist: %lf\n", theta_indx, (rpm_indx * 25 + 1000.0), data.distance[m_model][theta_indx][rpm_indx]);
-				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);		
+				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);
 				// printf("rpm_indx: %d dist: %lf\n", rpm_indx, dist.value());
 
 				// printf(" was short - theta_indx: %d rpm_indx: %d dist: %6.3lf distance: %6.3lf\n", theta_indx, rpm_indx, dist, inputs.distance);
@@ -219,6 +220,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 					// this one is better
 					rpm_indx_best = rpm_indx;
 					dist_best = dist;
+					inputs.wheel_rpm = get_rpm(rpm_indx_best);
 					// go again
 					continue;
 				} else {
@@ -248,7 +250,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 			// NOTE: looking at the data table, this will always find a solution before hitting the min RPM values in the table
 			// therefore no special action is taken for not finding a solution
 			for(rpm_indx = 0; rpm_indx < TRAJECTORY_TABLE_SPEEDS; rpm_indx++) {
-				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);		
+				dist = units::foot_t(data.distance[m_model][theta_indx][rpm_indx]);
 
 				// printf(" was long - theta_indx: %d rpm_indx: %d dist: %6.3lf distance: %6.3lf\n", theta_indx, rpm_indx, dist, inputs.distance);
 
@@ -286,17 +288,17 @@ int TrajectoryCalc::get_rpm_index(double rpm)
 {
 	int indx = 0;
 	double rpm_max = RPM_BASE + (TRAJECTORY_TABLE_SPEEDS - 1) * RPM_INC;
-	
+
 	if(rpm > rpm_max) {
 		rpm = rpm_max;
 	}
-	
+
 	indx = (rpm - RPM_BASE) / (1.0 * RPM_INC);
 
 	if(indx < 0) {
 		indx = 0;
 	}
-	
+
 	return indx;
 }
 
@@ -309,7 +311,7 @@ units::revolutions_per_minute_t TrajectoryCalc::get_rpm(int rpm_index) {
 
 /*
 units::feet_per_second_t TrajectoryCalc::fuel_velocity(units::revolutions_per_minute_t rpm) {
-	units::feet_per_second_t v = (units::feet_per_second_t)(M_PI * (m_wheel_diameter_in / 12.0) * rpm.value() / 60.0 / 2.0);	
+	units::feet_per_second_t v = (units::feet_per_second_t)(M_PI * (m_wheel_diameter_in / 12.0) * rpm.value() / 60.0 / 2.0);
 
 	return v;
 }

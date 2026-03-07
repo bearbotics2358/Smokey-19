@@ -54,7 +54,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
         ctre::phoenix6::hardware::TalonFX m_turretSpinMotor;
         std::function<frc::Pose2d()> m_GetCurrentBotPose;
 
-        static constexpr double kGearRatio = 1;
+        static constexpr double kGearRatio = 40;
 
         units::degree_t m_setpointAngle = 0_deg;
 

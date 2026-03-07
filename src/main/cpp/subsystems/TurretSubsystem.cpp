@@ -45,12 +45,13 @@ void TurretSubsystem::Periodic() {
 
     if (frc::DriverStation::IsDisabled()) {
         BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
-        if (m_turretReset.Get() == false) {
+        if (m_turretReset.Get()) {
             turretOffset = -GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + 65_deg;
         }
     }
 
-    GoToAngle();
+    // Disabled for now until the turret functionality is working
+    // GoToAngle();
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
@@ -115,12 +116,12 @@ units::degree_t TurretSubsystem::CurrentAngle() {
 };
 
 units::degree_t TurretSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = rotations;
+    units::degree_t angle = rotations / kGearRatio;
     return angle;
 }
 
 units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = angle;
+    units::turn_t rotations = angle * kGearRatio;
     return rotations;
 }
 

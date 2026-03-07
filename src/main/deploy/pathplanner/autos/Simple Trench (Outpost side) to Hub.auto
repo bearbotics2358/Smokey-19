@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Simple"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Extend Hopper"
+            "pathName": "Simple Trench (Outpost side) to Shoot"
           }
         },
         {
@@ -21,11 +15,17 @@
           "data": {
             "name": "Launch Fuel at Hub"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Simple Back to Trench (Outpost side)"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Simple Preload",
+  "folder": null,
   "choreoAuto": false
 }

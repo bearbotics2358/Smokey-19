@@ -2,11 +2,7 @@
 
 #include <units/velocity.h>
 #include <units/angular_velocity.h>
-
-// hard coding the table to angles of 0 to 90 degrees inclusive with a step size of 1,
-// and speeds (wheel RPMs) from 1000 to 4000 inclusive with a step size of 25
-#define TRAJECTORY_TABLE_ANGLES 91
-#define TRAJECTORY_TABLE_SPEEDS 121
+#include "trajectory/trajectory_table_defs.h"
 
 #define GRAVITY 32.17
 

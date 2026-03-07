@@ -93,7 +93,9 @@
     "typeindex": "cpp",
     "typeinfo": "cpp",
     "valarray": "cpp",
-    "*.inc": "cpp"
+    "*.inc": "cpp",
+    "execution": "cpp",
+    "locale": "cpp"
   },
   "wpilib.skipTests": true
 }

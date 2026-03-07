@@ -45,6 +45,7 @@
     }
   ],
   "rotationTargets": [],
+<<<<<<< HEAD
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -60,6 +61,9 @@
       }
     }
   ],
+=======
+  "constraintZones": [],
+>>>>>>> main
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
