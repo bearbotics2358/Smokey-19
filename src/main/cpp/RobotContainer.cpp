@@ -98,7 +98,6 @@ void RobotContainer::ConfigureBindings()
 
     operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
-    // operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
     operatorJoystick.B().OnTrue(m_intakeSubsystem.RunExtenderForwardVolts());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 

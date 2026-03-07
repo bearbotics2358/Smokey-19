@@ -55,7 +55,7 @@ bool DriveManager::GoThroughTrench() {
         } else {
             yMovement = robotY;
         }
-        rotMovement = -m_driverController.GetRightY();
+        rotMovement = rotation;
 
         return true;
     } else {
