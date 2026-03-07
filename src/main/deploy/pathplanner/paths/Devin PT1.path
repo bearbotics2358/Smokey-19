@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.6696130715925142,
+        "y": 0.6179767500882769
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.145048469907573,
+        "y": 1.5354875008470956
+      },
+      "isLocked": false,
+      "linkedName": "EndOfVihaan1"
+    },
+    {
+      "anchor": {
+        "x": 2.610299699858757,
+        "y": 2.4949468132062145
+      },
+      "prevControl": {
+        "x": 2.2862907422073686,
+        "y": 1.8253919858635546
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "EndOfDevin1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -140.58397894231902
+  },
+  "reversed": false,
+  "folder": "Path Parts",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 179.73952464527218
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.0,
+        "y": 0.6179767500882769
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.870426818502825,
+        "y": 0.6068961864406778
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6696130715925142,
+        "y": 0.6179767500882769
+      },
+      "prevControl": {
+        "x": 2.843765724311441,
+        "y": 0.6152670926024006
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "EndOfVihaan1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 179.73952464527218
+  },
+  "reversed": false,
+  "folder": "Path Parts",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -179.91137285566032
+  },
+  "useDefaultConstraints": true
+}

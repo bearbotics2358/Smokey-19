@@ -1,0 +1,126 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.610299699858757,
+        "y": 2.4949468132062145
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.477961963718221,
+        "y": 2.111191571769068
+      },
+      "isLocked": false,
+      "linkedName": "EndOfDevin1"
+    },
+    {
+      "anchor": {
+        "x": 3.5716474664548024,
+        "y": 0.6355411370056492
+      },
+      "prevControl": {
+        "x": 2.689178401245342,
+        "y": 0.6551639923104484
+      },
+      "nextControl": {
+        "x": 4.563914360434323,
+        "y": 0.6134767831920898
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.181491878531074,
+        "y": 0.8195559123411009
+      },
+      "prevControl": {
+        "x": 5.440605118559821,
+        "y": 0.6014025145604212
+      },
+      "nextControl": {
+        "x": 7.627859562588277,
+        "y": 0.8754909847281067
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.4796993621998595,
+        "y": 3.2272317487641238
+      },
+      "prevControl": {
+        "x": 7.500941141419492,
+        "y": 2.2245617055084743
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "EndOfVihaan2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0022628171247356,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.669215776955601,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 2.1849151030655367,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.68176951142132,
+      "maxWaypointRelativePos": 1.6656091370558384,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 2.178587008248731,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.50421001252269
+  },
+  "reversed": false,
+  "folder": "Path Parts",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -140.58397894231902
+  },
+  "useDefaultConstraints": true
+}

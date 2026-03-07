@@ -180,7 +180,7 @@ void RobotContainer::AddPathPlannerCommands() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_intakeSubsystem.ExtendHopper())
+        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(1_s))
     );
     NamedCommands::registerCommand(
         "Run Intake",
@@ -188,7 +188,7 @@ void RobotContainer::AddPathPlannerCommands() {
     );
     NamedCommands::registerCommand(
         "Stop Intake",
-        std::move(m_intakeSubsystem.StopIntake())
+        std::move(m_intakeSubsystem.StopIntake().WithTimeout(1_s))
     );
     NamedCommands::registerCommand(
         "Point Turret at Hub",
@@ -197,11 +197,25 @@ void RobotContainer::AddPathPlannerCommands() {
     NamedCommands::registerCommand(
         "Launch Fuel at Hub",
         std::move(
-            frc2::cmd::Sequence(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
-                frc2::cmd::Wait(40_ms),
-                m_indexerSubsystem.RunIndexerForLaunching()
-            )
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(3_s)
+        )
+    );
+    NamedCommands::registerCommand(
+        "Run Indexer",
+        std::move(
+            m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(3_s)
+        )
+    );
+    NamedCommands::registerCommand(
+        "Stop Shooter",
+        std::move(
+            m_shooterSubsystem.StopShooter()
+        )
+    );
+    NamedCommands::registerCommand(
+        "Stop Indexer",
+        std::move(
+            m_indexerSubsystem.Stop()
         )
     );
     NamedCommands::registerCommand(
