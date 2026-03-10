@@ -5,9 +5,39 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Simple Trench (Left) to Shoot"
+            "pathName": "Matthew1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Matthew2"
           }
         },
         {
@@ -24,12 +54,6 @@
                 "type": "named",
                 "data": {
                   "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
                 }
               }
             ]
@@ -55,9 +79,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Simple Back to Trench (Left side)"
+            "pathName": "Matthew3"
           }
         }
       ]

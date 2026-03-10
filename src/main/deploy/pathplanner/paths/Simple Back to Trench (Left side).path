@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7935705812574145,
-        "y": 5.374519572953736
+        "x": 2.4492763938315547,
+        "y": 5.686536180308422
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1639497346860743,
-        "y": 6.5098657804894575
+        "x": 1.8196555472602145,
+        "y": 6.821882387844143
       },
       "isLocked": false,
       "linkedName": "Simple Trench (Left side) Hub"
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "VihaanSomething"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 145.92280471986922
+    "rotation": 139.84400037508058
   },
   "useDefaultConstraints": false
 }

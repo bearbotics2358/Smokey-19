@@ -23,7 +23,7 @@ IntakeSubsystem::IntakeSubsystem()
 
     m_ExtenderHardStop = frc2::Trigger([this] {
         return (units::math::abs(m_extenderMotor.GetVelocity().GetValue()) < 1_tps &&
-            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 35_A);
+            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 30_A);
     }).Debounce(0.1_s);
 }
 
@@ -79,7 +79,7 @@ void IntakeSubsystem::ConfigureIntakeMotor() {
     configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     configs.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
 
-    configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    configs.CurrentLimits.StatorCurrentLimit = 60_A;
     configs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     configs.Slot0.kP = 0.5;
@@ -115,6 +115,12 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeToHelpIndexer() {
     });
 }
 
+frc2::CommandPtr IntakeSubsystem::RunIntakeInReverse() {
+    return RunOnce([this] {
+        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(-2000_rpm));
+    });
+}
+
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
     return Run([this] {
         m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
@@ -127,6 +133,18 @@ frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
             StopIntake()
         )
     );
+}
+
+frc2::CommandPtr IntakeSubsystem::RunExtenderInReverseVolts() {
+    return Run([this] {
+        m_extenderMotor.SetVoltage(1.0_V);
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::RunExtenderForwardVolts() {
+    return Run([this] {
+        m_extenderMotor.SetVoltage(-1.0_V);
+    });
 }
 
 frc2::CommandPtr IntakeSubsystem::StopIntake() {

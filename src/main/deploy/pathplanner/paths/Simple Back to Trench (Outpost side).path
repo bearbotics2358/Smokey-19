@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4707947805456705,
-        "y": 2.1790391459074727
+        "x": 2.2771293001186246,
+        "y": 1.834744958481613
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4169988137603804,
-        "y": 0.9847686832740215
+        "x": 2.2233333333333345,
+        "y": 0.6404744958481616
       },
       "isLocked": false,
       "linkedName": "Simple Trench (Outpost side) Hub"

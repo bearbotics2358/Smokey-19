@@ -15,7 +15,7 @@ IndexerSubsystem::IndexerSubsystem():
     configs.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
 
-    configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    configs.CurrentLimits.StatorCurrentLimit = 60_A;
     configs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
@@ -31,13 +31,13 @@ IndexerSubsystem::IndexerSubsystem():
 
     m_isHardStop = frc2::Trigger([this] {
         return abs(m_indexerSpinMotor.GetVelocity().GetValue().value()) < 1 &&
-            abs(m_indexerSpinMotor.GetTorqueCurrent().GetValue().value()) > 10;
+            abs(m_indexerSpinMotor.GetTorqueCurrent().GetValue().value()) > 20;
     }).Debounce(0.1_s);
 }
 
 frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
     return Run([this] {
-        m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(750_rpm));
+        m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(1250_rpm));
     }).Until(
         [this] { return m_isHardStop.Get(); }
     ).AndThen(

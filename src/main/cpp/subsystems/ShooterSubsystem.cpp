@@ -175,14 +175,14 @@ frc2::CommandPtr ShooterSubsystem::EnableShooterWithHubTracking() {
 frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
     return Run([this] {
         TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+        // SetGoals(parameters.wheel_rpm + 1500_rpm, kFixedPositionHoodAngle);
         SetGoals(parameters.wheel_rpm, kFixedPositionHoodAngle);
     });
 }
 
-frc2::CommandPtr ShooterSubsystem::EnableShooterForFeeding() {
+frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAndFixedSpeed() {
     return Run([this] {
-        TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
-        SetGoals(3500_rpm, kFixedPositionHoodAngle);
+        SetGoals(4500_rpm, kFixedPositionHoodAngle);
     });
 }
 
