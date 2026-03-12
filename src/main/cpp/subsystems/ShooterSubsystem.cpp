@@ -51,17 +51,15 @@ void ShooterSubsystem::ConfigureShooterMotors()
 
     configs.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
-    configs.Slot0.kP = 2.0;
+    configs.Slot0.kP = 100.0;
     configs.Slot0.kI = 0.0;
     configs.Slot0.kD = 0.0;
     configs.Slot0.kV = 0.12;
 
     m_FlywheelMotor.GetConfigurator().Apply(configs);
-    m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
 
-    m_FlywheelFollowerMotor.SetControl(
-        controls::Follower{m_FlywheelMotor.GetDeviceID(), signals::MotorAlignmentValue::Opposed}
-            .WithUpdateFreqHz(200_Hz));
+    configs.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
+    m_FlywheelFollowerMotor.GetConfigurator().Apply(configs);
 }
 
 void ShooterSubsystem::ConfigureHoodMotor()
@@ -141,7 +139,8 @@ units::turn_t ShooterSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 
 void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
     m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed));
-    m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(1500_rpm));
+    m_FlywheelFollowerMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed));
+    m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(4500_rpm));
 
     // @todo Enable this when hood control is working
     //m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
@@ -155,6 +154,7 @@ units::revolutions_per_minute_t ShooterSubsystem::GetCurrentShooterSpeed() {
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return RunOnce([this] {
         m_FlywheelMotor.SetControl(m_Stop);
+        m_FlywheelFollowerMotor.SetControl(m_Stop);
         m_FeederMotor.SetControl(m_Stop);
     });
 }
