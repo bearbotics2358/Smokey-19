@@ -47,12 +47,12 @@ void TurretSubsystem::Periodic() {
     if (frc::DriverStation::IsDisabled()) {
         BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
         if (m_turretReset.Get()) {
-            turretOffset = -GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+            turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 65_deg;
         }
     }
 
     // Disabled for now until the turret functionality is working
-    GoToAngle();
+    //GoToAngle();
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
@@ -65,14 +65,19 @@ units::degree_t TurretSubsystem::AngleToHub() {
     units::degree_t angleToHub;
 
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle + 180_deg;
+        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
     } else {
-        angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
+        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + 180_deg;
     }
-    BearLog::Log("Turret/Setpoint", angleToHub);
-    angleToHub = units::degree_t(std::clamp(angleToHub.value(), 0.0, 90.0));
+    BearLog::Log("Turret/RawSetpoint", angleToHub);
+    angleToHub -= robotAngle;
+    while (angleToHub.value() > 180) {
+        angleToHub -= 360_deg;
+    }
+    while (angleToHub.value() < -180) {
+        angleToHub += 360_deg;
+    }
     BearLog::Log("Turret/ClampedSetpoint", angleToHub);
-    //return angleToHub;
     return angleToHub;
 }
 
@@ -112,11 +117,11 @@ void TurretSubsystem::SetGoalAngle() {
     //     //     m_setpointAngle = AngleToAllianceZone();
     //     // }
     // }
-    m_setpointAngle = AngleToHub();
+    m_setpointAngle = AngleToHub() + turretOffset;
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + turretOffset;
+    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - turretOffset;
     return angle;
 };
 

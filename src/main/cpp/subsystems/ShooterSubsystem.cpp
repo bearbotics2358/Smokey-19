@@ -6,6 +6,7 @@
 #include <frc/simulation/RoboRioSim.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/RobotBase.h>
+#include <frc/DriverStation.h>
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem()
@@ -24,20 +25,20 @@ ShooterSubsystem::ShooterSubsystem()
     }
 }
 
-frc2::CommandPtr ShooterSubsystem::CalibrateHoodMotor() {
-    return Run([this] {
-        m_HoodMotor.SetControl(calibrationRequest);
-    }
-    ).Until(
-        [this] { return m_isHardStop.Get(); }
-    ).AndThen(
-        StopHood()
-    ).AndThen(
-        frc2::cmd::RunOnce([this] {
-            m_HoodOffset = -GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + 75_deg;
-        })
-    );
-}
+// frc2::CommandPtr ShooterSubsystem::CalibrateHoodMotor() {
+//     return Run([this] {
+//         m_HoodMotor.SetControl(calibrationRequest);
+//     }
+//     ).Until(
+//         [this] { return m_isHardStop.Get(); }
+//     ).AndThen(
+//         StopHood()
+//     ).AndThen(
+//         frc2::cmd::RunOnce([this] {
+//             m_HoodOffset = -GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + 75_deg;
+//         })
+//     );
+// }
 
 void ShooterSubsystem::ConfigureShooterMotors()
 {
@@ -72,11 +73,11 @@ void ShooterSubsystem::ConfigureHoodMotor()
 
     hood_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
-    hood_config.CurrentLimits.StatorCurrentLimit = 70_A;
+    hood_config.CurrentLimits.StatorCurrentLimit = 10_A;
     hood_config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    hood_config.Slot0.kP = 0.6;
-    hood_config.Slot0.kI = 0.0;
+    hood_config.Slot0.kP = 8.0;
+    hood_config.Slot0.kI = 4.0;
     hood_config.Slot0.kD = 0.2;
     hood_config.Slot0.kS = 0.0;
     hood_config.Slot0.kV = 0.12;
@@ -108,6 +109,10 @@ void ShooterSubsystem::ConfigureFeederMotor()
 }
 
 void ShooterSubsystem::Periodic() {
+    if (frc::DriverStation::IsDisabled()) {
+        m_HoodOffset = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) - 75_deg;
+    }
+
     BearLog::Log("Shooter/Flywheel/SetPointSpeed", units::revolutions_per_minute_t(m_ShooterVelocityVoltage.Velocity));
     BearLog::Log("Shooter/Flywheel/Speed", GetCurrentShooterSpeed());
     BearLog::Log("Shooter/Flywheel/Voltage", m_FlywheelMotor.GetMotorVoltage().GetValue());
@@ -117,6 +122,7 @@ void ShooterSubsystem::Periodic() {
 
     BearLog::Log("Shooter/Elevation/SetpointAngle", GetAngleFromTurns(m_HoodPositionVoltage.Position));
     BearLog::Log("Shooter/Elevation/CurrentAngle", GetCurrentHoodAngle());
+    BearLog::Log("Shooter/Elevation/RawCurrentAngle", GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()));
     BearLog::Log("Shooter/Elevation/HoodOffset", m_HoodOffset);
     BearLog::Log("Shooter/Elevation/HardStop", m_isHardStop.Get());
 
@@ -125,18 +131,25 @@ void ShooterSubsystem::Periodic() {
 }
 
 units::degree_t ShooterSubsystem::GetCurrentHoodAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) + m_HoodOffset;
-    return 65_deg;
+    units::degree_t angle = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) - m_HoodOffset;
+    return angle;
 };
 
 units::degree_t ShooterSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations.value() * 360 * kGearRatio);
+    units::degree_t angle = units::degree_t(rotations * kGearRatio);
     return angle;
 }
 
 units::turn_t ShooterSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t((angle.value() / kGearRatio) / 360);
+    units::turn_t rotations = units::turn_t((angle / kGearRatio));
     return rotations;
+}
+
+frc2::CommandPtr ShooterSubsystem::GoToAngle(units::degree_t angle) {
+    angle = units::degree_t(std::clamp(angle.value(), 55.0, 75.0));
+    return Run([this, angle] {
+        m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(angle + m_HoodOffset)));
+    });
 }
 
 void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
@@ -144,7 +157,7 @@ void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::de
     m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(1500_rpm));
 
     // @todo Enable this when hood control is working
-    //m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle)));
+    // m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle + m_HoodOffset)));
 }
 
 units::revolutions_per_minute_t ShooterSubsystem::GetCurrentShooterSpeed() {
