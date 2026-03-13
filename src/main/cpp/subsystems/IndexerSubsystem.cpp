@@ -31,7 +31,7 @@ IndexerSubsystem::IndexerSubsystem():
 
     m_isHardStop = frc2::Trigger([this] {
         return abs(m_indexerSpinMotor.GetVelocity().GetValue().value()) < 1 &&
-            abs(m_indexerSpinMotor.GetTorqueCurrent().GetValue().value()) > 20;
+            abs(m_indexerSpinMotor.GetTorqueCurrent().GetValue().value()) > 30;
     }).Debounce(0.1_s);
 }
 
