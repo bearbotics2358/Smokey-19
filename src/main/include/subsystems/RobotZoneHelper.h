@@ -19,8 +19,10 @@ class RobotZoneHelper {
         };
         enum class NeutralSide {
             NotInNeutral,
-            RightNeutral,
-            LeftNeutral
+            CloseRightNeutral,
+            CloseLeftNeutral,
+            FarRightNeutral,
+            FarLeftNeutral
         };
         
         static bool isRobotInBlueAllianceZone (frc::Pose2d botPose) {
@@ -68,9 +70,17 @@ class RobotZoneHelper {
                 return NeutralSide::NotInNeutral;
             } else {
                 if (botPose.Y() < 4.035_m) {
-                    return NeutralSide::RightNeutral;
+                    if (botPose.X() < 8.27_m) {
+                        return NeutralSide::CloseRightNeutral;
+                    } else {
+                        return NeutralSide::FarRightNeutral;
+                    }
                 } else {
-                    return NeutralSide::LeftNeutral;
+                    if (botPose.X() < 8.27_m) {
+                        return NeutralSide::CloseLeftNeutral;
+                    } else {
+                        return NeutralSide::FarLeftNeutral;
+                    }
                 }
             }
         }

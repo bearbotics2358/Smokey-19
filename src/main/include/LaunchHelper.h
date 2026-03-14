@@ -33,6 +33,8 @@ private:
 
     frc::Translation2d m_setpointPose1 = frc::Translation2d(2_m, 1.5_m);
     frc::Translation2d m_setpointPose2 = frc::Translation2d(2_m, 6.57_m);
+    frc::Translation2d m_setpointPose3 = frc::Translation2d(2.5_m, 1.75_m);
+    frc::Translation2d m_setpointPose4 = frc::Translation2d(2.5_m, 6.32_m);
 
     units::meters_per_second_t RPMToVelocity(units::revolutions_per_minute_t rpm);
 

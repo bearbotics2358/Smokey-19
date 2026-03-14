@@ -10,6 +10,7 @@
 #include "subsystems/RobotZoneHelper.h"
 #include <frc/Timer.h>
 #include <frc/RobotBase.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 LaunchHelper& LaunchHelper::GetInstance() {
     // Defining a static LaunchHelper object so it will only be created once
@@ -58,15 +59,37 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
     inputs.wheel_rpm = m_GetShooterSpeed();
     inputs.turret_angle = m_GetTurretAngle();
 
-    frc::Translation2d setpoint_center = FieldConstants::GetHubCenterForMyAlliance();
+    frc::Translation2d setpoint_center;
+    units::meter_t zdistance = 0_m;
 
     if (RobotZoneHelper::isRobotInMyAllianceZone(m_RobotPoseSupplier())) {
         setpoint_center = FieldConstants::GetHubCenterForMyAlliance();
-    } else if (RobotZoneHelper::sideOfNeutralZone(m_RobotPoseSupplier()) == RobotZoneHelper::NeutralSide::RightNeutral) {
-            setpoint_center = m_setpointPose1;
-        } else {
-            setpoint_center = m_setpointPose2;
+        zdistance = 2_m;
+    } else if (RobotZoneHelper::sideOfNeutralZone(m_RobotPoseSupplier()) == RobotZoneHelper::NeutralSide::CloseRightNeutral) {
+        setpoint_center = m_setpointPose1;
+        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+            setpoint_center = frc::Translation2d(16.54_m - m_setpointPose3.X(), m_setpointPose3.Y());
         }
+    } else if (RobotZoneHelper::sideOfNeutralZone(m_RobotPoseSupplier()) == RobotZoneHelper::NeutralSide::FarRightNeutral) {
+        setpoint_center = m_setpointPose3;
+        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+            setpoint_center = frc::Translation2d(16.54_m - m_setpointPose1.X(), m_setpointPose1.Y());
+        }
+    } else if (RobotZoneHelper::sideOfNeutralZone(m_RobotPoseSupplier()) == RobotZoneHelper::NeutralSide::CloseLeftNeutral) {
+        setpoint_center = m_setpointPose2;
+        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+            setpoint_center = frc::Translation2d(16.54_m - m_setpointPose4.X(), m_setpointPose4.Y());
+        }
+    } else {
+        setpoint_center = m_setpointPose4;
+        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+            setpoint_center = frc::Translation2d(16.54_m - m_setpointPose2.X(), m_setpointPose2.Y());
+        }
+    }
+
+    frc::Pose3d setpointPose = frc::Pose3d(setpoint_center.X(), setpoint_center.Y(), zdistance, frc::Rotation3d{});
+
+    BearLog::Log("TheRobotSetpointPose", setpointPose);
 
     units::meter_t distance_to_hub_center = units::math::abs(m_RobotPoseSupplier().Translation().Distance(setpoint_center));
     inputs.distance = distance_to_hub_center;
@@ -94,7 +117,7 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
     units::degree_t angleToSetpoint;
 
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToSetpoint = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + 180_deg;
+        angleToSetpoint = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
     } else {
         angleToSetpoint = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
     }
@@ -177,7 +200,7 @@ void LaunchHelper::DrawTrajectory()
             };
 
             frc::Translation3d rotated = localPose.RotateBy(
-            frc::Rotation3d{0_deg, 0_deg, botPose2d.Rotation().Degrees() + m_GetTurretAngle()});
+            frc::Rotation3d{0_deg, 0_deg, botPose2d.Rotation().Degrees() + m_GetTurretAngle() + 180_deg});
 
             frc::Pose3d worldPose{
                 robotPose3d.X() + rotated.X(),
