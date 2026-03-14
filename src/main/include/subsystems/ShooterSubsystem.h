@@ -71,7 +71,7 @@ private:
     units::degree_t GetAngleFromTurns(units::turn_t rotations);
     units::turn_t GetTurnsFromAngle(units::degree_t angle);
 
-    static constexpr double kGearRatio = 1/28.435; //48, -763. 75, 4.75. 27 / 767.75
+    static constexpr double kGearRatio = 1/28.435;
 
     controls::DutyCycleOut calibrationRequest = controls::DutyCycleOut(-0.1)
         .WithIgnoreHardwareLimits(true)
