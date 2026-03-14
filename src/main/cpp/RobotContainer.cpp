@@ -110,19 +110,11 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.RightBumper().OnTrue(
         frc2::cmd::Sequence(
-            frc2::cmd::Either(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
-                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed().WithTimeout(0.05_s),
-                [this] {return RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose);}
-            ),
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
             m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
         ).AndThen(
             frc2::cmd::Parallel(
-                frc2::cmd::Either(
-                    m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
-                    m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
-                    [this] {return RobotZoneHelper::isRobotInMyAllianceZone(m_drivetrain.GetState().Pose);}
-                ),
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
                 m_indexerSubsystem.RunIndexerForLaunching())
         )).OnFalse(
         frc2::cmd::Parallel(
@@ -133,11 +125,11 @@ void RobotContainer::ConfigureBindings()
 
     driverJoystick.RightTrigger().WhileTrue(
         frc2::cmd::Sequence(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed().WithTimeout(0.05_s),
+            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(0.05_s),
             m_indexerSubsystem.RunIndexerForLaunching().WithTimeout(0.05_s)
         ).AndThen(
             frc2::cmd::Parallel(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
                 m_indexerSubsystem.RunIndexerForLaunching())
         )).OnFalse(
         frc2::cmd::Parallel(

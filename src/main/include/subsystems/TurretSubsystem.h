@@ -30,9 +30,6 @@ class TurretSubsystem : public frc2::SubsystemBase {
         void SetGoalAngle();
         units::degree_t CurrentAngle();
 
-        units::degree_t AngleToHub();
-        units::degree_t AngleToAllianceZone();
-
         frc2::CommandPtr PointAtHub();
 
         void Periodic() override;
@@ -70,8 +67,8 @@ class TurretSubsystem : public frc2::SubsystemBase {
           kGearRatio,
           frc::sim::SingleJointedArmSim::EstimateMOI(kTurretRadius, 0.1_kg),
           kTurretRadius,
-          -360_deg,
-          360_deg,
+          -180_deg,
+          180_deg,
           false,
           10_deg,
         };
