@@ -16,33 +16,40 @@
     },
     {
       "anchor": {
-        "x": 7.633085330596751,
-        "y": 3.1272647422316378
+        "x": 6.488392857142856,
+        "y": 3.1118035714285712
       },
       "prevControl": {
-        "x": 7.948857201182911,
-        "y": 0.12419006002824817
+        "x": 6.804164727729016,
+        "y": 0.10872888922518165
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "AutoIdea1End"
+      "linkedName": "closertohub"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.4952431289640593,
       "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 0.787341772151899,
-      "rotationDegrees": 119.99999999999999
     }
   ],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 7.6,
+        "y": 5.5
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.6818190831218273,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.5,
+    "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -51,7 +58,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 116.16639293218613
+    "rotation": 90.20171856242256
   },
   "reversed": false,
   "folder": "Path Parts",

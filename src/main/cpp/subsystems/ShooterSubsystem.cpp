@@ -151,8 +151,8 @@ frc2::CommandPtr ShooterSubsystem::GoToAngle(units::degree_t angle) {
 }
 
 void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
-    m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed));
-    m_FlywheelFollowerMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed));
+    m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed * 1.1));
+    m_FlywheelFollowerMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed * 1.1));
     m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(4500_rpm));
 
     // @todo Enable this when hood control is working

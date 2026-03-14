@@ -5,34 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Run Intake"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "AutoIdea1"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Intake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "AutoIdea2"
+            "pathName": "easycentralauto1"
           }
         },
         {
@@ -42,28 +17,9 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Launch Fuel at Hub"
                 }
               },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
               {
                 "type": "named",
                 "data": {
@@ -71,15 +27,9 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -89,116 +39,16 @@
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Indexer"
-                }
-              },
               {
                 "type": "named",
                 "data": {
                   "name": "Stop Shooter"
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Intake"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "AutoIdea5"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AutoIdea4"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
-                }
               },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
               {
                 "type": "named",
                 "data": {
                   "name": "Stop Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter"
                 }
               }
             ]
@@ -207,7 +57,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AutoIdea3"
+            "pathName": "easycentralauto2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "easycentralauto3"
           }
         },
         {
@@ -217,19 +79,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Indexer"
+                  "name": "Launch Fuel at Hub"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Launch Fuel at Hub"
+                  "name": "Run Indexer"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -242,9 +104,28 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "Launch Fuel at Hub"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "Run Indexer"
                 }
               },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
@@ -252,9 +133,65 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Run Indexer"
+                }
+              },
+              {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Launch Fuel at Hub"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Indexer"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Launch Fuel at Hub"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Indexer"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -267,13 +204,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Indexer"
+                  "name": "Stop Shooter"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Shooter"
+                  "name": "Stop Indexer"
                 }
               }
             ]

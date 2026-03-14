@@ -18,7 +18,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 {
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(1)
+        .WithKP(10)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
@@ -30,7 +30,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
-        .WithPeakForwardDutyCycle(.1);
+        .WithPeakForwardDutyCycle(.75);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
@@ -88,9 +88,17 @@ units::degree_t TurretSubsystem::AngleToAllianceZone() {
     units::degree_t angleToHub;
 
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = - robotAngle;
+        angleToHub = 180_deg;
     } else {
-        angleToHub = 180_deg - robotAngle;
+        angleToHub = 0_deg;
+    }
+    BearLog::Log("Turret/RawSetpoint", angleToHub);
+    angleToHub -= robotAngle;
+    while (angleToHub.value() > 180) {
+        angleToHub -= 360_deg;
+    }
+    while (angleToHub.value() < -180) {
+        angleToHub += 360_deg;
     }
 
     return angleToHub;
@@ -108,16 +116,15 @@ frc2::CommandPtr TurretSubsystem::PointAtHub() {
 }
 
 void TurretSubsystem::SetGoalAngle() {
-    // if (m_pointAtHubToggle == false) {
-    //     m_setpointAngle = m_stowAngle;
-    // } else {
-    //     // if (RobotZoneHelper::isRobotInMyAllianceZone(m_GetCurrentBotPose())) {
-    //     //     m_setpointAngle = AngleToHub();
-    //     // } else if (RobotZoneHelper::isRobotInNeutralZone(m_GetCurrentBotPose())) {
-    //     //     m_setpointAngle = AngleToAllianceZone();
-    //     // }
-    // }
-    m_setpointAngle = AngleToHub() + turretOffset;
+    if (m_pointAtHubToggle == false) {
+        m_setpointAngle = m_stowAngle;
+    } else {
+        if (RobotZoneHelper::isRobotInMyAllianceZone(m_GetCurrentBotPose())) {
+            m_setpointAngle = AngleToHub();
+        } else if (RobotZoneHelper::isRobotInNeutralZone(m_GetCurrentBotPose())) {
+            m_setpointAngle = AngleToAllianceZone();
+        }
+    }
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
