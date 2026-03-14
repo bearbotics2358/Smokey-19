@@ -31,6 +31,7 @@ public:
     frc2::CommandPtr EnableShooterWithHubTracking();
     frc2::CommandPtr EnableShooterWithFixedHoodAngle();
     frc2::CommandPtr EnableShooterWithFixedHoodAndFixedSpeed();
+    frc2::CommandPtr GoToAngle(units::degree_t angle);
 
     frc2::CommandPtr TestRunShooter();
     frc2::CommandPtr TestRunFeeder();
@@ -70,7 +71,7 @@ private:
     units::degree_t GetAngleFromTurns(units::turn_t rotations);
     units::turn_t GetTurnsFromAngle(units::degree_t angle);
 
-    static constexpr double kGearRatio = 1;
+    static constexpr double kGearRatio = 1/28.435;
 
     controls::DutyCycleOut calibrationRequest = controls::DutyCycleOut(-0.1)
         .WithIgnoreHardwareLimits(true)

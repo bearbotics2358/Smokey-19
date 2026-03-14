@@ -18,7 +18,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 {
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(1)
+        .WithKP(10)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
@@ -28,7 +28,9 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     // brake mode, which direction is positive rotation, etc.
     ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
     rotation_config
-        .WithSlot0(slot0Config);
+        .WithSlot0(slot0Config)
+        .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
+        .WithPeakForwardDutyCycle(.75);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
@@ -40,18 +42,17 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 }
 
 void TurretSubsystem::Periodic() {
-    BearLog::Log("Turret/Setpoint", m_setpointAngle);
     BearLog::Log("Turret/Angle", CurrentAngle());
 
     if (frc::DriverStation::IsDisabled()) {
         BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
         if (m_turretReset.Get()) {
-            turretOffset = -GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + 65_deg;
+            turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
         }
     }
 
     // Disabled for now until the turret functionality is working
-    // GoToAngle();
+    GoToAngle();
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
@@ -64,11 +65,19 @@ units::degree_t TurretSubsystem::AngleToHub() {
     units::degree_t angleToHub;
 
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle - 180_deg;
+        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + 180_deg;
     } else {
-        angleToHub = units::degree_t(units::radian_t(atan(strafe.value()/forward.value()))) - robotAngle;
+        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
     }
-
+    BearLog::Log("Turret/RawSetpoint", angleToHub);
+    angleToHub -= robotAngle;
+    while (angleToHub.value() > 180) {
+        angleToHub -= 360_deg;
+    }
+    while (angleToHub.value() < -180) {
+        angleToHub += 360_deg;
+    }
+    BearLog::Log("Turret/ClampedSetpoint", angleToHub);
     return angleToHub;
 }
 
@@ -79,9 +88,17 @@ units::degree_t TurretSubsystem::AngleToAllianceZone() {
     units::degree_t angleToHub;
 
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = - robotAngle;
+        angleToHub = 180_deg;
     } else {
-        angleToHub = 180_deg - robotAngle;
+        angleToHub = 0_deg;
+    }
+    BearLog::Log("Turret/RawSetpoint", angleToHub);
+    angleToHub -= robotAngle;
+    while (angleToHub.value() > 180) {
+        angleToHub -= 360_deg;
+    }
+    while (angleToHub.value() < -180) {
+        angleToHub += 360_deg;
     }
 
     return angleToHub;
@@ -111,7 +128,7 @@ void TurretSubsystem::SetGoalAngle() {
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) + turretOffset;
+    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - turretOffset;
     return angle;
 };
 
