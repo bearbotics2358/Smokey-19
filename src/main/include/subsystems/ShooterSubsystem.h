@@ -39,7 +39,7 @@ public:
 
     frc2::CommandPtr CalibrateHoodMotor();
 
-    static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
+    static constexpr units::degree_t kFixedPositionHoodAngle = 60_deg;
 
     units::degree_t m_HoodOffset = 75_deg;
 

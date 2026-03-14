@@ -32,7 +32,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
-        .WithPeakForwardDutyCycle(.75);
+        .WithPeakForwardDutyCycle(.1);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
