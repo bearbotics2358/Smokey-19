@@ -7,6 +7,7 @@
 #include "FieldConstants.h"
 #include "LaunchHelper.h"
 #include "bearlog/bearlog.h"
+#include "subsystems/RobotZoneHelper.h"
 #include <frc/Timer.h>
 #include <frc/RobotBase.h>
 
@@ -57,8 +58,17 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
     inputs.wheel_rpm = m_GetShooterSpeed();
     inputs.turret_angle = m_GetTurretAngle();
 
-    frc::Translation2d hub_center = FieldConstants::GetHubCenterForMyAlliance();
-    units::meter_t distance_to_hub_center = units::math::abs(m_RobotPoseSupplier().Translation().Distance(hub_center));
+    frc::Translation2d setpoint_center = FieldConstants::GetHubCenterForMyAlliance();
+
+    if (RobotZoneHelper::isRobotInMyAllianceZone(m_RobotPoseSupplier())) {
+        setpoint_center = FieldConstants::GetHubCenterForMyAlliance();
+    } else if (RobotZoneHelper::sideOfNeutralZone(m_RobotPoseSupplier()) == RobotZoneHelper::NeutralSide::RightNeutral) {
+            setpoint_center = m_setpointPose1;
+        } else {
+            setpoint_center = m_setpointPose2;
+        }
+
+    units::meter_t distance_to_hub_center = units::math::abs(m_RobotPoseSupplier().Translation().Distance(setpoint_center));
     inputs.distance = distance_to_hub_center;
 
     BearLog::Log("LaunchHelper/Distance to Hub", units::foot_t(distance_to_hub_center));
@@ -75,6 +85,30 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
     BearLog::Log("LaunchHelper/Hood Angle", m_Cache.elevation_angle);
     BearLog::Log("LaunchHelper/Wheel RPM", m_Cache.wheel_rpm);
     BearLog::Log("LaunchHelper/Turret Angle", m_Cache.turret_angle);
+
+    frc::Pose2d robotPose = m_RobotPoseSupplier();
+
+    units::meter_t strafe = robotPose.Y() - setpoint_center.Y();
+    units::meter_t forward = robotPose.X() - setpoint_center.X();
+    units::degree_t robotAngle = robotPose.Rotation().Degrees();
+    units::degree_t angleToSetpoint;
+
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+        angleToSetpoint = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + 180_deg;
+    } else {
+        angleToSetpoint = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
+    }
+    BearLog::Log("Turret/RawSetpoint", angleToSetpoint);
+    angleToSetpoint -= robotAngle;
+    while (angleToSetpoint.value() > 180) {
+        angleToSetpoint -= 360_deg;
+    }
+    while (angleToSetpoint.value() < -180) {
+        angleToSetpoint += 360_deg;
+    }
+    BearLog::Log("Turret/ClampedSetpoint", angleToSetpoint);
+
+    m_Cache.turret_angle = angleToSetpoint;
 
     if (frc::RobotBase::IsSimulation()) {
         DrawTrajectory();
