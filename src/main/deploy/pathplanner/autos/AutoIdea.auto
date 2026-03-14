@@ -136,7 +136,7 @@
           }
         },
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -152,34 +152,9 @@
                 }
               },
               {
-                "type": "wait",
+                "type": "path",
                 "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
+                  "pathName": "AutoIdea3"
                 }
               }
             ]
@@ -192,31 +167,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AutoIdea3"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
                   "name": "Run Indexer"
                 }
               },
@@ -224,37 +174,6 @@
                 "type": "named",
                 "data": {
                   "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
                 }
               }
             ]
@@ -267,13 +186,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Indexer"
+                  "name": "Run Indexer"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Shooter"
+                  "name": "Launch Fuel at Hub"
                 }
               }
             ]

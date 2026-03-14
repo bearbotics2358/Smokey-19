@@ -24,6 +24,8 @@ public:
 
     frc2::CommandPtr RunIndexerForLaunching();
     frc2::CommandPtr MoveBack();
+    frc2::CommandPtr MoveForward();
+    frc2::CommandPtr Unjam();
     frc2::CommandPtr Stop();
 
 

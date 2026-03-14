@@ -32,11 +32,14 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
-        .WithPeakForwardDutyCycle(.1);
+        .WithPeakForwardDutyCycle(.5)
+        .WithPeakReverseDutyCycle(.5);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
     m_turretSpinMotor.GetConfigurator().Apply(rotation_config);
+
+    // turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
@@ -46,12 +49,12 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Angle", CurrentAngle());
 
-    if (frc::DriverStation::IsDisabled()) {
-        BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
-        if (m_turretReset.Get()) {
-            turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
-        }
-    }
+    // if (frc::DriverStation::IsDisabled()) {
+    //     BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
+    //     if (m_turretReset.Get()) {
+    //         turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+    //     }
+    // }
 
     // Disabled for now until the turret functionality is working
     GoToAngle();

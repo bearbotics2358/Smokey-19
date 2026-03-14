@@ -31,6 +31,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
         units::degree_t CurrentAngle();
 
         frc2::CommandPtr PointAtHub();
+        frc2::CommandPtr ZeroTurret();
 
         void Periodic() override;
         void SimulationPeriodic() override;

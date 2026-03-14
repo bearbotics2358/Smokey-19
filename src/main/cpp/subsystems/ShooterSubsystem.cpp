@@ -111,6 +111,11 @@ void ShooterSubsystem::Periodic() {
         m_HoodOffset = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) - 75_deg;
     }
 
+    // TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+    // units::degree_t hoodAngle = parameters.elevation_angle;
+    // hoodAngle = units::degree_t(std::clamp(hoodAngle.value(), 55.0, 75.0));
+    // m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle + m_HoodOffset)));
+
     BearLog::Log("Shooter/Flywheel/SetPointSpeed", units::revolutions_per_minute_t(m_ShooterVelocityVoltage.Velocity));
     BearLog::Log("Shooter/Flywheel/Speed", GetCurrentShooterSpeed());
     BearLog::Log("Shooter/Flywheel/Voltage", m_FlywheelMotor.GetMotorVoltage().GetValue());
@@ -143,19 +148,19 @@ units::turn_t ShooterSubsystem::GetTurnsFromAngle(units::degree_t angle) {
     return rotations;
 }
 
-frc2::CommandPtr ShooterSubsystem::GoToAngle(units::degree_t angle) {
-    angle = units::degree_t(std::clamp(angle.value(), 55.0, 75.0));
-    return Run([this, angle] {
-        m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(angle + m_HoodOffset)));
-    });
-}
+// frc2::CommandPtr ShooterSubsystem::GoToAngle(units::degree_t angle) {
+//     angle = units::degree_t(std::clamp(angle.value(), 55.0, 75.0));
+//     return RunOnce([this, angle] {
+//         m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(angle + m_HoodOffset)));
+//     });
+// }
 
 void ShooterSubsystem::SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle) {
-    m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed * 1.27));
-    m_FlywheelFollowerMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed * 1.27));
+    m_FlywheelMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed * 1.273));
+    m_FlywheelFollowerMotor.SetControl(m_ShooterVelocityVoltage.WithVelocity(speed * 1.273));
     m_FeederMotor.SetControl(m_FeederVelocityVoltage.WithVelocity(4500_rpm));
 
-    // @todo Enable this when hood control is working
+    // hoodAngle = units::degree_t(std::clamp(hoodAngle.value(), 55.0, 75.0));
     // m_HoodMotor.SetControl(m_HoodPositionVoltage.WithPosition(GetTurnsFromAngle(hoodAngle + m_HoodOffset)));
 }
 
@@ -163,6 +168,10 @@ units::revolutions_per_minute_t ShooterSubsystem::GetCurrentShooterSpeed() {
     units::revolutions_per_minute_t speed = m_FlywheelMotor.GetVelocity().GetValue();
     return speed;
 };
+
+units::revolutions_per_minute_t ShooterSubsystem::GetShooterSetPointSpeed() {
+    return units::revolutions_per_minute_t(m_ShooterVelocityVoltage.Velocity);
+}
 
 frc2::CommandPtr ShooterSubsystem::StopShooter(){
     return RunOnce([this] {
@@ -188,7 +197,6 @@ frc2::CommandPtr ShooterSubsystem::EnableShooterWithHubTracking() {
 frc2::CommandPtr ShooterSubsystem::EnableShooterWithFixedHoodAngle() {
     return Run([this] {
         TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
-        // SetGoals(parameters.wheel_rpm + 1500_rpm, kFixedPositionHoodAngle);
         SetGoals(parameters.wheel_rpm, kFixedPositionHoodAngle);
     });
 }

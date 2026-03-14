@@ -22,6 +22,7 @@ public:
     ShooterSubsystem();
 
     units::revolutions_per_minute_t GetCurrentShooterSpeed();
+    units::revolutions_per_minute_t GetShooterSetPointSpeed();
     units::degree_t GetCurrentHoodAngle();
     void SetGoals(units::revolutions_per_minute_t speed, units::degree_t hoodAngle);
     void Periodic() override;

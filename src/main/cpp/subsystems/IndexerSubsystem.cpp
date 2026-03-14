@@ -38,7 +38,22 @@ IndexerSubsystem::IndexerSubsystem():
 frc2::CommandPtr IndexerSubsystem::MoveBack() {
     return Run([this] {
         m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(-50_rpm));
-    }).WithTimeout(0.2_s);
+    }).WithTimeout(0.5_s).AndThen(Stop());
+}
+
+frc2::CommandPtr IndexerSubsystem::MoveForward() {
+    return Run([this] {
+        m_indexerSpinMotor.SetControl(m_IndexerRequest.WithVelocity(50_rpm));
+    }).WithTimeout(0.5_s).AndThen(Stop());
+}
+
+frc2::CommandPtr IndexerSubsystem::Unjam() {
+    return frc2::cmd::Sequence(
+        MoveBack(),
+        MoveForward(),
+        MoveBack(),
+        MoveForward()
+    );
 }
 
 frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
