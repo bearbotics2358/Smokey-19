@@ -46,6 +46,11 @@ RobotContainer::RobotContainer()
     m_autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
     frc::SmartDashboard::PutData("Auto Mode", &m_autoChooser);
 
+    m_pdh = std::make_shared<frc::PowerDistribution>(1, frc::PowerDistribution::ModuleType::kRev);
+    BearLog::SetPdh(m_pdh);
+
+    BearLog::SetOptions({BearLogOptions::NTPublish::Yes, BearLogOptions::LogWithNTPrefix::Yes, BearLogOptions::LogExtras::Yes});
+
     ConfigureBindings();
 }
 
