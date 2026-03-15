@@ -6,7 +6,7 @@
 #include <frc/simulation/RoboRioSim.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/RobotBase.h>
-#include <frc/DriverStation.h>
+#include <frc2/command/button/RobotModeTriggers.h>
 
 using namespace ctre::phoenix6;
 ShooterSubsystem::ShooterSubsystem()
@@ -23,6 +23,24 @@ ShooterSubsystem::ShooterSubsystem()
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+
+    frc2::RobotModeTriggers::Autonomous().OnTrue(
+        frc2::cmd::RunOnce([this] {
+            if (false == m_HoodZeroed) {
+                m_HoodOffset = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) - 75_deg;
+                m_HoodZeroed = true;
+            }
+        })
+    );
+
+    frc2::RobotModeTriggers::Teleop().OnTrue(
+        frc2::cmd::RunOnce([this] {
+            if (false == m_HoodZeroed) {
+                m_HoodOffset = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) - 75_deg;
+                m_HoodZeroed = true;
+            }
+        })
+    );
 }
 
 // frc2::CommandPtr ShooterSubsystem::CalibrateHoodMotor() {
@@ -107,10 +125,6 @@ void ShooterSubsystem::ConfigureFeederMotor()
 }
 
 void ShooterSubsystem::Periodic() {
-    if (frc::DriverStation::IsDisabled()) {
-        m_HoodOffset = GetAngleFromTurns(m_HoodMotor.GetPosition().GetValue()) - 75_deg;
-    }
-
     BearLog::Log("Shooter/Flywheel/SetPointSpeed", units::revolutions_per_minute_t(m_ShooterVelocityVoltage.Velocity));
     BearLog::Log("Shooter/Flywheel/Speed", GetCurrentShooterSpeed());
     BearLog::Log("Shooter/Flywheel/Voltage", m_FlywheelMotor.GetMotorVoltage().GetValue());

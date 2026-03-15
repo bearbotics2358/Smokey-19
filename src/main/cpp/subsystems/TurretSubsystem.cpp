@@ -8,6 +8,7 @@
 #include <frc/simulation/RoboRioSim.h>
 #include <frc/util/Color8Bit.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc2/command/button/RobotModeTriggers.h>
 
 #include "subsystems/RobotZoneHelper.h"
 #include "FieldConstants.h"
@@ -39,17 +40,28 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+
+    frc2::RobotModeTriggers::Autonomous().OnTrue(
+        frc2::cmd::RunOnce([this] {
+            if (false == m_TurretZeroed) {
+                m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+                m_TurretZeroed = true;
+            }
+        })
+    );
+
+    frc2::RobotModeTriggers::Teleop().OnTrue(
+        frc2::cmd::RunOnce([this] {
+            if (false == m_TurretZeroed) {
+                m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+                m_TurretZeroed = true;
+            }
+        })
+    );
 }
 
 void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Angle", CurrentAngle());
-
-    if (frc::DriverStation::IsDisabled()) {
-        BearLog::Log("Turret/IsBeamBroken?", m_turretReset.Get());
-        if (m_turretReset.Get()) {
-            turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
-        }
-    }
 
     // Disabled for now until the turret functionality is working
     GoToAngle();
@@ -128,7 +140,7 @@ void TurretSubsystem::SetGoalAngle() {
 }
 
 units::degree_t TurretSubsystem::CurrentAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - turretOffset;
+    units::degree_t angle = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - m_turretOffset;
     return angle;
 };
 
