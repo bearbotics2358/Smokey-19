@@ -57,7 +57,7 @@ private:
       frc::Transform3d{-1.375_in, 32_in, 17.625_in, frc::Rotation3d{0.0_rad, 20_deg, 90_deg}}
     ));
     localization_cameras.push_back(std::make_unique<VisionInputPhotonVision>(
-      "Right2",
+      "Right",
       frc::Transform3d{-1.5_in, -32_in, 17.75_in, frc::Rotation3d{0.0_rad, 20_deg, -90_deg}}
     ));
 

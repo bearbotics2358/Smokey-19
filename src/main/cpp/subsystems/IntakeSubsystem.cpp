@@ -135,15 +135,15 @@ frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
     );
 }
 
-frc2::CommandPtr IntakeSubsystem::RunExtenderInReverseVolts() {
+frc2::CommandPtr IntakeSubsystem::ExtendExtenderConstantVolts() {
     return Run([this] {
-        m_extenderMotor.SetVoltage(1.0_V);
+        m_extenderMotor.SetVoltage(2.0_V);
     });
 }
 
-frc2::CommandPtr IntakeSubsystem::RunExtenderForwardVolts() {
+frc2::CommandPtr IntakeSubsystem::RetractExtenderConstantVolts() {
     return Run([this] {
-        m_extenderMotor.SetVoltage(-1.0_V);
+        m_extenderMotor.SetVoltage(-2.0_V);
     });
 }
 
