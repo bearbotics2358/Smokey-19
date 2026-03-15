@@ -25,8 +25,8 @@ public:
         frc2::CommandPtr StopIntake();
         frc2::CommandPtr AgitateToHelpIndexer();
 
-        frc2::CommandPtr RunExtenderInReverseVolts();
-        frc2::CommandPtr RunExtenderForwardVolts();
+        frc2::CommandPtr ExtendExtenderConstantVolts();
+        frc2::CommandPtr RetractExtenderConstantVolts();
         units::degree_t CurrentAngle();
 
         void Periodic() override;
