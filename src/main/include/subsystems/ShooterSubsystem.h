@@ -50,6 +50,8 @@ private:
     void ConfigureHoodMotor();
     void ConfigureFeederMotor();
 
+    bool m_HoodZeroed = false;
+
     static constexpr int kFlywheelMotorId = 37;
     static constexpr int kFlywheelFollowerMotorId = 36;
     static constexpr int kShooterElevationMotorID = 50;
