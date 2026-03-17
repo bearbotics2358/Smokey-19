@@ -8,40 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.718871527777778,
-        "y": 5.105763888888888
+        "x": 8.033802083333333,
+        "y": 1.8147395833333335
       },
       "isLocked": false,
       "linkedName": "Mid Neutral1"
     },
     {
       "anchor": {
-        "x": 4.317621527777778,
-        "y": 7.43625
+        "x": 4.412100694444445,
+        "y": 0.618003472222223
       },
       "prevControl": {
-        "x": 7.1519965277777775,
-        "y": 7.814166666666667
-      },
-      "nextControl": {
-        "x": 2.415678868686328,
-        "y": 7.182657645454474
-      },
-      "isLocked": false,
-      "linkedName": "Left Trench"
-    },
-    {
-      "anchor": {
-        "x": 1.2313694721825963,
-        "y": 6.0081455064194005
-      },
-      "prevControl": {
-        "x": 2.1918402777777777,
-        "y": 6.869375
+        "x": 7.041770833333333,
+        "y": 0.3818055555555566
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Right Trench"
     }
   ],
   "rotationTargets": [],
@@ -49,7 +33,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 1.3248730964466993,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.2,
         "maxAcceleration": 3.0,
@@ -63,41 +47,25 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 6.2,
-        "y": 7.5
+        "x": 7.0,
+        "y": 0.5
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.67005076142132,
-      "maxWaypointRelativePos": 1.3604060913705551,
-      "name": "Point Towards Zone"
-    },
-    {
-      "fieldPosition": {
-        "x": 5.0,
-        "y": 7.3
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.8077994428969363,
+      "minWaypointRelativePos": 0.8525345622119836,
+      "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
     {
+      "name": "Extend Hopper",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
       "name": "Run Intake",
-      "waypointRelativePos": 0.03899721448467969,
-      "endWaypointRelativePos": 0.8245125348189416,
-      "command": null
-    },
-    {
-      "name": "",
-      "waypointRelativePos": 1.4484679665738132,
-      "endWaypointRelativePos": 2.0,
-      "command": null
-    },
-    {
-      "name": "Squeeze Hopper",
-      "waypointRelativePos": 1.610027855153201,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
     }

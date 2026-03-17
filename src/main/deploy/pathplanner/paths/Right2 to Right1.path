@@ -74,7 +74,7 @@
   ],
   "eventMarkers": [
     {
-      "name": "Point Turret at Hub",
+      "name": "",
       "waypointRelativePos": 1.1142061281337057,
       "endWaypointRelativePos": 2.0,
       "command": null

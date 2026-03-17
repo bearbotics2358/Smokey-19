@@ -80,7 +80,7 @@
       "command": null
     },
     {
-      "name": "Point Turret at Hub",
+      "name": "",
       "waypointRelativePos": 1.3704735376044548,
       "endWaypointRelativePos": 2.0,
       "command": null
@@ -108,7 +108,7 @@
   "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -163.3690462932786
+    "rotation": -125.72739822279975
   },
   "useDefaultConstraints": true
 }

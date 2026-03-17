@@ -21,22 +21,9 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Point Turret at Hub"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Launch Fuel at Hub"
-                      }
-                    }
-                  ]
+                  "name": "Launch Fuel at Hub"
                 }
               }
             ]
@@ -65,12 +52,6 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Point Turret at Hub"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
                         "name": "Launch Fuel at Hub"
                       }
                     }
@@ -81,25 +62,6 @@
                 "type": "named",
                 "data": {
                   "name": "Squeeze Hopper"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Point Turret at Hub"
-                      }
-                    }
-                  ]
                 }
               },
               {
