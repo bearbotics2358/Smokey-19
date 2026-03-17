@@ -16,19 +16,19 @@
     },
     {
       "anchor": {
-        "x": 4.364861111111111,
+        "x": 4.805763888888889,
         "y": 7.43625
       },
       "prevControl": {
-        "x": 3.5319787218650323,
-        "y": 7.409809289230283
+        "x": 3.972596335533171,
+        "y": 7.45121708179681
       },
       "nextControl": {
-        "x": 6.34892361111111,
-        "y": 7.499236111111111
+        "x": 7.435434027777777,
+        "y": 7.389010416666666
       },
       "isLocked": false,
-      "linkedName": "Left Trench"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -36,8 +36,8 @@
         "y": 3.6098437500000005
       },
       "prevControl": {
-        "x": 6.484625279849744,
-        "y": 5.230434842216075
+        "x": 6.679600694444445,
+        "y": 5.200243055555557
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.0807799442896946,
+      "minWaypointRelativePos": 0.593908629441624,
       "maxWaypointRelativePos": 2.0,
       "constraints": {
         "maxVelocity": 1.2,
@@ -63,21 +63,21 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 7.0,
-        "y": 7.0
+        "x": 3.0,
+        "y": 7.25
       },
       "rotationOffset": 0.0,
       "minWaypointRelativePos": 0.5515320334261847,
-      "maxWaypointRelativePos": 1.225626740947072,
+      "maxWaypointRelativePos": 1.157360406091371,
       "name": "Point Towards Zone"
     },
     {
       "fieldPosition": {
-        "x": 7.0,
+        "x": 5.0,
         "y": 1.0
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 1.2256267409470758,
+      "minWaypointRelativePos": 1.2639593908629432,
       "maxWaypointRelativePos": 2.0,
       "name": "Point Towards Zone"
     }
@@ -90,15 +90,15 @@
       "command": null
     },
     {
-      "name": "Extend Hopper",
-      "waypointRelativePos": 0.32311977715877466,
-      "endWaypointRelativePos": null,
+      "name": "Run Intake",
+      "waypointRelativePos": 1.28426395939086,
+      "endWaypointRelativePos": 2.0,
       "command": null
     },
     {
-      "name": "Run Intake",
-      "waypointRelativePos": 1.1532033426183848,
-      "endWaypointRelativePos": 2.0,
+      "name": "Extend Hopper",
+      "waypointRelativePos": 1.2842639593908605,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],

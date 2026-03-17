@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.333368055555556,
-        "y": 0.6652430555555566
+        "x": 4.412100694444445,
+        "y": 0.618003472222223
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.246666666666666,
-        "y": 0.31881944444444454
+        "x": 5.325399305555555,
+        "y": 0.2715798611111109
       },
       "isLocked": false,
       "linkedName": "Right Trench"
@@ -48,7 +48,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.6295264623955437,
+      "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 1.9164345403899643,
       "constraints": {
         "maxVelocity": 1.2,
@@ -63,12 +63,12 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 7.8,
+        "x": 5.0,
         "y": 5.5
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.7242339832869096,
-      "maxWaypointRelativePos": 1.766016713091914,
+      "minWaypointRelativePos": 0.7309644670050767,
+      "maxWaypointRelativePos": 2.0,
       "name": "Point Towards Zone"
     },
     {

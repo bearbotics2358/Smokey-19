@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.333368055555556,
-        "y": 0.6652430555555566
+        "x": 4.412100694444445,
+        "y": 0.618003472222223
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.2426923378296575,
-        "y": 0.6628332706577514
+        "x": 5.435625,
+        "y": 0.9171875
       },
       "isLocked": false,
       "linkedName": "Right Trench"
@@ -95,7 +95,7 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 0.4,
+        "x": 7.0,
         "y": 7.2
       },
       "rotationOffset": 0.0,
@@ -105,8 +105,8 @@
     },
     {
       "fieldPosition": {
-        "x": 0.4,
-        "y": 37.0
+        "x": 5.0,
+        "y": 12.0
       },
       "rotationOffset": 0.0,
       "minWaypointRelativePos": 0.7466666666666657,
@@ -145,12 +145,6 @@
     {
       "name": "Stop Intake",
       "waypointRelativePos": 3.368888888888891,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Point Turret at Hub",
-      "waypointRelativePos": 3.7155555555555573,
       "endWaypointRelativePos": null,
       "command": null
     },
