@@ -89,6 +89,25 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
 
     frc::Pose3d setpointPose = frc::Pose3d(setpoint_center.X(), setpoint_center.Y(), zdistance, frc::Rotation3d{});
 
+    units::meters_per_second_t launchVelocity = units::meters_per_second_t((m_GetShooterSpeed().value() / 60) * (units::meter_t(4_in).value() * M_PI)) / 2;
+
+    units::meters_per_second_t gravity = 9.81_mps;
+    units::second_t timeOfFlight = units::second_t((2 * launchVelocity.value() * sin(units::radian_t(m_GetHoodAngle()).value())) / gravity.value());
+
+    units::degree_t angleToHub = units::degree_t(units::radian_t(atan2(m_RobotPoseSupplier().Y().value() - setpointPose.Y().value(), m_RobotPoseSupplier().X().value() - setpointPose.X().value())));
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+        angleToHub += 180_deg;
+    }
+
+    frc::Pose2d robotMotionVelocity = frc::Pose2d(units::meter_t(m_RobotSpeedsSupplier().vx.value() / 6), units::meter_t(m_RobotSpeedsSupplier().vy.value() / 6), frc::Rotation2d{}).RotateBy(frc::Rotation2d(m_RobotPoseSupplier().Rotation())).RotateBy(frc::Rotation2d(angleToHub));
+
+    setpointPose = frc::Pose3d( setpointPose.X() + (robotMotionVelocity.X() * timeOfFlight.value()),
+                                setpointPose.Y() + (robotMotionVelocity.Y() * timeOfFlight.value()),
+                                setpointPose.Z(),
+                                frc::Rotation3d{});
+
+    BearLog::Log("AngleToHub", angleToHub);
+    BearLog::Log("TimeOfFlight", timeOfFlight); 
     BearLog::Log("TheRobotSetpointPose", setpointPose);
 
     units::meter_t distance_to_hub_center = units::math::abs(m_RobotPoseSupplier().Translation().Distance(setpoint_center));
