@@ -230,8 +230,10 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		// check if distance is ok
 
 		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
-		if(m_constant_shooter_elevation_enabled || ((inputs.distance - dist) > SUCCESSFUL_SHOT_RADIUS)) {
-			// shot is too short to go into hub
+
+		if(m_constant_shooter_elevation_enabled || (units::math::fabs(inputs.distance - dist) > SUCCESSFUL_SHOT_RADIUS)) {
+			// shot is too short or too long to go into hub
+			// for now, go to constant angle
 
 			if(m_constant_shooter_elevation_enabled) {
 				elevation = inputs.elevation_angle;
@@ -254,40 +256,14 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		// elevation angle not acceptable
 		// adjust motor speed to bring elevation angle within limits
 		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
-		if(dist < inputs.distance) {
-			// shot not going far enough
-			// need to speed up motor
 
-			// search the table, at the minimum elevation angle, starting at the current wheel speed and moving to higher speeds,
-			// find the best match
-			// stop once the table distance error:
-			// - is worse than the previous
+		elevation = ELEVATION_ANGLE_MID;
+		theta_index = (int)elevation.value();
+		inputs.elevation_angle = elevation;
+		// printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
 
-			// starting at ELEVATION_ANGLE_MIN can end up on the wrong side of the balistic arc
-			// starting at ELEVATION_ANGLE_MID looks to be on the correct side of the arc
-			elevation = ELEVATION_ANGLE_MID;
-			theta_index = (int)elevation.value();
-			inputs.elevation_angle = elevation;
-			// printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
+		inputs = find_best_launch_speed(inputs, theta_index);
 
-			inputs = find_best_launch_speed(inputs, theta_index);
-
-		} else {
-			// shot too long
-			// need to slow down motor
-
-			// search the table, at the maximum elevation angle, starting at the current wheel speed and moving to slower speeds,
-			// find the best match
-			// stop once the table distance error:
-			// - is worse than the previous
-
-			elevation = ELEVATION_ANGLE_MID;
-			theta_index = (int)elevation.value();
-			inputs.elevation_angle = elevation;
-
-			inputs = find_best_launch_speed(inputs, theta_index);
-
-		}
 	}
 
 	// NOTE: not sure this is correct for all cases
@@ -297,6 +273,7 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 	return inputs;
 }
 
+// this only changes launch speed (wheel speed), not launch angle theta
 TrajectoryInfo TrajectoryCalc::find_best_launch_speed(TrajectoryInfo inputs, int theta_index)
 {
 	units::foot_t dist_best = -99_ft;

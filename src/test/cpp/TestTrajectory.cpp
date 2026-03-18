@@ -181,7 +181,9 @@ INSTANTIATE_TEST_SUITE_P(
         */
 
         TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 2650_rpm, 65_deg, 3104_rpm, 0.795_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #0
-        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 65_deg, 3104_rpm, 0.795_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #1
+        TrajectoryParamsCompensated{false, AIR_DRAG, 7_ft, 65_deg, 3600_rpm, 65_deg, 3104_rpm, 0.795_s, TRAJECTORY_FAILURE_SHOT_LONG}, // #1 - this is wrong, it should have returned 3600 RPM - I think this activated it is within good angles, but shot is long, goto 65 deg and find an RPM
+
+        TrajectoryParamsCompensated{false, AIR_DRAG, 7.2_ft, 65_deg, 3600_rpm, 75_deg, 3600_rpm, 1.192_s, TRAJECTORY_FAILURE_SHOT_LONG}, // actually went to 75 deg 3600 RPM, which is correct: stay at current RPM and find an angle
 
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 55_deg,    0_rpm, 65_deg, 4845_rpm, 1.580_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #2
         TrajectoryParamsCompensated{false, AIR_DRAG, 20_ft, 52_deg, 3200_rpm, 65_deg, 4845_rpm, 1.580_s, TRAJECTORY_FAILURE_SHOT_SHORT}, // #3
