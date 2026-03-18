@@ -20,8 +20,8 @@
         "y": 7.420813802083334
       },
       "prevControl": {
-        "x": 5.676567465572034,
-        "y": 7.547151582362288
+        "x": 7.277968749999999,
+        "y": 7.57796875
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,8 +29,43 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.2,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 9.0,
+        "y": 7.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.5862944162436542,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    },
+    {
+      "fieldPosition": {
+        "x": 7.0,
+        "y": 7.5
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.4467005076142136,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -48,7 +83,7 @@
   "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -89.9801378170033
+    "rotation": -160.3042778712707
   },
   "useDefaultConstraints": true
 }

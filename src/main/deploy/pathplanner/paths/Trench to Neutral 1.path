@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -91.04463017064279
   },
   "reversed": false,
   "folder": "Path Parts",

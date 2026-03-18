@@ -16,15 +16,15 @@
     },
     {
       "anchor": {
-        "x": 4.364861111111111,
+        "x": 4.317621527777778,
         "y": 7.43625
       },
       "prevControl": {
-        "x": 6.758333333333333,
+        "x": 6.71109375,
         "y": 7.483489583333334
       },
       "nextControl": {
-        "x": 2.4464603863023586,
+        "x": 2.399220802969026,
         "y": 7.398386827799827
       },
       "isLocked": false,
@@ -90,7 +90,7 @@
       "command": null
     },
     {
-      "name": "Point Turret at Hub",
+      "name": "",
       "waypointRelativePos": 1.465181058495818,
       "endWaypointRelativePos": 2.0,
       "command": null

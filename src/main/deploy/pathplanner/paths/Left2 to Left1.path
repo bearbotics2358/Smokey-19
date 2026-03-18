@@ -45,11 +45,25 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6129032258064504,
+      "maxWaypointRelativePos": 1.3456221198156724,
+      "constraints": {
+        "maxVelocity": 1.2,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 0.4,
+        "x": 7.0,
         "y": 7.2
       },
       "rotationOffset": 0.0,
@@ -60,7 +74,7 @@
   ],
   "eventMarkers": [
     {
-      "name": "Point Turret at Hub",
+      "name": "",
       "waypointRelativePos": 1.3816155988857917,
       "endWaypointRelativePos": 2.0,
       "command": null

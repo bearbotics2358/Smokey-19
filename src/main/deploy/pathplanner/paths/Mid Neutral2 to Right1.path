@@ -90,7 +90,7 @@
       "command": null
     },
     {
-      "name": "Point Turret at Hub",
+      "name": "",
       "waypointRelativePos": 1.3147632311977702,
       "endWaypointRelativePos": 2.0,
       "command": null
