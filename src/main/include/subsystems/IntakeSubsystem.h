@@ -33,7 +33,7 @@ public:
         frc2::CommandPtr StowHopper();
         frc2::CommandPtr StopHopper();
 private:
-        controls::PositionVoltage m_ExtenderPositionVoltage = controls::PositionVoltage(0_tr);
+        controls::MotionMagicVoltage m_ExtenderVoltage = controls::MotionMagicVoltage(0_tr).WithSlot(0);
         controls::VelocityVoltage m_IntakeVelocity = controls::VelocityVoltage(0_rpm).WithSlot(0);
         controls::NeutralOut m_Stop;
 

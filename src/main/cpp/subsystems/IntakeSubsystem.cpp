@@ -49,6 +49,9 @@ void IntakeSubsystem::ConfigureExtenderMotor() {
     extender_config.Slot1.kD = 0.0;
     extender_config.Slot1.kV = 0.12;
 
+    extender_config.MotionMagic.MotionMagicCruiseVelocity = 80_tps;
+    extender_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
+
     m_extenderMotor.GetConfigurator().Apply(extender_config);
 
     m_extenderMotor.SetPosition(0_tr);
@@ -93,13 +96,13 @@ void IntakeSubsystem::ConfigureIntakeMotor() {
 void IntakeSubsystem::Periodic() {
     BearLog::Log("Intake/Extender/Angle", CurrentAngle());
     BearLog::Log("Intake/Extender/Turns", m_extenderMotor.GetPosition().GetValue());
-    BearLog::Log("Intake/Extender/Setpoint", GetAngleFromTurns(m_ExtenderPositionVoltage.Position));
+    BearLog::Log("Intake/Extender/Setpoint", GetAngleFromTurns(m_ExtenderVoltage.Position));
     BearLog::Log("Intake/Velocity", units::revolutions_per_minute_t(m_intakeSpinMotor.GetVelocity().GetValue()));
     BearLog::Log("Intake/Extender/Current", m_extenderMotor.GetTorqueCurrent().GetValue());
     BearLog::Log("Intake/Extender/Voltage", m_extenderMotor.GetMotorVoltage().GetValue());
 
     BearLog::Log("Intake/Extender/CANcoder position", m_ExtenderCANCoder.GetPosition().GetValue());
-    BearLog::Log("Intake/Extender/Setpoint", m_ExtenderPositionVoltage.Position);
+    BearLog::Log("Intake/Extender/Setpoint", m_ExtenderVoltage.Position);
 }
 
 frc2::CommandPtr IntakeSubsystem::RunIntake() {
@@ -115,18 +118,27 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeToHelpIndexer() {
     });
 }
 
+// frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
+//     return Run([this] {
+//         m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
+//         m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(0));
+//     }).RaceWith(
+//         frc2::cmd::Wait(1_s)
+//     ).AndThen(
+//         frc2::cmd::Parallel(
+//             StopHopper(),
+//             StopIntake()
+//         )
+//     );
+// }
+
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
     return Run([this] {
-        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
-        m_extenderMotor.SetControl(m_ExtenderPositionVoltage.WithPosition(0_tr).WithSlot(0));
-    }).RaceWith(
-        frc2::cmd::Wait(1_s)
-    ).AndThen(
-        frc2::cmd::Parallel(
-            StopHopper(),
-            StopIntake()
-        )
-    );
+        //m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(11_tr));
+    });
+    //.WithTimeout(1_s)
+    //.AndThen(StopHopper());
 }
 
 frc2::CommandPtr IntakeSubsystem::StopIntake() {
@@ -142,7 +154,7 @@ units::degree_t IntakeSubsystem::CurrentAngle() {
 
 frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
     return Run([this] {
-        m_extenderMotor.SetControl(m_ExtenderPositionVoltage.WithPosition(11_tr).WithSlot(0));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(11_tr).WithSlot(0));
     }).Until(
         // This could probably be done using WithLimitForwardMotion, but this works for now
         [this] { return m_ExtenderHardStop.Get(); }
@@ -154,7 +166,7 @@ frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
 frc2::CommandPtr IntakeSubsystem::StowHopper() {
     return Run([this] {
         // Using Slot 1 here for retracting to give the the hopper more power to retract
-        m_extenderMotor.SetControl(m_ExtenderPositionVoltage.WithPosition(0_tr).WithSlot(1));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(1));
     }).Until(
         // This could probably be done using WithLimitForwardMotion, but this works for now
         [this] { return m_ExtenderHardStop.Get(); }
