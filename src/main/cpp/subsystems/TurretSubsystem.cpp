@@ -13,6 +13,8 @@
 #include "subsystems/RobotZoneHelper.h"
 #include "FieldConstants.h"
 
+#include "LaunchHelper.h"
+
 TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     : m_turretSpinMotor(kTurretMotorID),
       m_GetCurrentBotPose(getBotPose)
@@ -67,55 +69,6 @@ void TurretSubsystem::Periodic() {
     GoToAngle();
 }
 
-units::degree_t TurretSubsystem::AngleToHub() {
-    frc::Pose2d robotPose = m_GetCurrentBotPose();
-    frc::Translation2d myHubPose = FieldConstants::GetHubCenterForMyAlliance();
-
-    units::meter_t strafe = robotPose.Y() - myHubPose.Y();
-    units::meter_t forward = robotPose.X() - myHubPose.X();
-    units::degree_t robotAngle = robotPose.Rotation().Degrees();
-    units::degree_t angleToHub;
-
-    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + 180_deg;
-    } else {
-        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
-    }
-    BearLog::Log("Turret/RawSetpoint", angleToHub);
-    angleToHub -= robotAngle;
-    while (angleToHub.value() > 180) {
-        angleToHub -= 360_deg;
-    }
-    while (angleToHub.value() < -180) {
-        angleToHub += 360_deg;
-    }
-    BearLog::Log("Turret/ClampedSetpoint", angleToHub);
-    return angleToHub;
-}
-
-units::degree_t TurretSubsystem::AngleToAllianceZone() {
-    frc::Pose2d robotPose = m_GetCurrentBotPose();
-
-    units::degree_t robotAngle = robotPose.Rotation().Degrees();
-    units::degree_t angleToHub;
-
-    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = 180_deg;
-    } else {
-        angleToHub = 0_deg;
-    }
-    BearLog::Log("Turret/RawSetpoint", angleToHub);
-    angleToHub -= robotAngle;
-    while (angleToHub.value() > 180) {
-        angleToHub -= 360_deg;
-    }
-    while (angleToHub.value() < -180) {
-        angleToHub += 360_deg;
-    }
-
-    return angleToHub;
-}
-
 frc2::CommandPtr TurretSubsystem::PointAtHub() {
     return frc2::cmd::RunOnce([this] {
         if (m_pointAtHubToggle == true) {
@@ -129,13 +82,10 @@ frc2::CommandPtr TurretSubsystem::PointAtHub() {
 
 void TurretSubsystem::SetGoalAngle() {
     if (m_pointAtHubToggle == false) {
-        m_setpointAngle = m_stowAngle;
+        m_setpointAngle = m_stowAngle + turretOffset; 
     } else {
-        if (RobotZoneHelper::isRobotInMyAllianceZone(m_GetCurrentBotPose())) {
-            m_setpointAngle = AngleToHub();
-        } else if (RobotZoneHelper::isRobotInNeutralZone(m_GetCurrentBotPose())) {
-            m_setpointAngle = AngleToAllianceZone();
-        }
+        TrajectoryInfo parameters = LaunchHelper::GetInstance().GetLaunchParameters();
+        m_setpointAngle = parameters.turret_angle + turretOffset;
     }
 }
 
@@ -155,7 +105,7 @@ units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 }
 
 void TurretSubsystem::GoToAngle() {
-    SetGoalAngle();
+  SetGoalAngle();
   units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
 
   m_turretSpinMotor.SetControl(
