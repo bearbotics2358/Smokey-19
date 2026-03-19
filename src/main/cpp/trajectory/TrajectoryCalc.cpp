@@ -12,7 +12,7 @@ void TrajectoryCalc::init()
 {
 	set_model(AIR_DRAG);
 	set_shoot_on_the_move_enabled(true);
-	set_constant_shooter_elevation(true);
+	set_constant_shooter_elevation(false);
 	set_ball_compression(0.3950);
 
 	// debug_found_it = false;
@@ -54,14 +54,15 @@ double TrajectoryCalc::get_ball_compression()
 }
 
 
+
+// get_angle() finds the best angle for the current RPM for the requested distance
+
 // NOTE: This code is based on the angle-vs-launch-speed distance table having angles that start at 0, go to 90 degrees, with
 // a step of 1 degree
-//
-// looking at distances for 2 angles, and picking the one that is closer to the target distance
-// - if the distance for the current angle is closer to the target distance, continue, using it as the closest so far
-// -  else return the angle for the closest to target distance
 
 // if it is not able to find an angle that will reach the target distance, it returns the angle for the longest shot possible
+
+// NOTE: this code IGNORES m_constant_shooter_elevation_enabled
 
 units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolutions_per_minute_t rpm)
 {
@@ -81,13 +82,10 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 	double dist_error_delta_last = 0;
 
 	// starting at 0 degrees and moving to higher angles, find the best match
-	// stop once the table distance:
-	// - error is worse that the best so far
 
 	// look at distance error, and the delta to the distance error from the last distance
 	// if the sign of the delta distance error changes from negative to positive, done
 	// use the last value (lower angle)
-
 
 	v_launch = wheel_rpm_to_v_launch(rpm);
 	v_launch_index = get_v_launch_index(v_launch);
@@ -117,43 +115,12 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 			continue;
 		}
 
-		/*
-		*********************************************************************************************
-
-		If search inital distance, after the "0's":
-		- check the distance
-		- if won't go in (or maybe 1/2 that?)
-		-- start the reverse direction (like we used to, from 90 to 0)
-
-
-		*/
-
-
-
-		/*
-		if(rpm.value() < 10) {
-			printf("  in get_angle: theta: %2d distance-dist %6.3lf distance-dist_best: %6.3lf distance: % 6.3lf\n", theta_indx,
-				units::math::fabs(distance-dist) + 0.01_ft, units::math::fabs(distance-dist_best), distance);
-		}
-		*/
-
-		// look for best match from 2 adjacent entries in the table
-		// now see which is closer
-
 		// look for sign change from negative to positive in dist_error_delta
 		dist_error = units::math::fabs(distance - dist).value();
 		dist_error_delta = dist_error - dist_error_last;
-		/*
-		if(!debug_found_it) {
-			printf("theta: %3d  dist: %6.2lf  dist_error: %6.2lf  dist_error_delta: %6.2lf  theta_last: %3d  dist_last: %6.2lf  dist_error_last: %6.2lf  dist_error_delta_last: %6.2lf\n", 
-							theta_index, dist.value(), dist_error, dist_error_delta, theta_index_last, dist_last.value(), dist_error_last, dist_error_delta_last);
-		}
-		*/
 		if((dist_error_delta > 0) && (dist_error_delta_last < 0)) {
 			// we're done, use previous value
 			theta_ret = units::degree_t(theta_index_last);
-			// printf("found it\n");
-			// debug_found_it = 1;
 			break;
 		}
 		dist_last = dist;
@@ -162,20 +129,6 @@ units::degree_t TrajectoryCalc::get_angle(units::foot_t distance, units::revolut
 		theta_index_last = theta_index;
 		continue;
 
-		/*
-		if(units::math::fabs(distance - dist) + 0.01_ft < units::math::fabs(distance - dist_best)) { // 0.01 'cause comparing floating point numbers
-			// this one is better
-			theta_index_best = theta_index;
-			dist_best = dist;
-			// go again
-			continue;
-		} else {
-			// this one is worse, use the previous one
-			theta_ret = units::degree_t(theta_index_best);
-			// done
-			break;
-		}
-		*/
 	}
 
 	return theta_ret;
@@ -205,6 +158,63 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		inputs.return_value = TRAJECTORY_FAILURE_SHOT_LONG;
 	}
 
+	// Step 2 - update values based on robot moving at speed
+	// The trajectory of the ball will be affected by the velocity of the robot.  The velocity of the robot will add to the velocity
+	// the ball acquires from the shooter.
+	// It is assumed that the bot has been shooting, perhaps shooting on the fly and that the values fed in will be near what's needed
+	// To compensate for the robot's movement, first calculate the desired trajectory for the shot to the hub from the current robot position.
+	// Then subtract the velocity vector of the robot to determine the velocity that must be imparted to the ball.
+	// Adjust the hood angle and wheel RPM to the new setting
+	// Adjust the turret angle to the new setting
+	if(m_shoot_on_the_move_enabled && ((units::math::fabs(inputs.vx) > ROBOT_SPEED_THRESHOLD) || (units::math::fabs(inputs.vy) > ROBOT_SPEED_THRESHOLD))) {
+		// compensate the elevation angle, turret angle, and wheel speed due to robot moving at speed
+
+		// first, solve the inital problem based on distance to the hub
+		// did Step 1 do this for all cases?
+
+		// We're going to cheat and just use ELEVATION_ANGLE_MID
+		// The advantage is this is always coming from this code so that assumption is fairly valid
+		// An alternative is to back out from the calculations what was the condition last time and update to current distance
+
+		// Find a combination of hood angle and wheel speed that would work for a stationary shot from this distance
+		inputs.elevation_angle = ELEVATION_ANGLE_MID;
+		elevation = ELEVATION_ANGLE_MID;
+		theta_index = (int)elevation.value();
+		inputs = find_best_launch_speed(inputs, theta_index);
+		v_launch_index = wheel_rpm_to_v_launch_index(inputs.wheel_rpm);
+
+		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
+		printf("shoot on fly: distance: %6.2lf  dist: %6.2lf wheel_rpm: %6.2lf\n", inputs.distance.value(), dist.value(), inputs.wheel_rpm.value());
+
+		double v_launch = v_launch_index_to_value(v_launch_index).value();
+		double theta = 1.0 * theta_index;
+		printf("before fly adj: theta: %6.3lf  v_launch: %6.3lf\n", theta, v_launch);
+		printf("  bot: vx: %6.3lf  vy: %6.3lf\n", inputs.vx.value(), inputs.vy.value());
+		double ball_vz = v_launch * sin(theta * M_PI / 180.0);
+		double ball_vh = v_launch * cos(theta * M_PI / 180.0); // ball horizontal velocity (in the xy plane)
+		double ball_vx = ball_vh * units::math::cos(units::radian_t(inputs.hub_angle));
+		double ball_vy = ball_vh * units::math::sin(units::radian_t(inputs.hub_angle));
+		printf("  ball vz: %6.2lf  vh: %6.2lf  vx: %6.2lf vy: %6.2lf\n", ball_vz, ball_vh, ball_vx, ball_vy);
+
+
+		// now subtract the robot's field trajectory (actually the shooter) from the desired trajectory to get the new desired launch trajectory
+		ball_vx = ball_vx - inputs.vx.value();
+		ball_vy = ball_vy - inputs.vy.value();
+		// ball_vz is unchanged
+		inputs.turret_angle = units::degree_t(atan2(ball_vy, ball_vx) * 180.0 / M_PI);
+		ball_vh = sqrt(ball_vx * ball_vx  +  ball_vy * ball_vy);
+		v_launch = sqrt(ball_vh * ball_vh  +  ball_vz * ball_vz);
+		theta = atan2(ball_vz, ball_vh) * 180.0 / M_PI;
+		printf("  new theta: %6.3lf  v_launch: %6.3lf  turret_angle: %6.2lf\n", theta, v_launch, inputs.turret_angle.value());
+		printf("  ball vz: %6.2lf  vh: %6.2lf  vx: %6.2lf vy: %6.2lf\n", ball_vz, ball_vh, ball_vx, ball_vy);
+
+
+		theta_index = (int)theta;
+
+
+		// likely need to skip step 3 or adapt it to this scenario
+	}
+
 	// Step 1 - compute the elevation angle with no limits
 	if(m_constant_shooter_elevation_enabled == 0) {
 		elevation = get_angle(inputs.distance, inputs.wheel_rpm);
@@ -217,11 +227,6 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		theta_index = (int)elevation.value();
 		v_launch_index = wheel_rpm_to_v_launch_index(inputs.wheel_rpm);
 		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
-	}
-
-	// Step 2 - update values based on robot moving at speed
-	if(m_shoot_on_the_move_enabled && (units::math::fabs(inputs.vx) > ROBOT_SPEED_THRESHOLD) || (units::math::fabs(inputs.vy) > ROBOT_SPEED_THRESHOLD)) {
-		// compensate the elevation angle, turret angle, and wheel speed due to robot moving at speed
 	}
 
 	// Step 3 - adjust for elevation angle limits or
