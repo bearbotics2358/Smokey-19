@@ -186,6 +186,14 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
 		printf("shoot on fly: distance: %6.2lf  dist: %6.2lf wheel_rpm: %6.2lf\n", inputs.distance.value(), dist.value(), inputs.wheel_rpm.value());
 
+		if(units::math::fabs(dist - inputs.distance) < SUCCESSFUL_SHOT_RADIUS) {
+			inputs.return_value = TRAJECTORY_SUCCESS;
+		} else if(dist < inputs.distance) {
+			inputs.return_value = TRAJECTORY_FAILURE_SHOT_SHORT;
+		} else {
+			inputs.return_value = TRAJECTORY_FAILURE_SHOT_LONG;
+		}
+
 		double v_launch = v_launch_index_to_value(v_launch_index).value();
 		double theta = 1.0 * theta_index;
 		printf("before fly adj: theta: %6.3lf  v_launch: %6.3lf\n", theta, v_launch);
@@ -209,65 +217,69 @@ TrajectoryInfo TrajectoryCalc::compute_trajectory(TrajectoryInfo inputs)
 		printf("  ball vz: %6.2lf  vh: %6.2lf  vx: %6.2lf vy: %6.2lf\n", ball_vz, ball_vh, ball_vx, ball_vy);
 
 
-		theta_index = (int)theta;
+		// now update remaining values
+		v_launch_index = get_v_launch_index(v_launch);
+		inputs.wheel_rpm = v_launch_index_to_wheel_rpm(v_launch_index);
 
 
 		// likely need to skip step 3 or adapt it to this scenario
-	}
+	} else { // not shooting on the fly:
 
-	// Step 1 - compute the elevation angle with no limits
-	if(m_constant_shooter_elevation_enabled == 0) {
-		elevation = get_angle(inputs.distance, inputs.wheel_rpm);
-		/*
-		if(inputs.wheel_rpm.value() < 10) {
-			printf("  get_angle: %lf input: %lf\n", elevation.value(), inputs.elevation_angle.value());
+		// Step 1 - compute the elevation angle with no limits
+		if(m_constant_shooter_elevation_enabled == 0) {
+			elevation = get_angle(inputs.distance, inputs.wheel_rpm);
+			/*
+			if(inputs.wheel_rpm.value() < 10) {
+				printf("  get_angle: %lf input: %lf\n", elevation.value(), inputs.elevation_angle.value());
+			}
+				*/
+			inputs.elevation_angle = elevation;
+			theta_index = (int)elevation.value();
+			v_launch_index = wheel_rpm_to_v_launch_index(inputs.wheel_rpm);
+			dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
 		}
-			*/
-		inputs.elevation_angle = elevation;
-		theta_index = (int)elevation.value();
-		v_launch_index = wheel_rpm_to_v_launch_index(inputs.wheel_rpm);
-		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
-	}
 
-	// Step 3 - adjust for elevation angle limits or
-	if(m_constant_shooter_elevation_enabled || ((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX))) {
-		// no adjustment needed for angle
-		// check if distance is ok
+		// Step 3 - adjust for elevation angle limits or
+		if(m_constant_shooter_elevation_enabled || ((elevation >= ELEVATION_ANGLE_MIN) && (elevation <= ELEVATION_ANGLE_MAX))) {
+			// no adjustment needed for angle
+			// check if distance is ok
 
-		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
+			dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
 
-		if(m_constant_shooter_elevation_enabled || (units::math::fabs(inputs.distance - dist) > SUCCESSFUL_SHOT_RADIUS)) {
-			// shot is too short or too long to go into hub
-			// for now, go to constant angle
+			if(m_constant_shooter_elevation_enabled || (units::math::fabs(inputs.distance - dist) > SUCCESSFUL_SHOT_RADIUS)) {
+				// shot is too short or too long to go into hub
+				// for now, go to constant angle
 
-			if(m_constant_shooter_elevation_enabled) {
-				elevation = inputs.elevation_angle;
-				theta_index = (int)elevation.value();
-			} else {
-				// set the shot to a mid angle and look from lowest RPM to highest
-				// looking at table, this will find a solution for 7 ft to 20 ft
-				elevation = ELEVATION_ANGLE_MID;
-				theta_index = (int)elevation.value();
-				inputs.elevation_angle = elevation;
+				if(m_constant_shooter_elevation_enabled) {
+					elevation = inputs.elevation_angle;
+					theta_index = (int)elevation.value();
+				} else {
+					// set the shot to a mid angle and look from lowest RPM to highest
+					// looking at table, this will find a solution for 7 ft to 20 ft
+					elevation = ELEVATION_ANGLE_MID;
+					theta_index = (int)elevation.value();
+					inputs.elevation_angle = elevation;
+				}
+
+				// now step thru RPM's to find the best shot
+				// printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
+
+				inputs = find_best_launch_speed(inputs, theta_index);
 			}
 
-			// now step thru RPM's to find the best shot
+		} else {
+			// elevation angle not acceptable
+			// adjust motor speed to bring elevation angle within limits
+			dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
+
+			elevation = ELEVATION_ANGLE_MID;
+			theta_index = (int)elevation.value();
+			inputs.elevation_angle = elevation;
 			// printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
 
 			inputs = find_best_launch_speed(inputs, theta_index);
+
 		}
-
-	} else {
-		// elevation angle not acceptable
-		// adjust motor speed to bring elevation angle within limits
-		dist = units::foot_t(data.distance[m_model][theta_index][v_launch_index]);
-
-		elevation = ELEVATION_ANGLE_MID;
-		theta_index = (int)elevation.value();
-		inputs.elevation_angle = elevation;
-		// printf("inputs.wheel_rpm: %lf  rpm index: %d\n", inputs.wheel_rpm.value(), get_rpm_index(inputs.wheel_rpm));
-
-		inputs = find_best_launch_speed(inputs, theta_index);
 
 	}
 
