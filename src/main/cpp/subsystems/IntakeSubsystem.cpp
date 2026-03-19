@@ -133,24 +133,11 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeToHelpIndexer() {
 // }
 
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
-    return //((Run([this] {
-        //m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
-        AgitateIn()//.WithTimeout(.5_s);
-        //AgitateOut();//.WithTimeout(.5_s);
-    //})//.WithTimeout(.5_s)
-    .AndThen(
-        AgitateOut()//.WithTimeout(.5_s)
-    )
+    return
+    AgitateIn()
+    .AndThen(AgitateOut())
     .Repeatedly()
-    //.WithTimeout(4_s)
-    //.WithTimeout(4_s)
-    // .Until(
-    //     // This could probably be done using WithLimitForwardMotion, but this works for now
-    //     [this] { return m_ExtenderHardStop.Get(); })
-    .AndThen(
-        StopHopper()
-    );
-    //.Repeatedly();
+    .AndThen(StopHopper());
 }
 
 frc2::CommandPtr IntakeSubsystem::AgitateIn(){
