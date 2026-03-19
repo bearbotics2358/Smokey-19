@@ -36,7 +36,7 @@ void IntakeSubsystem::ConfigureExtenderMotor() {
     extender_config.CurrentLimits.StatorCurrentLimit = 50_A;
     extender_config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Coast;
+    extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     extender_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
     extender_config.Slot0.kP = 0.5;
@@ -133,17 +133,37 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeToHelpIndexer() {
 // }
 
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
-    return Run([this] {
+    return //((Run([this] {
         //m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(2_tr));
-    })
-    .WithTimeout(4_s)
+        AgitateIn()//.WithTimeout(.5_s);
+        //AgitateOut();//.WithTimeout(.5_s);
+    //})//.WithTimeout(.5_s)
+    .AndThen(
+        AgitateOut()//.WithTimeout(.5_s)
+    )
+    .Repeatedly()
+    //.WithTimeout(4_s)
+    //.WithTimeout(4_s)
     // .Until(
     //     // This could probably be done using WithLimitForwardMotion, but this works for now
     //     [this] { return m_ExtenderHardStop.Get(); })
     .AndThen(
         StopHopper()
     );
+    //.Repeatedly();
+}
+
+frc2::CommandPtr IntakeSubsystem::AgitateIn(){
+    return Run([this]{
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(2_tr));
+        //@todo: make intake motors spin if that is needed, to push fuel in further
+    }).WithTimeout(.5_s);
+}
+
+frc2::CommandPtr IntakeSubsystem::AgitateOut(){
+    return Run([this]{
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(9_tr));
+    }).WithTimeout(.5_s);
 }
 
 frc2::CommandPtr IntakeSubsystem::StopIntake() {
