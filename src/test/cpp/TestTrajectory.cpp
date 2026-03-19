@@ -22,6 +22,20 @@ struct TrajectoryParamsCompensated {
 	enum return_value_t expected_return_value;
 };
 
+struct TrajectoryParamsShootontheFly {
+    units::foot_t distance;
+    units::degree_t angle;
+    units::revolutions_per_minute_t wheel_rpm;
+    units::degree_t hub_angle;
+    units::feet_per_second_t vx;
+    units::feet_per_second_t vy;
+    units::degree_t expected_turret_angle;
+    units::degree_t expected_elevation_angle;
+    units::revolutions_per_minute_t expected_rpm;    
+};
+
+
+
 class TestTrajectory : public testing::TestWithParam<TrajectoryParams> {
 protected:
     TrajectoryCalc m_TrajectoryCalc;
@@ -41,6 +55,20 @@ public:
     TestTrajectoryCompensated() {
         m_TrajectoryCalc.init();
         m_TrajectoryCalc.set_model(NO_AIR);
+    }
+};
+
+class TestTrajectoryShootontheFly : public testing::TestWithParam<TrajectoryParamsShootontheFly> {
+protected:
+    TrajectoryCalc m_TrajectoryCalc;
+
+public:
+    TestTrajectoryShootontheFly() {
+        m_TrajectoryCalc.init();
+        m_TrajectoryCalc.set_model(AIR_DRAG);
+    	m_TrajectoryCalc.set_shoot_on_the_move_enabled(true);
+	    m_TrajectoryCalc.set_constant_shooter_elevation(false);
+
     }
 };
 
@@ -106,6 +134,8 @@ TEST_P(TestTrajectoryCompensated, ValidateAnglesFromTrajectoryTableWithKnownDist
     trajInfo.distance = params.distance;
     trajInfo.elevation_angle = params.angle;
     trajInfo.wheel_rpm = params.rpm;
+    trajInfo.vx = 0.0_fps;
+    trajInfo.vy = 0.0_fps;
     double alpha = 0.9;
     double max_runs;
 
@@ -196,4 +226,61 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
+TEST_P(TestTrajectoryShootontheFly, ValidateDataFromShootontheFly) {
+    TrajectoryParamsShootontheFly params = GetParam();
+
+    struct TrajectoryInfo trajInfo;
+
+    /*
+    units::foot_t distance;
+    units::degree_t angle;
+    units::degree_t hub_angle;
+    units::feet_per_second_t vx;
+    units::feet_per_second_t vy;
+    units::degree_t expected_turret_angle;
+    units::degree_t expected_elevation_angle;
+    units::revolutions_per_minute_t expected_rpm;    
+
+	units::degree_t elevation_angle = params.angle;
+	units::revolutions_per_minute_t wheel_rpm = params.rpm;
+
+
+    */
+
+    trajInfo.distance = params.distance;
+    trajInfo.elevation_angle = params.angle;
+    trajInfo.hub_angle = params.hub_angle;
+    trajInfo.vx = params.vx;
+    trajInfo.vy = params.vy;
+    trajInfo.wheel_rpm = params.wheel_rpm;
+    trajInfo = m_TrajectoryCalc.compute_trajectory(trajInfo);
+
+    EXPECT_DOUBLE_EQ(trajInfo.elevation_angle.value(), params.expected_elevation_angle.value());
+    /*
+    EXPECT_NEAR(trajInfo.wheel_rpm.value(), params.expected_rpm.value(), 1.0);
+    EXPECT_DOUBLE_EQ(trajInfo.t.value(), params.expected_t.value());
+    EXPECT_EQ(trajInfo.return_value, params.expected_return_value);
+    EXPECT_DOUBLE_EQ(angle.value(), params.expected_angle_deg);
+    */
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrajectoryDistanceTest,
+    TestTrajectoryShootontheFly,
+    ::testing::Values(
+        // Include a small set of ranges for distance and rpms for testing. If testing on the real robot shows that
+        // the trajectory calculations need to be adjusted, these may need to change (so we should avoid adding
+        // a large number of them). We want a representative set to ensure that any possible code optimizations
+        // (like for lookup or calculation speed) to the TrajectoryTable and TrajectoryCalc classes will give us the
+        // same result.
+
+        TrajectoryParamsShootontheFly{10_ft, 65_deg, 3600_rpm, 0_deg, 2_fps, 0_fps, 0_deg, 65_deg, 3600_rpm}, // 0
+        TrajectoryParamsShootontheFly{15_ft, 47_deg, 3974_rpm, 0_deg, 2_fps, 0_fps, 0_deg, 65_deg, 3600_rpm}, // 1
+        TrajectoryParamsShootontheFly{12_ft, 61_deg, 3655_rpm, 45_deg, 5_fps, 5_fps, 0_deg, 65_deg, 3600_rpm}, // 2
+        TrajectoryParamsShootontheFly{12_ft, 61_deg, 3655_rpm, -45_deg, 5_fps, 5_fps, 0_deg, 65_deg, 3600_rpm}, // 3
+        TrajectoryParamsShootontheFly{8_ft, 62_deg, 3191_rpm, 25_deg, 4.33_fps, 2.5_fps, 0_deg, 65_deg, 3600_rpm} // 4
+
+        
+    )
+);
 
