@@ -181,7 +181,7 @@ void RobotContainer::AddPathPlannerCommands() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(1_s))
+        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(3_s)) //the operator X button does not have a timeout, so the extend hopper command has been e
     );
     NamedCommands::registerCommand(
         "Run Intake",
