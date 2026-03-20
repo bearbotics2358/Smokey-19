@@ -59,6 +59,30 @@
           "data": {
             "pathName": "Simple Back to Trench (Left side)"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Simple Go Through Trench (Left Side)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
         }
       ]
     }

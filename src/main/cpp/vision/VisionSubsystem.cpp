@@ -69,4 +69,6 @@ void VisionSubsystem::Periodic()
     BearLog::Log("Vision/Camera" + std::to_string(camera_index) + "/RobotPosesAccepted", robot_poses_accepted);
     BearLog::Log("Vision/Camera" + std::to_string(camera_index) + "/RobotPosesRejected", robot_poses_rejected);
   }
+
+  BearLog::Log("Vision/PigeonYaw", m_Drivetrain->GetPigeon2().GetYaw().GetValue());
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.7941755634638206,
-        "y": 0.6189561091340454
+        "x": 3.019513641755635,
+        "y": 7.354211150652431
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.309406880189799,
-        "y": 0.7911032028469753
+        "x": 4.019513641755635,
+        "y": 7.354211150652431
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "VihaanSomething"
     },
     {
       "anchor": {
-        "x": 2.2771293001186246,
-        "y": 1.834744958481613
+        "x": 5.784626334519575,
+        "y": 7.386488730723606
       },
       "prevControl": {
-        "x": 2.492313167259788,
-        "y": 0.328457888493475
+        "x": 4.784626334519575,
+        "y": 7.386488730723606
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Simple Trench (Outpost side) Hub"
+      "linkedName": "AnotherVihaanSomething"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -141.70983680775686
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Path Parts",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

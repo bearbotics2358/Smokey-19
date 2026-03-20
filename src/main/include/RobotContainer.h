@@ -7,6 +7,7 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <frc/PowerDistribution.h>
 #include "subsystems/CommandSwerveDrivetrain.h"
 #include "Telemetry.h"
 #include "Config.h"
@@ -50,6 +51,8 @@ private:
     IndexerSubsystem m_indexerSubsystem;
     FMSSubsystem m_FMSSubsystem;
     DriveManager m_driveManager;
+
+    std::shared_ptr<frc::PowerDistribution> m_pdh;
 
     subsystems::CommandSwerveDrivetrain m_drivetrain{TunerConstants::CreateDrivetrain(m_RobotType)};
     VisionSubsystem m_VisionSubsystem{&m_drivetrain, VisionConstants::GetLocalizationCameras(&m_drivetrain)};

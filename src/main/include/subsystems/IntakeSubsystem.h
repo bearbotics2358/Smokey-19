@@ -21,10 +21,14 @@ public:
         IntakeSubsystem();
         frc2::CommandPtr RunIntake();
         frc2::CommandPtr RunIntakeToHelpIndexer();
+        frc2::CommandPtr RunIntakeInReverse();
         frc2::CommandPtr StopIntake();
         frc2::CommandPtr AgitateToHelpIndexer();
         frc2::CommandPtr AgitateIn();
         frc2::CommandPtr AgitateOut();
+
+        frc2::CommandPtr ExtendExtenderConstantVolts();
+        frc2::CommandPtr RetractExtenderConstantVolts();
         units::degree_t CurrentAngle();
 
         void Periodic() override;

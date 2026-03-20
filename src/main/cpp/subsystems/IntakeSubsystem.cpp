@@ -23,7 +23,7 @@ IntakeSubsystem::IntakeSubsystem()
 
     m_ExtenderHardStop = frc2::Trigger([this] {
         return (units::math::abs(m_extenderMotor.GetVelocity().GetValue()) < 1_tps &&
-            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 35_A);
+            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 30_A);
     }).Debounce(0.1_s);
 }
 
@@ -82,7 +82,7 @@ void IntakeSubsystem::ConfigureIntakeMotor() {
     configs.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     configs.MotorOutput.Inverted = signals::InvertedValue::Clockwise_Positive;
 
-    configs.CurrentLimits.StatorCurrentLimit = 70_A;
+    configs.CurrentLimits.StatorCurrentLimit = 60_A;
     configs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     configs.Slot0.kP = 0.5;
@@ -118,23 +118,14 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeToHelpIndexer() {
     });
 }
 
-// frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
-//     return Run([this] {
-//         m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
-//         m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(0));
-//     }).RaceWith(
-//         frc2::cmd::Wait(1_s)
-//     ).AndThen(
-//         frc2::cmd::Parallel(
-//             StopHopper(),
-//             StopIntake()
-//         )
-//     );
-// }
+frc2::CommandPtr IntakeSubsystem::RunIntakeInReverse() {
+    return RunOnce([this] {
+        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(-2000_rpm));
+    });
+}
 
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
-    return
-    AgitateIn()
+    return AgitateIn()
     .AndThen(AgitateOut())
     .Repeatedly()
     .AndThen(StopHopper());
@@ -151,6 +142,18 @@ frc2::CommandPtr IntakeSubsystem::AgitateOut(){
     return Run([this]{
         m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(9_tr));
     }).WithTimeout(.5_s);
+}
+
+frc2::CommandPtr IntakeSubsystem::ExtendExtenderConstantVolts() {
+    return Run([this] {
+        m_extenderMotor.SetVoltage(2.0_V);
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::RetractExtenderConstantVolts() {
+    return Run([this] {
+        m_extenderMotor.SetVoltage(-2.0_V);
+    });
 }
 
 frc2::CommandPtr IntakeSubsystem::StopIntake() {

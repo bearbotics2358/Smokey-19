@@ -59,9 +59,9 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
 
     frc::Translation2d hub_center = FieldConstants::GetHubCenterForMyAlliance();
     units::meter_t distance_to_hub_center = units::math::abs(m_RobotPoseSupplier().Translation().Distance(hub_center));
-    inputs.distance = distance_to_hub_center * 2;
+    inputs.distance = distance_to_hub_center;
 
-    BearLog::Log("Distance to Hub", distance_to_hub_center);
+    BearLog::Log("LaunchHelper/Distance to Hub", units::foot_t(distance_to_hub_center));
 
     // @todo When we're ready for shoot on the move, these should be
     //  updated to use m_RobotSpeedsSupplier().vx and m_RobotSpeedsSupplier().vy
@@ -69,6 +69,12 @@ TrajectoryInfo LaunchHelper::GetLaunchParameters() {
     inputs.vy = 0_fps;
 
     m_Cache = m_TrajectoryCalc.compute_trajectory(inputs);
+
+    // m_Cache.wheel_rpm += (1500_rpm * units::foot_t(distance_to_hub_center).value
+
+    BearLog::Log("LaunchHelper/Hood Angle", m_Cache.elevation_angle);
+    BearLog::Log("LaunchHelper/Wheel RPM", m_Cache.wheel_rpm);
+    BearLog::Log("LaunchHelper/Turret Angle", m_Cache.turret_angle);
 
     if (frc::RobotBase::IsSimulation()) {
         DrawTrajectory();
