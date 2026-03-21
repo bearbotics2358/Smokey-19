@@ -23,6 +23,8 @@
 
 constexpr int kTurretMotorID = 60;
 
+using namespace ctre::phoenix6;
+
 class TurretSubsystem : public frc2::SubsystemBase {
     public:
         TurretSubsystem(std::function<frc::Pose2d()> getBotPose);
@@ -51,7 +53,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
 
         bool m_TurretZeroed = false;
 
-        ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
+        controls::PositionVoltage m_RotationVoltage = controls::PositionVoltage(0_tr).WithSlot(0);
 
         ctre::phoenix6::hardware::TalonFX m_turretSpinMotor;
         std::function<frc::Pose2d()> m_GetCurrentBotPose;
