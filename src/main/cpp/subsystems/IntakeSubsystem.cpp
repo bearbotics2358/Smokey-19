@@ -36,7 +36,7 @@ void IntakeSubsystem::ConfigureExtenderMotor() {
     extender_config.CurrentLimits.StatorCurrentLimit = 50_A;
     extender_config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Coast;
+    extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     extender_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
     extender_config.Slot0.kP = 0.5;
@@ -48,6 +48,9 @@ void IntakeSubsystem::ConfigureExtenderMotor() {
     extender_config.Slot1.kI = 0.0;
     extender_config.Slot1.kD = 0.0;
     extender_config.Slot1.kV = 0.12;
+
+    extender_config.MotionMagic.MotionMagicCruiseVelocity = 80_tps;
+    extender_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
 
     m_extenderMotor.GetConfigurator().Apply(extender_config);
 
@@ -93,13 +96,13 @@ void IntakeSubsystem::ConfigureIntakeMotor() {
 void IntakeSubsystem::Periodic() {
     BearLog::Log("Intake/Extender/Angle", CurrentAngle());
     BearLog::Log("Intake/Extender/Turns", m_extenderMotor.GetPosition().GetValue());
-    BearLog::Log("Intake/Extender/Setpoint", GetAngleFromTurns(m_ExtenderPositionVoltage.Position));
+    BearLog::Log("Intake/Extender/Setpoint", GetAngleFromTurns(m_ExtenderVoltage.Position));
     BearLog::Log("Intake/Velocity", units::revolutions_per_minute_t(m_intakeSpinMotor.GetVelocity().GetValue()));
     BearLog::Log("Intake/Extender/Current", m_extenderMotor.GetTorqueCurrent().GetValue());
     BearLog::Log("Intake/Extender/Voltage", m_extenderMotor.GetMotorVoltage().GetValue());
 
     BearLog::Log("Intake/Extender/CANcoder position", m_ExtenderCANCoder.GetPosition().GetValue());
-    BearLog::Log("Intake/Extender/Setpoint", m_ExtenderPositionVoltage.Position);
+    BearLog::Log("Intake/Extender/Setpoint", m_ExtenderVoltage.Position);
 }
 
 frc2::CommandPtr IntakeSubsystem::RunIntake() {
@@ -122,17 +125,23 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeInReverse() {
 }
 
 frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
-    return Run([this] {
-        m_intakeSpinMotor.SetControl(m_IntakeVelocity.WithVelocity(500_rpm));
-        m_extenderMotor.SetControl(m_ExtenderPositionVoltage.WithPosition(0_tr).WithSlot(0));
-    }).RaceWith(
-        frc2::cmd::Wait(1_s)
-    ).AndThen(
-        frc2::cmd::Parallel(
-            StopHopper(),
-            StopIntake()
-        )
-    );
+    return AgitateIn()
+    .AndThen(AgitateOut())
+    .Repeatedly()
+    .AndThen(StopHopper());
+}
+
+frc2::CommandPtr IntakeSubsystem::AgitateIn(){
+    return Run([this]{
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(2_tr));
+        //@todo: make intake motors spin if that is needed, to push fuel in further
+    }).WithTimeout(.5_s);
+}
+
+frc2::CommandPtr IntakeSubsystem::AgitateOut(){
+    return Run([this]{
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(9_tr));
+    }).WithTimeout(.5_s);
 }
 
 frc2::CommandPtr IntakeSubsystem::ExtendExtenderConstantVolts() {
@@ -160,7 +169,7 @@ units::degree_t IntakeSubsystem::CurrentAngle() {
 
 frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
     return Run([this] {
-        m_extenderMotor.SetControl(m_ExtenderPositionVoltage.WithPosition(11_tr).WithSlot(0));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(11_tr).WithSlot(0));
     }).Until(
         // This could probably be done using WithLimitForwardMotion, but this works for now
         [this] { return m_ExtenderHardStop.Get(); }
@@ -172,7 +181,7 @@ frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
 frc2::CommandPtr IntakeSubsystem::StowHopper() {
     return Run([this] {
         // Using Slot 1 here for retracting to give the the hopper more power to retract
-        m_extenderMotor.SetControl(m_ExtenderPositionVoltage.WithPosition(0_tr).WithSlot(1));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(1));
     }).Until(
         // This could probably be done using WithLimitForwardMotion, but this works for now
         [this] { return m_ExtenderHardStop.Get(); }
