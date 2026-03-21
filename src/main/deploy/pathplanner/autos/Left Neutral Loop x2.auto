@@ -5,6 +5,18 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left Trench to Mid Neutral1"
@@ -35,6 +47,12 @@
                       "data": {
                         "name": "Launch Fuel at Hub"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Indexer"
+                      }
                     }
                   ]
                 }
@@ -59,6 +77,31 @@
                       "type": "named",
                       "data": {
                         "name": "Launch Fuel at Hub"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Indexer"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop Shooter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop Indexer"
                       }
                     }
                   ]
@@ -92,6 +135,12 @@
                       "data": {
                         "name": "Launch Fuel at Hub"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Indexer"
+                      }
                     }
                   ]
                 }
@@ -111,17 +160,42 @@
                       "data": {
                         "name": "Squeeze Hopper"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Launch Fuel at Hub"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Indexer"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop Shooter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop Indexer"
+                      }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Launch Fuel at Hub"
           }
         }
       ]
