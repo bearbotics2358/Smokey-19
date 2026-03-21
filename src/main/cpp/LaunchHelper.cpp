@@ -33,6 +33,7 @@ void LaunchHelper::Init(std::function<units::degree_t()> hoodAngleSupplier,
     m_RobotPoseSupplier = robotPoseSupplier;
 
     m_TrajectoryCalc.init();
+    m_TrajectoryCalc.set_constant_shooter_elevation(true);
 
     m_Initialized = true;
 }
