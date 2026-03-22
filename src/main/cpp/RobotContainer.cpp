@@ -107,7 +107,7 @@ void RobotContainer::ConfigureBindings()
 
     operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
-    operatorJoystick.B().OnTrue(m_intakeSubsystem.RetractExtenderConstantVolts());
+    operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
     operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp());
@@ -115,6 +115,9 @@ void RobotContainer::ConfigureBindings()
 
     operatorJoystick.RightTrigger().WhileTrue(m_intakeSubsystem.AgitateToHelpIndexer());
     operatorJoystick.RightTrigger().OnFalse(m_intakeSubsystem.StopHopper());
+
+    operatorJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
+    operatorJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
@@ -165,7 +168,7 @@ void RobotContainer::ConfigureBindings()
     (driverJoystick.Start() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
     (driverJoystick.Start() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
 
-    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading
     driverJoystick.POVDown().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
