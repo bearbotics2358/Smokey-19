@@ -43,18 +43,18 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 
     frc2::RobotModeTriggers::Autonomous().OnTrue(
         frc2::cmd::RunOnce([this] {
-            if (false == m_TurretZeroed) {
+            if (false == m_TurretZeroedInit) {
                 m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
-                m_TurretZeroed = true;
+                m_TurretZeroedInit = true;
             }
         })
     );
 
     frc2::RobotModeTriggers::Teleop().OnTrue(
         frc2::cmd::RunOnce([this] {
-            if (false == m_TurretZeroed) {
+            if (false == m_TurretZeroedInit) {
                 m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
-                m_TurretZeroed = true;
+                m_TurretZeroedInit = true;
             }
         })
     );
@@ -127,6 +127,48 @@ frc2::CommandPtr TurretSubsystem::PointAtHub() {
     });
 }
 
+frc2::CommandPtr TurretSubsystem::ChangeStatement(bool statement) {
+    return RunOnce([this, statement] {
+        testStatementToggle = statement;
+        BearLog::Log("atoggle", testStatementToggle);
+    });
+}
+
+frc2::CommandPtr TurretSubsystem::ZeroTurret() {
+    return Run([this]{
+        m_turretSpinMotor.SetControl(
+            m_RotationVoltage.WithPosition(GetTurnsFromAngle(170_deg))
+        .WithSlot(0));
+        m_TurretZeroed = false;
+    }).WithTimeout(0.5_s).AndThen(
+        RunOnce([this] {
+            m_turretSpinMotor.SetControl(
+                m_RotationVoltage.WithPosition(GetTurnsFromAngle(-170_deg))
+            .WithSlot(0));
+        }).WithTimeout(0.5_s)
+    ).Until(
+        [this] { return testStatementToggle/*m_turretReset.Get() == true*/; }
+    ).AndThen(
+        Run([this] {
+            m_turretSpinMotor.SetControl(
+                m_RotationVoltage.WithPosition(GetTurnsFromAngle(GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 10_deg))
+            .WithSlot(0));
+        }).WithTimeout(0.5_s)
+    ).AndThen(
+        RunOnce([this] {
+            m_turretSpinMotor.SetVoltage(0.5_V);
+        }).Until(
+            [this] { return testStatementToggle/*m_turretReset.Get() == true*/; }
+        )
+    ).AndThen(
+        RunOnce([this] {
+            m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+            m_TurretZeroed = true;
+            m_turretSpinMotor.SetVoltage(0_V);
+        })
+    );
+}
+
 void TurretSubsystem::SetGoalAngle() {
     if (m_pointAtHubToggle == false) {
         m_setpointAngle = m_stowAngle;
@@ -156,11 +198,15 @@ units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 
 void TurretSubsystem::GoToAngle() {
     SetGoalAngle();
-  units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
+    units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
 
-  m_turretSpinMotor.SetControl(
-    m_RotationVoltage.WithPosition(position_in_motor_turns)
-      .WithSlot(0));
+
+    BearLog::Log("aTurretZeroed", m_TurretZeroed);
+    if (m_TurretZeroed == true) {
+        m_turretSpinMotor.SetControl(
+            m_RotationVoltage.WithPosition(position_in_motor_turns)
+            .WithSlot(0));
+    }
 }
 
 // Runs in Simulation only!

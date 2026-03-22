@@ -35,10 +35,15 @@ class TurretSubsystem : public frc2::SubsystemBase {
 
         frc2::CommandPtr PointAtHub();
 
+        frc2::CommandPtr ZeroTurret();
+
         void Periodic() override;
         void SimulationPeriodic() override;
 
         bool m_pointAtHubToggle = true;
+
+        bool testStatementToggle = false;
+        frc2::CommandPtr ChangeStatement(bool statement);
 
         units::degree_t m_stowAngle = 0_deg;
     private:
@@ -49,7 +54,8 @@ class TurretSubsystem : public frc2::SubsystemBase {
         frc::DigitalInput m_turretReset{0};
         units::degree_t m_turretOffset = 0_deg;
 
-        bool m_TurretZeroed = false;
+        bool m_TurretZeroedInit = false;
+        bool m_TurretZeroed = true;
 
         ctre::phoenix6::controls::PositionVoltage m_RotationVoltage{0_tr};
 
