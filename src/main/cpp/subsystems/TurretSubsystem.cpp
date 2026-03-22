@@ -19,7 +19,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 {
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(10)
+        .WithKP(5)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
@@ -31,7 +31,8 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
-        .WithPeakForwardDutyCycle(.75);
+        .WithPeakForwardDutyCycle(.1)
+        .WithPeakReverseDutyCycle(.1);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
@@ -62,9 +63,23 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 
 void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Angle", CurrentAngle());
+    BearLog::Log("Turret/position", m_turretSpinMotor.GetPosition().GetValue());
+    BearLog::Log("Turret/offset", m_turretOffset);
+    BearLog::Log("Turret/PoseRotation", m_GetCurrentBotPose().Rotation().Degrees());
 
-    // Disabled for now until the turret functionality is working
     GoToAngle();
+}
+
+frc2::CommandPtr TurretSubsystem::NudgeOffsetUp() {
+    return RunOnce([this] {
+        m_turretOffset += 2_deg;
+    });
+}
+
+frc2::CommandPtr TurretSubsystem::NudgeOffsetDown() {
+    return RunOnce([this] {
+        m_turretOffset -= 2_deg;
+    });
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
@@ -156,11 +171,9 @@ units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 
 void TurretSubsystem::GoToAngle() {
     SetGoalAngle();
-  units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
+    units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle + m_turretOffset);
 
-  m_turretSpinMotor.SetControl(
-    m_RotationVoltage.WithPosition(position_in_motor_turns)
-      .WithSlot(0));
+    m_turretSpinMotor.SetControl(m_RotationVoltage.WithPosition(position_in_motor_turns));
 }
 
 // Runs in Simulation only!

@@ -14,6 +14,7 @@ IntakeSubsystem::IntakeSubsystem()
 {
     ConfigureExtenderMotor();
     ConfigureIntakeMotor();
+    ConfigureExtenderCANCoder();
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
@@ -49,25 +50,22 @@ void IntakeSubsystem::ConfigureExtenderMotor() {
     extender_config.Slot1.kD = 0.0;
     extender_config.Slot1.kV = 0.12;
 
-    extender_config.MotionMagic.MotionMagicCruiseVelocity = 80_tps;
-    extender_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
+    extender_config.MotionMagic.MotionMagicCruiseVelocity = 50_tps;
+    extender_config.MotionMagic.MotionMagicAcceleration = 150_tr_per_s_sq;
+
+    extender_config.Feedback.RotorToSensorRatio = 8.1818181818;
+    extender_config.Feedback.SensorToMechanismRatio = 1.0;
 
     m_extenderMotor.GetConfigurator().Apply(extender_config);
 
-    m_extenderMotor.SetPosition(0_tr);
+    // m_extenderMotor.SetPosition(0_tr);
 }
 
 void IntakeSubsystem::ConfigureExtenderCANCoder() {
     configs::CANcoderConfiguration config{};
 
-    // @todo Find the center of rotation of the CANcoder and set this correctly!
-    config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5_tr;
-
-    // @todo Find out if this is correct!
     config.MagnetSensor.SensorDirection = signals::SensorDirectionValue::CounterClockwise_Positive;
-
-    // @todo Find out the real offset!
-    config.MagnetSensor.MagnetOffset = 0.4_tr;
+    config.MagnetSensor.MagnetOffset = -0.213135_tr;
 
     m_ExtenderCANCoder.GetConfigurator().Apply(config);
 }
