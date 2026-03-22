@@ -139,10 +139,11 @@ frc2::CommandPtr TurretSubsystem::ZeroTurret() {
         Run([this] {
             m_turretSpinMotor.SetVoltage(-0.5_V);
         }).Until(
-            [this] { return m_Sensor.Get(); }
+            [this] { return (m_Sensor.Get() || (CurrentAngle() < 0_deg)); }
         )
     ).AndThen(
         RunOnce([this] {
+            m_turretSpinMotor.SetVoltage(0_V);
             m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 90_deg;
             m_TurretZeroed = true;
         })
