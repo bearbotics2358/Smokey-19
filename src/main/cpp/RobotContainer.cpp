@@ -112,8 +112,9 @@ void RobotContainer::ConfigureBindings()
 
     operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp());
     operatorJoystick.POVDown().OnTrue(m_turretSubsystem.NudgeOffsetDown());
-    operatorJoystick.POVUp().OnTrue(m_shooterSubsystem.GoToAngle(55_deg));
-    operatorJoystick.POVDown().OnTrue(m_shooterSubsystem.GoToAngle(75_deg));
+
+    operatorJoystick.RightTrigger().WhileTrue(m_intakeSubsystem.AgitateToHelpIndexer());
+    operatorJoystick.RightTrigger().OnFalse(m_intakeSubsystem.StopHopper());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
