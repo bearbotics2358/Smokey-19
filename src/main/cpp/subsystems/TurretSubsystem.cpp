@@ -69,6 +69,8 @@ void TurretSubsystem::Periodic() {
 
     // Disabled for now until the turret functionality is working
     GoToAngle();
+    BearLog::Log("Turret/Sensor", m_Sensor.Get());
+    BearLog::Log("Turret/TurretOffset", m_turretOffset);
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
@@ -135,16 +137,24 @@ frc2::CommandPtr TurretSubsystem::ZeroTurret() {
     return Run([this] {
         m_TurretZeroed = false;
         m_turretSpinMotor.SetControl(m_RotationVoltage.WithPosition(GetTurnsFromAngle(165_deg)));
-    }).WithTimeout(0.5_s).AndThen(
+    }).Until(
+        [this] { return ((m_Sensor.Get() == false)); }
+    ).WithTimeout(0.5_s).AndThen(
         Run([this] {
-            m_turretSpinMotor.SetVoltage(-0.5_V);
+            m_turretSpinMotor.SetControl(5_V);
         }).Until(
-            [this] { return (m_Sensor.Get() || (CurrentAngle() < 0_deg)); }
+            [this] { return ((m_Sensor.Get())); }
+        )
+    ).AndThen(
+        Run([this] {
+            m_turretSpinMotor.SetControl(-2_V);
+        }).Until(
+            [this] { return ((m_Sensor.Get() == false) || (CurrentAngle() < 0_deg)); }
         )
     ).AndThen(
         RunOnce([this] {
             m_turretSpinMotor.SetVoltage(0_V);
-            m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 90_deg;
+            m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 91.5_deg;
             m_TurretZeroed = true;
         })
     );
@@ -179,7 +189,7 @@ units::turn_t TurretSubsystem::GetTurnsFromAngle(units::degree_t angle) {
 
 void TurretSubsystem::GoToAngle() {
     SetGoalAngle();
-    units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle);
+    units::turn_t position_in_motor_turns = GetTurnsFromAngle(m_setpointAngle + m_turretOffset);
 
 
     BearLog::Log("aTurretZeroed", m_TurretZeroed);
