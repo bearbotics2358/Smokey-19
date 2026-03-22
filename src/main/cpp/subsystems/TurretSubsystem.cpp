@@ -19,7 +19,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 {
     ctre::phoenix6::configs::Slot0Configs slot0Config;
     slot0Config
-        .WithKP(10)
+        .WithKP(5)
         .WithKI(0)
         .WithKD(0.2)
         .WithKS(0)
@@ -31,7 +31,7 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
-        .WithPeakForwardDutyCycle(.75);
+        .WithPeakForwardDutyCycle(.1);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
@@ -58,6 +58,10 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
             }
         })
     );
+
+    m_Sensor = frc2::Trigger([this] {
+        return m_turretReset.Get();
+    });
 }
 
 void TurretSubsystem::Periodic() {
@@ -127,44 +131,20 @@ frc2::CommandPtr TurretSubsystem::PointAtHub() {
     });
 }
 
-frc2::CommandPtr TurretSubsystem::ChangeStatement(bool statement) {
-    return RunOnce([this, statement] {
-        testStatementToggle = statement;
-        BearLog::Log("atoggle", testStatementToggle);
-    });
-}
-
 frc2::CommandPtr TurretSubsystem::ZeroTurret() {
-    return Run([this]{
-        m_turretSpinMotor.SetControl(
-            m_RotationVoltage.WithPosition(GetTurnsFromAngle(170_deg))
-        .WithSlot(0));
+    return Run([this] {
         m_TurretZeroed = false;
+        m_turretSpinMotor.SetControl(m_RotationVoltage.WithPosition(GetTurnsFromAngle(165_deg)));
     }).WithTimeout(0.5_s).AndThen(
-        RunOnce([this] {
-            m_turretSpinMotor.SetControl(
-                m_RotationVoltage.WithPosition(GetTurnsFromAngle(-170_deg))
-            .WithSlot(0));
-        }).WithTimeout(0.5_s)
-    ).Until(
-        [this] { return testStatementToggle/*m_turretReset.Get() == true*/; }
-    ).AndThen(
         Run([this] {
-            m_turretSpinMotor.SetControl(
-                m_RotationVoltage.WithPosition(GetTurnsFromAngle(GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 10_deg))
-            .WithSlot(0));
-        }).WithTimeout(0.5_s)
-    ).AndThen(
-        RunOnce([this] {
-            m_turretSpinMotor.SetVoltage(0.5_V);
+            m_turretSpinMotor.SetVoltage(-0.5_V);
         }).Until(
-            [this] { return testStatementToggle/*m_turretReset.Get() == true*/; }
+            [this] { return m_Sensor.Get(); }
         )
     ).AndThen(
         RunOnce([this] {
-            m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue());
+            m_turretOffset = GetAngleFromTurns(m_turretSpinMotor.GetPosition().GetValue()) - 90_deg;
             m_TurretZeroed = true;
-            m_turretSpinMotor.SetVoltage(0_V);
         })
     );
 }

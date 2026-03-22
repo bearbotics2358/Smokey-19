@@ -42,10 +42,9 @@ class TurretSubsystem : public frc2::SubsystemBase {
 
         bool m_pointAtHubToggle = true;
 
-        bool testStatementToggle = false;
-        frc2::CommandPtr ChangeStatement(bool statement);
-
         units::degree_t m_stowAngle = 0_deg;
+
+        frc2::Trigger m_Sensor;
     private:
         void GoToAngle();
         units::degree_t GetAngleFromTurns(units::turn_t rotations);

@@ -164,10 +164,10 @@ void RobotContainer::ConfigureBindings()
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 
 
-    operatorJoystick.A().OnTrue(m_turretSubsystem.ZeroTurret());
+    operatorJoystick.Y().OnTrue(m_turretSubsystem.ZeroTurret());
     operatorJoystick.POVLeft().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
     operatorJoystick.POVRight().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
-    operatorJoystick.Y().OnTrue(m_turretSubsystem.ChangeStatement(true)).OnFalse(m_turretSubsystem.ChangeStatement(false));
+    operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
     //Don't use until tested
     //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
