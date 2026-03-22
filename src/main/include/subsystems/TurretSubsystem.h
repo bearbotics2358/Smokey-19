@@ -36,6 +36,8 @@ class TurretSubsystem : public frc2::SubsystemBase {
         units::degree_t AngleToAllianceZone();
 
         frc2::CommandPtr PointAtHub();
+        frc2::CommandPtr NudgeOffsetUp();
+        frc2::CommandPtr NudgeOffsetDown();
 
         void Periodic() override;
         void SimulationPeriodic() override;

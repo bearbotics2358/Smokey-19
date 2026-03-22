@@ -70,6 +70,18 @@ void TurretSubsystem::Periodic() {
     GoToAngle();
 }
 
+frc2::CommandPtr TurretSubsystem::NudgeOffsetUp() {
+    return RunOnce([this] {
+        m_turretOffset += 2_deg;
+    });
+}
+
+frc2::CommandPtr TurretSubsystem::NudgeOffsetDown() {
+    return RunOnce([this] {
+        m_turretOffset -= 2_deg;
+    });
+}
+
 units::degree_t TurretSubsystem::AngleToHub() {
     frc::Pose2d robotPose = m_GetCurrentBotPose();
     frc::Translation2d myHubPose = FieldConstants::GetHubCenterForMyAlliance();

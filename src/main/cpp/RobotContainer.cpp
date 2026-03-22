@@ -110,6 +110,8 @@ void RobotContainer::ConfigureBindings()
     operatorJoystick.B().OnTrue(m_intakeSubsystem.RetractExtenderConstantVolts());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
+    operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp());
+    operatorJoystick.POVDown().OnTrue(m_turretSubsystem.NudgeOffsetDown());
     operatorJoystick.POVUp().OnTrue(m_shooterSubsystem.GoToAngle(55_deg));
     operatorJoystick.POVDown().OnTrue(m_shooterSubsystem.GoToAngle(75_deg));
 
