@@ -10,6 +10,8 @@
 
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/auto/NamedCommands.h>
+#include <pathplanner/lib/path/PathConstraints.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 #include <frc2/command/RunCommand.h>
 
@@ -39,7 +41,7 @@ RobotContainer::RobotContainer()
         [this] { return m_drivetrain.GetState().Pose; }
     );
 
-    AddPathPlannerCommands();
+    ConfigurePathPlanner();
 
     m_drivetrain.ConfigureAutoBuilder();
 
@@ -177,6 +179,7 @@ void RobotContainer::ConfigureBindings()
 
     //Don't use until tested
     //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
+    driverJoystick.Y().WhileTrue(m_driveManager.DriveAlongWall());
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand()
@@ -184,7 +187,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand()
     return m_autoChooser.GetSelected();
 }
 
-void RobotContainer::AddPathPlannerCommands() {
+void RobotContainer::ConfigurePathPlanner() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
@@ -237,5 +240,29 @@ void RobotContainer::AddPathPlannerCommands() {
                 m_indexerSubsystem.RunIndexerForLaunching()
             )
         )
+    );
+
+    pathplanner::RobotConfig config = pathplanner::RobotConfig::fromGUISettings();
+
+    pathplanner::AutoBuilder::configure(
+        [this]() { return m_drivetrain.GetState().Pose; },
+        [this](frc::Pose2d pose) { m_drivetrain.ResetPose(pose); },
+        [this]() { return m_drivetrain.GetState().Speeds; },
+        [this](frc::ChassisSpeeds speeds) {
+            m_drivetrain.SetControl(
+                drive.WithVelocityX(speeds.vx)
+                    .WithVelocityY(speeds.vy)
+                    .WithRotationalRate(speeds.omega)
+            );
+        },
+
+        std::make_shared<pathplanner::PPHolonomicDriveController>(
+            pathplanner::PIDConstants(5.0, 0.0, 0.0),
+            pathplanner::PIDConstants(5.0, 0.0, 0.0)
+        ),
+
+        config,
+        []() { return true; },
+        &m_drivetrain
     );
 }

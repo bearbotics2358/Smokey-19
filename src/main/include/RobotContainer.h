@@ -63,5 +63,5 @@ public:
     frc2::Command* GetAutonomousCommand();
 private:
     void ConfigureBindings();
-    void AddPathPlannerCommands();
+    void ConfigurePathPlanner();
 };

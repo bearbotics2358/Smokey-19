@@ -1,6 +1,10 @@
 #include "subsystems/DriveManager.h"
 #include "bearlog/bearlog.h"
 #include "subsystems/RobotZoneHelper.h"
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/auto/NamedCommands.h>
+#include <pathplanner/lib/path/PathConstraints.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 DriveManager::DriveManager(std::function<frc::Pose2d()> getBotPose) :
     m_GetCurrentBotPose(getBotPose)
@@ -135,4 +139,26 @@ bool DriveManager::TurnToHub() {
 
         return false;
     }
+}
+
+frc2::CommandPtr DriveManager::DriveAlongWall() {
+    frc::Pose2d target1{0.8_m, 1_m, frc::Rotation2d(180_deg)};
+    frc::Pose2d target2{0.5_m, 0.5_m, frc::Rotation2d(90_deg)};
+    frc::Pose2d target3{0.5_m, 2.3_m, frc::Rotation2d(90_deg)};
+
+    auto slowConstraints = pathplanner::PathConstraints(
+        1.0_mps, 3.0_mps_sq,
+        540_deg_per_s, 720_deg_per_s_sq
+    );
+
+    auto normalConstraints = pathplanner::PathConstraints(
+        3.0_mps, 3.0_mps_sq,
+        540_deg_per_s, 720_deg_per_s_sq
+    );
+
+    return frc2::cmd::Sequence(
+        pathplanner::AutoBuilder::pathfindToPose(target1, normalConstraints, 0_mps),
+        pathplanner::AutoBuilder::pathfindToPose(target2, slowConstraints, 0_mps),
+        pathplanner::AutoBuilder::pathfindToPose(target3, slowConstraints, 0_mps)
+    );
 }
