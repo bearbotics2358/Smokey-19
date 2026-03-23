@@ -24,7 +24,7 @@ public:
 
     frc2::CommandPtr RunIndexerForLaunching();
     frc2::CommandPtr Stop();
-
+    frc2::CommandPtr RunIndexerInReverse();
 
     units::revolutions_per_minute_t GetMotorVelocity();
 

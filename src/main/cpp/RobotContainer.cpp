@@ -52,6 +52,10 @@ RobotContainer::RobotContainer()
     BearLog::SetOptions({BearLogOptions::NTPublish::Yes, BearLogOptions::LogWithNTPrefix::Yes, BearLogOptions::LogExtras::Yes});
 
     ConfigureBindings();
+
+    configs::Pigeon2Configuration pigeon_config{};
+    pigeon_config.GyroTrim.GyroScalarZ = 0.227;
+    m_drivetrain.GetPigeon2().GetConfigurator().Apply(pigeon_config);
 }
 
 void RobotContainer::ConfigureBindings()
@@ -106,8 +110,11 @@ void RobotContainer::ConfigureBindings()
     operatorJoystick.B().OnTrue(m_intakeSubsystem.RetractExtenderConstantVolts());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
-    operatorJoystick.POVUp().OnTrue(m_shooterSubsystem.GoToAngle(55_deg));
-    operatorJoystick.POVDown().OnTrue(m_shooterSubsystem.GoToAngle(75_deg));
+    operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp());
+    operatorJoystick.POVDown().OnTrue(m_turretSubsystem.NudgeOffsetDown());
+
+    operatorJoystick.RightTrigger().WhileTrue(m_intakeSubsystem.AgitateToHelpIndexer());
+    operatorJoystick.RightTrigger().OnFalse(m_intakeSubsystem.StopHopper());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
@@ -182,7 +189,11 @@ void RobotContainer::AddPathPlannerCommands() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(1_s))
+        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(0.5_s))
+    );
+    NamedCommands::registerCommand(
+        "Squeeze Hopper",
+        std::move(m_intakeSubsystem.StowHopper().WithTimeout(2_s))
     );
     NamedCommands::registerCommand(
         "Run Intake",

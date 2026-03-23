@@ -1,5 +1,9 @@
 // TrajectoryCalc.cpp - helper class to calculate trajectories for the shooter
 
+#if defined(_WIN32) || defined(_WIN64)
+#define _USE_MATH_DEFINES
+#endif
+
 #include <units/math.h>
 #include <stdio.h>
 

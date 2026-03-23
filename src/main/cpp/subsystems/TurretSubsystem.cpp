@@ -31,7 +31,8 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)
-        .WithPeakForwardDutyCycle(.1);
+        .WithPeakForwardDutyCycle(.1)
+        .WithPeakReverseDutyCycle(.1);
 
     // Must apply the config to the motor during construction of this object and NOT within functions that
     // run in the normal Periodic loop
@@ -66,11 +67,25 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
 
 void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/Angle", CurrentAngle());
+    BearLog::Log("Turret/position", m_turretSpinMotor.GetPosition().GetValue());
+    BearLog::Log("Turret/offset", m_turretOffset);
+    BearLog::Log("Turret/PoseRotation", m_GetCurrentBotPose().Rotation().Degrees());
 
-    // Disabled for now until the turret functionality is working
     GoToAngle();
     BearLog::Log("Turret/Sensor", m_Sensor.Get());
     BearLog::Log("Turret/TurretOffset", m_turretOffset);
+}
+
+frc2::CommandPtr TurretSubsystem::NudgeOffsetUp() {
+    return RunOnce([this] {
+        m_turretOffset += 2_deg;
+    });
+}
+
+frc2::CommandPtr TurretSubsystem::NudgeOffsetDown() {
+    return RunOnce([this] {
+        m_turretOffset -= 2_deg;
+    });
 }
 
 units::degree_t TurretSubsystem::AngleToHub() {
