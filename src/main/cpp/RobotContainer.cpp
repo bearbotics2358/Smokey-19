@@ -185,7 +185,7 @@ void RobotContainer::ConfigureBindings()
 
     //Don't use until tested
     //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
-    driverJoystick.Y().WhileTrue(m_driveManager.DriveAlongWall());
+    driverJoystick.POVLeft().WhileTrue(m_driveManager.DriveAlongWall());
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand()

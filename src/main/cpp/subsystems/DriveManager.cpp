@@ -146,6 +146,14 @@ frc2::CommandPtr DriveManager::DriveAlongWall() {
     frc::Pose2d target2{0.5_m, 0.5_m, frc::Rotation2d(90_deg)};
     frc::Pose2d target3{0.5_m, 2.3_m, frc::Rotation2d(90_deg)};
 
+    frc::Translation2d fieldCenter{325.61_in, 158.84_in};
+
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
+        target1 = target1.RotateAround(fieldCenter, frc::Rotation2d(180_deg));
+        target2 = target2.RotateAround(fieldCenter, frc::Rotation2d(180_deg));
+        target3 = target3.RotateAround(fieldCenter, frc::Rotation2d(180_deg));
+    }
+
     auto slowConstraints = pathplanner::PathConstraints(
         1.0_mps, 3.0_mps_sq,
         540_deg_per_s, 720_deg_per_s_sq
