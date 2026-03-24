@@ -39,12 +39,16 @@ class TurretSubsystem : public frc2::SubsystemBase {
         frc2::CommandPtr NudgeOffsetUp();
         frc2::CommandPtr NudgeOffsetDown();
 
+        frc2::CommandPtr ZeroTurret();
+
         void Periodic() override;
         void SimulationPeriodic() override;
 
         bool m_pointAtHubToggle = true;
 
         units::degree_t m_stowAngle = 0_deg;
+
+        frc2::Trigger m_Sensor;
     private:
         void GoToAngle();
         units::degree_t GetAngleFromTurns(units::turn_t rotations);
@@ -53,7 +57,8 @@ class TurretSubsystem : public frc2::SubsystemBase {
         frc::DigitalInput m_turretReset{0};
         units::degree_t m_turretOffset = 0_deg;
 
-        bool m_TurretZeroed = false;
+        bool m_TurretZeroedInit = false;
+        bool m_TurretZeroed = true;
 
         controls::PositionVoltage m_RotationVoltage = controls::PositionVoltage(0_tr).WithSlot(0);
 
