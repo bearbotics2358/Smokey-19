@@ -40,25 +40,20 @@ void IntakeSubsystem::ConfigureExtenderMotor() {
     extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     extender_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
-    extender_config.Slot0.kP = 0.5;
+    extender_config.Slot0.kP = 25.0;
     extender_config.Slot0.kI = 0.0;
     extender_config.Slot0.kD = 0.0;
     extender_config.Slot0.kV = 0.12;
 
-    extender_config.Slot1.kP = 2.0;
-    extender_config.Slot1.kI = 0.0;
-    extender_config.Slot1.kD = 0.0;
-    extender_config.Slot1.kV = 0.12;
-
     extender_config.MotionMagic.MotionMagicCruiseVelocity = 50_tps;
-    extender_config.MotionMagic.MotionMagicAcceleration = 150_tr_per_s_sq;
+    extender_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
 
+    extender_config.Feedback.FeedbackRemoteSensorID = m_ExtenderCANCoder.GetDeviceID();
+    extender_config.Feedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::FusedCANcoder;
     extender_config.Feedback.RotorToSensorRatio = 8.1818181818;
     extender_config.Feedback.SensorToMechanismRatio = 1.0;
 
     m_extenderMotor.GetConfigurator().Apply(extender_config);
-
-    // m_extenderMotor.SetPosition(0_tr);
 }
 
 void IntakeSubsystem::ConfigureExtenderCANCoder() {
@@ -131,15 +126,15 @@ frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
 
 frc2::CommandPtr IntakeSubsystem::AgitateIn(){
     return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(2_tr));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.05_tr));
         //@todo: make intake motors spin if that is needed, to push fuel in further
-    }).WithTimeout(.5_s);
+    }).WithTimeout(1.0_s);
 }
 
 frc2::CommandPtr IntakeSubsystem::AgitateOut(){
     return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(9_tr));
-    }).WithTimeout(.5_s);
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.28_tr));
+    }).WithTimeout(1.0_s);
 }
 
 frc2::CommandPtr IntakeSubsystem::ExtendExtenderConstantVolts() {
@@ -167,7 +162,7 @@ units::degree_t IntakeSubsystem::CurrentAngle() {
 
 frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
     return Run([this] {
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(11_tr).WithSlot(0));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.28_tr).WithSlot(0));
     }).Until(
         // This could probably be done using WithLimitForwardMotion, but this works for now
         [this] { return m_ExtenderHardStop.Get(); }
@@ -179,7 +174,7 @@ frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
 frc2::CommandPtr IntakeSubsystem::StowHopper() {
     return Run([this] {
         // Using Slot 1 here for retracting to give the the hopper more power to retract
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(1));
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(0));
     }).Until(
         // This could probably be done using WithLimitForwardMotion, but this works for now
         [this] { return m_ExtenderHardStop.Get(); }

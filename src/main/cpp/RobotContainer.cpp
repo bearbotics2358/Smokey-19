@@ -107,16 +107,22 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.Y().OnTrue(m_intakeSubsystem.RunIntakeInReverse());
     driverJoystick.Y().OnFalse(m_intakeSubsystem.StopIntake());
 
+    driverJoystick.POVUp().OnTrue(m_indexerSubsystem.RunIndexerInReverse());
+    driverJoystick.POVUp().OnFalse(m_indexerSubsystem.Stop());
+
     operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
-    operatorJoystick.B().OnTrue(m_intakeSubsystem.RetractExtenderConstantVolts());
+    operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
-    operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp());
-    operatorJoystick.POVDown().OnTrue(m_turretSubsystem.NudgeOffsetDown());
+    operatorJoystick.POVLeft().OnTrue(m_turretSubsystem.NudgeOffsetUp());
+    operatorJoystick.POVRight().OnTrue(m_turretSubsystem.NudgeOffsetDown());
 
     operatorJoystick.RightTrigger().WhileTrue(m_intakeSubsystem.AgitateToHelpIndexer());
     operatorJoystick.RightTrigger().OnFalse(m_intakeSubsystem.StopHopper());
+
+    operatorJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
+    operatorJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
 
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
@@ -167,15 +173,15 @@ void RobotContainer::ConfigureBindings()
     (driverJoystick.Start() && driverJoystick.Y()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
     (driverJoystick.Start() && driverJoystick.X()).WhileTrue(m_drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
 
-    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading
     driverJoystick.POVDown().OnTrue(m_drivetrain.RunOnce([this] { m_drivetrain.SeedFieldCentric(); }));
 
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 
-
+    operatorJoystick.Y().OnTrue(m_turretSubsystem.ZeroTurret());
+    operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
+    operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
-    operatorJoystick.POVLeft().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
-    operatorJoystick.POVRight().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
 
     //Don't use until tested
     //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
