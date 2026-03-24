@@ -105,13 +105,16 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.Y().OnTrue(m_intakeSubsystem.RunIntakeInReverse());
     driverJoystick.Y().OnFalse(m_intakeSubsystem.StopIntake());
 
+    driverJoystick.POVUp().OnTrue(m_indexerSubsystem.RunIndexerInReverse());
+    driverJoystick.POVUp().OnFalse(m_indexerSubsystem.Stop());
+
     operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
     operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
     operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
     operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
 
-    operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp());
-    operatorJoystick.POVDown().OnTrue(m_turretSubsystem.NudgeOffsetDown());
+    operatorJoystick.POVLeft().OnTrue(m_turretSubsystem.NudgeOffsetUp());
+    operatorJoystick.POVRight().OnTrue(m_turretSubsystem.NudgeOffsetDown());
 
     operatorJoystick.RightTrigger().WhileTrue(m_intakeSubsystem.AgitateToHelpIndexer());
     operatorJoystick.RightTrigger().OnFalse(m_intakeSubsystem.StopHopper());
@@ -175,8 +178,8 @@ void RobotContainer::ConfigureBindings()
 
 
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
-    operatorJoystick.POVLeft().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
-    operatorJoystick.POVRight().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
+    operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
+    operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
 
     //Don't use until tested
     //operatorJoystick.B().OnTrue(m_shooterSubsystem.CalibrateHoodMotor());
