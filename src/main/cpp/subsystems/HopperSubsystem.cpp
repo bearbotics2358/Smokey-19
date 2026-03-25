@@ -37,7 +37,7 @@ void HopperSubsystem::ConfigureExtenderMotor() {
     extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
     extender_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
 
-    extender_config.Slot0.kP = 25.0;
+    extender_config.Slot0.kP = 30.0;
     extender_config.Slot0.kI = 0.0;
     extender_config.Slot0.kD = 0.0;
     extender_config.Slot0.kV = 0.12;
@@ -83,14 +83,13 @@ frc2::CommandPtr HopperSubsystem::AgitateToHelpIndexer() {
 frc2::CommandPtr HopperSubsystem::AgitateIn(){
     return Run([this]{
         m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.05_tr));
-        //@todo: make intake motors spin if that is needed, to push fuel in further
-    }).WithTimeout(1.0_s);
+    }).WithTimeout(0.5_s);
 }
 
 frc2::CommandPtr HopperSubsystem::AgitateOut(){
     return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.28_tr));
-    }).WithTimeout(1.0_s);
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.25_tr));
+    }).WithTimeout(0.5_s);
 }
 
 frc2::CommandPtr HopperSubsystem::ExtendExtenderConstantVolts() {
