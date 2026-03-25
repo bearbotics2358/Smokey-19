@@ -111,16 +111,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "AutoIdea5"
-                }
-              }
-            ]
+            "pathName": "AutoIdea5"
           }
         },
         {
@@ -211,72 +204,9 @@
           }
         },
         {
-          "type": "race",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter"
-                }
-              }
-            ]
+            "name": "Launch Fuel at Hub"
           }
         }
       ]

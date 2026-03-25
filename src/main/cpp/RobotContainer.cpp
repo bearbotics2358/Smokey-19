@@ -247,6 +247,12 @@ void RobotContainer::ConfigurePathPlanner() {
             )
         )
     );
+    NamedCommands::registerCommand(
+        "Empty Hopper",
+        std::move(
+            m_intakeSubsystem.RunIntakeInReverse()
+        )
+    );
 
     pathplanner::RobotConfig config = pathplanner::RobotConfig::fromGUISettings();
 

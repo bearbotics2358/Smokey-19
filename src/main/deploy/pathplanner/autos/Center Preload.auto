@@ -13,12 +13,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Extend Hopper"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Launch Fuel at Hub"
           }
         }
