@@ -7,7 +7,44 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Simple Trench (Left) to Shoot"
+            "pathName": "Center to RightA"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Launch Fuel at Hub"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Indexer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightA to Outpost"
           }
         },
         {
@@ -17,47 +54,22 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Indexer"
+                  "name": "Extend Hopper"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 1.0
                 }
               }
             ]
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Indexer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Simple Back to Trench (Left side)"
+            "name": "Launch Fuel at Hub"
           }
         }
       ]

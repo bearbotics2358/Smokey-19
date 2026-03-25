@@ -11,18 +11,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost to Shoot"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Launch Fuel at Hub"

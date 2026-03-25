@@ -171,7 +171,7 @@
   "folder": "Full Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -3.082180824528151
   },
   "useDefaultConstraints": true
 }

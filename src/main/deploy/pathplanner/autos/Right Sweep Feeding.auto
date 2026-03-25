@@ -17,13 +17,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Squeeze Hopper"
+                  "name": "Stop Intake"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Launch Fuel at Alliance Zone"
+                  "name": "Empty Hopper"
                 }
               }
             ]
@@ -33,6 +33,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Feeding",
   "choreoAuto": false
 }

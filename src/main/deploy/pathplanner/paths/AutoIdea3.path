@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 0.5928928571428569,
+        "x": 0.632934027777778,
         "y": 0.6528635902189261
       },
       "prevControl": {
-        "x": 1.72373937682859,
+        "x": 1.763780547463511,
         "y": 0.8951843882415256
       },
       "nextControl": null,
@@ -36,7 +36,14 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Extend Hopper",
+      "waypointRelativePos": 0.50921658986175,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 1.5,
     "maxAcceleration": 3.0,

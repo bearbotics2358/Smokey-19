@@ -11,13 +11,19 @@
           }
         },
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 5.0
+                  "name": "Stop Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Hopper"
                 }
               },
               {
@@ -27,24 +33,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right1 to Outpost"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost to Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Launch Fuel at Hub"
           }
         }
       ]
