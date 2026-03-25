@@ -124,9 +124,11 @@ void RobotContainer::ConfigureBindings()
     operatorJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     operatorJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
 
+    operatorJoystick.LeftBumper().OnTrue(m_intakeSubsystem.RunIntakeInReverse());
+    operatorJoystick.LeftBumper().OnFalse(m_intakeSubsystem.StopIntake());
+
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
-
 
     driverJoystick.RightBumper().OnTrue(
         frc2::cmd::Sequence(
