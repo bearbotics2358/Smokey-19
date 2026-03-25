@@ -12,57 +12,11 @@ using namespace ctre::phoenix6;
 
 IntakeSubsystem::IntakeSubsystem()
 {
-    ConfigureExtenderMotor();
     ConfigureIntakeMotor();
-    ConfigureExtenderCANCoder();
 
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
-
-    m_setpointAngle = kStowAngle;
-
-    m_ExtenderHardStop = frc2::Trigger([this] {
-        return (units::math::abs(m_extenderMotor.GetVelocity().GetValue()) < 1_tps &&
-            units::math::abs(m_extenderMotor.GetTorqueCurrent().GetValue()) > 30_A);
-    }).Debounce(0.1_s);
-}
-
-void IntakeSubsystem::ConfigureExtenderMotor() {
-    configs::TalonFXConfiguration extender_config{};
-
-    static constexpr units::ampere_t kPeakTorqueCurrent = 70_A;
-    extender_config.TorqueCurrent.PeakForwardTorqueCurrent = kPeakTorqueCurrent;
-    extender_config.TorqueCurrent.PeakReverseTorqueCurrent = -kPeakTorqueCurrent;
-    extender_config.CurrentLimits.StatorCurrentLimit = 50_A;
-    extender_config.CurrentLimits.StatorCurrentLimitEnable = true;
-
-    extender_config.MotorOutput.NeutralMode = signals::NeutralModeValue::Brake;
-    extender_config.MotorOutput.Inverted = signals::InvertedValue::CounterClockwise_Positive;
-
-    extender_config.Slot0.kP = 25.0;
-    extender_config.Slot0.kI = 0.0;
-    extender_config.Slot0.kD = 0.0;
-    extender_config.Slot0.kV = 0.12;
-
-    extender_config.MotionMagic.MotionMagicCruiseVelocity = 50_tps;
-    extender_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
-
-    extender_config.Feedback.FeedbackRemoteSensorID = m_ExtenderCANCoder.GetDeviceID();
-    extender_config.Feedback.FeedbackSensorSource = signals::FeedbackSensorSourceValue::FusedCANcoder;
-    extender_config.Feedback.RotorToSensorRatio = 8.1818181818;
-    extender_config.Feedback.SensorToMechanismRatio = 1.0;
-
-    m_extenderMotor.GetConfigurator().Apply(extender_config);
-}
-
-void IntakeSubsystem::ConfigureExtenderCANCoder() {
-    configs::CANcoderConfiguration config{};
-
-    config.MagnetSensor.SensorDirection = signals::SensorDirectionValue::CounterClockwise_Positive;
-    config.MagnetSensor.MagnetOffset = -0.213135_tr;
-
-    m_ExtenderCANCoder.GetConfigurator().Apply(config);
 }
 
 void IntakeSubsystem::ConfigureIntakeMotor() {
@@ -87,15 +41,7 @@ void IntakeSubsystem::ConfigureIntakeMotor() {
 }
 
 void IntakeSubsystem::Periodic() {
-    BearLog::Log("Intake/Extender/Angle", CurrentAngle());
-    BearLog::Log("Intake/Extender/Turns", m_extenderMotor.GetPosition().GetValue());
-    BearLog::Log("Intake/Extender/Setpoint", GetAngleFromTurns(m_ExtenderVoltage.Position));
     BearLog::Log("Intake/Velocity", units::revolutions_per_minute_t(m_intakeSpinMotor.GetVelocity().GetValue()));
-    BearLog::Log("Intake/Extender/Current", m_extenderMotor.GetTorqueCurrent().GetValue());
-    BearLog::Log("Intake/Extender/Voltage", m_extenderMotor.GetMotorVoltage().GetValue());
-
-    BearLog::Log("Intake/Extender/CANcoder position", m_ExtenderCANCoder.GetPosition().GetValue());
-    BearLog::Log("Intake/Extender/Setpoint", m_ExtenderVoltage.Position);
 }
 
 frc2::CommandPtr IntakeSubsystem::RunIntake() {
@@ -117,101 +63,17 @@ frc2::CommandPtr IntakeSubsystem::RunIntakeInReverse() {
     });
 }
 
-frc2::CommandPtr IntakeSubsystem::AgitateToHelpIndexer() {
-    return AgitateIn()
-    .AndThen(AgitateOut())
-    .Repeatedly()
-    .AndThen(StopHopper());
-}
-
-frc2::CommandPtr IntakeSubsystem::AgitateIn(){
-    return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.05_tr));
-        //@todo: make intake motors spin if that is needed, to push fuel in further
-    }).WithTimeout(1.0_s);
-}
-
-frc2::CommandPtr IntakeSubsystem::AgitateOut(){
-    return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.28_tr));
-    }).WithTimeout(1.0_s);
-}
-
-frc2::CommandPtr IntakeSubsystem::ExtendExtenderConstantVolts() {
-    return Run([this] {
-        m_extenderMotor.SetVoltage(2.0_V);
-    });
-}
-
-frc2::CommandPtr IntakeSubsystem::RetractExtenderConstantVolts() {
-    return Run([this] {
-        m_extenderMotor.SetVoltage(-2.0_V);
-    });
-}
-
 frc2::CommandPtr IntakeSubsystem::StopIntake() {
     return RunOnce([this] {
         m_intakeSpinMotor.SetControl(m_Stop);
     });
 }
 
-units::degree_t IntakeSubsystem::CurrentAngle() {
-    units::degree_t angle = GetAngleFromTurns(m_extenderMotor.GetPosition().GetValue()) * kEGearRatio;
-    return angle;
-}
-
-frc2::CommandPtr IntakeSubsystem::ExtendHopper() {
-    return Run([this] {
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.28_tr).WithSlot(0));
-    }).Until(
-        // This could probably be done using WithLimitForwardMotion, but this works for now
-        [this] { return m_ExtenderHardStop.Get(); }
-    ).AndThen(
-        StopHopper()
-    );
-}
-
-frc2::CommandPtr IntakeSubsystem::StowHopper() {
-    return Run([this] {
-        // Using Slot 1 here for retracting to give the the hopper more power to retract
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0_tr).WithSlot(0));
-    }).Until(
-        // This could probably be done using WithLimitForwardMotion, but this works for now
-        [this] { return m_ExtenderHardStop.Get(); }
-    ).AndThen(
-        StopHopper()
-    );
-}
-
-frc2::CommandPtr IntakeSubsystem::StopHopper() {
-    return RunOnce([this] {
-        m_extenderMotor.SetControl(m_Stop);
-    });
-}
-
-units::degree_t IntakeSubsystem::GetAngleFromTurns(units::turn_t rotations) {
-    units::degree_t angle = units::degree_t(rotations.value() * kEGearRatio);
-    return angle;
-}
-
-units::turn_t IntakeSubsystem::GetTurnsFromAngle(units::degree_t angle) {
-    units::turn_t rotations = units::turn_t(angle.value() / kEGearRatio);
-    return rotations;
-}
-
 // Runs in Simulation only!
 void IntakeSubsystem::SimulationInit() {
-    const double kSimIntakeLineWidth = 6;
     auto& intake_sim = m_intakeSpinMotor.GetSimState();
     intake_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
     intake_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
-
-    m_EIntakeMech = m_EMechRoot->Append<frc::MechanismLigament2d>("Turret", kEIntakeRadius.value(), 0_deg, kSimIntakeLineWidth, frc::Color8Bit{frc::Color::kPurple});
-    frc::SmartDashboard::PutData("Extender Sim", &m_EMech);
-
-    auto& extender_sim = m_extenderMotor.GetSimState();
-    extender_sim.Orientation = ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
-    extender_sim.SetMotorType(ctre::phoenix6::sim::TalonFXSimState::MotorType::KrakenX60);
 }
 
 // Runs in Simulation only!
@@ -219,28 +81,15 @@ void IntakeSubsystem::SimulationPeriodic() {
     auto& intake_sim = m_intakeSpinMotor.GetSimState();
     intake_sim.SetSupplyVoltage(frc::RobotController::GetBatteryVoltage());
 
-    auto& extender_sim = m_extenderMotor.GetSimState();
-    extender_sim.SetSupplyVoltage(frc::RobotController::GetBatteryVoltage());
-
     auto motor_voltage = intake_sim.GetMotorVoltage();
     m_IntakeSimModel.SetInputVoltage(motor_voltage);
 
-    auto eMotor_voltage = extender_sim.GetMotorVoltage();
-    m_EIntakeSimModel.SetInputVoltage(eMotor_voltage);
-
     // Simulate the 20ms run in the simulation model
     m_IntakeSimModel.Update(20_ms);
-    m_EIntakeSimModel.Update(20_ms);
 
     frc::sim::RoboRioSim::SetVInVoltage(frc::sim::BatterySim::Calculate({m_IntakeSimModel.GetCurrentDraw()}));
 
     // Update the simulated state for the Intake motor
     intake_sim.SetRawRotorPosition(kGearRatio * m_IntakeSimModel.GetAngle());
     intake_sim.SetRotorVelocity(kGearRatio * m_IntakeSimModel.GetVelocity());
-
-    extender_sim.SetRawRotorPosition(kEGearRatio * m_EIntakeSimModel.GetAngle());
-    extender_sim.SetRotorVelocity(kEGearRatio * m_EIntakeSimModel.GetVelocity());
-
-    // Update the simulated UI mechanism to the new angle based on the motor
-    m_EIntakeMech->SetAngle(CurrentAngle());
 }

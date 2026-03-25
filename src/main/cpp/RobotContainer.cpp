@@ -110,16 +110,16 @@ void RobotContainer::ConfigureBindings()
     driverJoystick.POVUp().OnTrue(m_indexerSubsystem.RunIndexerInReverse());
     driverJoystick.POVUp().OnFalse(m_indexerSubsystem.Stop());
 
-    operatorJoystick.X().OnTrue(m_intakeSubsystem.ExtendHopper());
-    operatorJoystick.X().OnFalse(m_intakeSubsystem.StopHopper());
-    operatorJoystick.B().OnTrue(m_intakeSubsystem.StowHopper());
-    operatorJoystick.B().OnFalse(m_intakeSubsystem.StopHopper());
+    operatorJoystick.X().OnTrue(m_hopperSubsystem.ExtendHopper());
+    operatorJoystick.X().OnFalse(m_hopperSubsystem.StopHopper());
+    operatorJoystick.B().OnTrue(m_hopperSubsystem.StowHopper());
+    operatorJoystick.B().OnFalse(m_hopperSubsystem.StopHopper());
 
     operatorJoystick.POVLeft().OnTrue(m_turretSubsystem.NudgeOffsetUp());
     operatorJoystick.POVRight().OnTrue(m_turretSubsystem.NudgeOffsetDown());
 
-    operatorJoystick.RightTrigger().WhileTrue(m_intakeSubsystem.AgitateToHelpIndexer());
-    operatorJoystick.RightTrigger().OnFalse(m_intakeSubsystem.StopHopper());
+    operatorJoystick.RightTrigger().WhileTrue(m_hopperSubsystem.AgitateToHelpIndexer());
+    operatorJoystick.RightTrigger().OnFalse(m_hopperSubsystem.StopHopper());
 
     operatorJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     operatorJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
@@ -197,11 +197,11 @@ void RobotContainer::ConfigurePathPlanner() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_intakeSubsystem.ExtendHopper().WithTimeout(0.5_s))
+        std::move(m_hopperSubsystem.ExtendHopper().WithTimeout(0.5_s))
     );
     NamedCommands::registerCommand(
         "Squeeze Hopper",
-        std::move(m_intakeSubsystem.StowHopper().WithTimeout(2_s))
+        std::move(m_hopperSubsystem.StowHopper().WithTimeout(2_s))
     );
     NamedCommands::registerCommand(
         "Run Intake",
