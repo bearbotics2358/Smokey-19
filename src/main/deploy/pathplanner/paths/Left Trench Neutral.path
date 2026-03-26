@@ -52,7 +52,7 @@
         "y": 0.637612612612612
       },
       "prevControl": {
-        "x": 2.9319270833333335,
+        "x": 2.931927083333334,
         "y": 0.9959201388888892
       },
       "nextControl": null,
@@ -60,7 +60,16 @@
       "linkedName": "Outpost"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.130307467057099,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.71888726207907,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -96,38 +105,9 @@
       "minWaypointRelativePos": 0.7644444444444455,
       "maxWaypointRelativePos": 1.9,
       "name": "Point Towards Zone"
-    },
-    {
-      "fieldPosition": {
-        "x": 7.0,
-        "y": 0.4
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 2.19111111111111,
-      "maxWaypointRelativePos": 2.6533333333333315,
-      "name": "Point Towards Zone"
     }
   ],
-  "eventMarkers": [
-    {
-      "name": "Extend Hopper",
-      "waypointRelativePos": 0.26666666666666666,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Run Intake",
-      "waypointRelativePos": 0.7733333333333342,
-      "endWaypointRelativePos": 2.6474654377880147,
-      "command": null
-    },
-    {
-      "name": "Squeeze Hopper",
-      "waypointRelativePos": 2.6545961002785456,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
