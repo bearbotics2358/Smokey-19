@@ -97,11 +97,8 @@ units::degree_t TurretSubsystem::AngleToHub() {
     units::degree_t robotAngle = robotPose.Rotation().Degrees();
     units::degree_t angleToHub;
 
-    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value()))) + 180_deg;
-    } else {
-        angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
-    }
+    angleToHub = units::degree_t(units::radian_t(atan2(strafe.value(), forward.value())));
+
     BearLog::Log("Turret/RawSetpoint", angleToHub);
     angleToHub -= robotAngle;
     while (angleToHub.value() > 180) {
@@ -120,11 +117,8 @@ units::degree_t TurretSubsystem::AngleToAllianceZone() {
     units::degree_t robotAngle = robotPose.Rotation().Degrees();
     units::degree_t angleToHub;
 
-    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed) {
-        angleToHub = 180_deg;
-    } else {
-        angleToHub = 0_deg;
-    }
+    angleToHub = 0_deg;
+
     BearLog::Log("Turret/RawSetpoint", angleToHub);
     angleToHub -= robotAngle;
     while (angleToHub.value() > 180) {
