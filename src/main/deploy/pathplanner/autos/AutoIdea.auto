@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "AutoIdea1"
@@ -39,28 +45,9 @@
                 }
               },
               {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
                 "type": "named",
                 "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
+                  "name": "Squeeze Hopper"
                 }
               }
             ]
@@ -92,6 +79,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "AutoIdea5"
@@ -120,28 +113,9 @@
                 }
               },
               {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
                 "type": "named",
                 "data": {
-                  "name": "Launch Fuel at Hub"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
+                  "name": "Squeeze Hopper"
                 }
               }
             ]
@@ -164,6 +138,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
           }
         },
         {
