@@ -199,7 +199,7 @@ void RobotContainer::ConfigurePathPlanner() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_hopperSubsystem.ExtendHopper().WithTimeout(0.5_s))
+        std::move(m_hopperSubsystem.ExtendHopper().WithTimeout(1_s))
     );
     NamedCommands::registerCommand(
         "Squeeze Hopper",
