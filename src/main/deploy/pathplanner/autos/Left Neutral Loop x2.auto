@@ -47,12 +47,6 @@
                       "data": {
                         "name": "Launch Fuel at Hub"
                       }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Indexer"
-                      }
                     }
                   ]
                 }
@@ -77,12 +71,6 @@
                       "type": "named",
                       "data": {
                         "name": "Launch Fuel at Hub"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Indexer"
                       }
                     }
                   ]
@@ -135,12 +123,6 @@
                       "data": {
                         "name": "Launch Fuel at Hub"
                       }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Indexer"
-                      }
                     }
                   ]
                 }
@@ -165,12 +147,6 @@
                       "type": "named",
                       "data": {
                         "name": "Launch Fuel at Hub"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Indexer"
                       }
                     }
                   ]

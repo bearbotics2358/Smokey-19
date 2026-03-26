@@ -224,7 +224,10 @@ void RobotContainer::ConfigurePathPlanner() {
     NamedCommands::registerCommand(
         "Launch Fuel at Hub",
         std::move(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(7.5_s)
+            frc2::cmd::Parallel(
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                m_indexerSubsystem.RunIndexerForLaunching()
+            ).WithTimeout(5_s)
         )
     );
     NamedCommands::registerCommand(
@@ -237,16 +240,6 @@ void RobotContainer::ConfigurePathPlanner() {
         "Stop Indexer",
         std::move(
             m_indexerSubsystem.Stop()
-        )
-    );
-    NamedCommands::registerCommand(
-        "Launch Fuel at Alliance Zone",
-        std::move(
-            frc2::cmd::Sequence(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
-                frc2::cmd::Wait(40_ms),
-                m_indexerSubsystem.RunIndexerForLaunching()
-            )
         )
     );
     NamedCommands::registerCommand(
