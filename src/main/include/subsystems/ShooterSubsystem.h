@@ -39,7 +39,7 @@ public:
 
     frc2::CommandPtr CalibrateHoodMotor();
 
-    static constexpr units::degree_t kFixedPositionHoodAngle = 65_deg;
+    static constexpr units::degree_t kFixedPositionHoodAngle = 60_deg;
 
     units::degree_t m_HoodOffset = 75_deg;
 
@@ -62,7 +62,7 @@ private:
     hardware::TalonFX m_FlywheelMotor{kFlywheelMotorId};
     hardware::TalonFX m_FlywheelFollowerMotor{kFlywheelFollowerMotorId};
     hardware::TalonFX m_FeederMotor{kFeederMotorId};
-    hardware::TalonFX m_HoodMotor{kShooterElevationMotorID};
+    //hardware::TalonFX m_HoodMotor{kShooterElevationMotorID};
 
     controls::VelocityVoltage m_ShooterVelocityVoltage = controls::VelocityVoltage(0_rpm).WithSlot(0);
     controls::VelocityVoltage m_FeederVelocityVoltage = controls::VelocityVoltage(0_rpm).WithSlot(0);

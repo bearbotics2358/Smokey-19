@@ -17,12 +17,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Empty Hopper"
                 }
               }

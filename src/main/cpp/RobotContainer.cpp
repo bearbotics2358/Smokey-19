@@ -124,9 +124,11 @@ void RobotContainer::ConfigureBindings()
     operatorJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     operatorJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
 
+    operatorJoystick.LeftBumper().OnTrue(m_intakeSubsystem.RunIntakeInReverse());
+    operatorJoystick.LeftBumper().OnFalse(m_intakeSubsystem.StopIntake());
+
     driverJoystick.LeftTrigger().OnFalse(m_intakeSubsystem.StopIntake());
     driverJoystick.LeftTrigger().OnTrue(m_intakeSubsystem.RunIntake());
-
 
     driverJoystick.RightBumper().OnTrue(
         frc2::cmd::Sequence(
@@ -197,7 +199,7 @@ void RobotContainer::ConfigurePathPlanner() {
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
-        std::move(m_hopperSubsystem.ExtendHopper().WithTimeout(0.5_s))
+        std::move(m_hopperSubsystem.ExtendHopper().WithTimeout(1_s))
     );
     NamedCommands::registerCommand(
         "Squeeze Hopper",
@@ -222,7 +224,10 @@ void RobotContainer::ConfigurePathPlanner() {
     NamedCommands::registerCommand(
         "Launch Fuel at Hub",
         std::move(
-            m_shooterSubsystem.EnableShooterWithFixedHoodAngle().WithTimeout(7.5_s)
+            frc2::cmd::Parallel(
+                m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
+                m_indexerSubsystem.RunIndexerForLaunching()
+            ).WithTimeout(5_s)
         )
     );
     NamedCommands::registerCommand(
@@ -235,16 +240,6 @@ void RobotContainer::ConfigurePathPlanner() {
         "Stop Indexer",
         std::move(
             m_indexerSubsystem.Stop()
-        )
-    );
-    NamedCommands::registerCommand(
-        "Launch Fuel at Alliance Zone",
-        std::move(
-            frc2::cmd::Sequence(
-                m_shooterSubsystem.EnableShooterWithFixedHoodAndFixedSpeed(),
-                frc2::cmd::Wait(40_ms),
-                m_indexerSubsystem.RunIndexerForLaunching()
-            )
         )
     );
     NamedCommands::registerCommand(

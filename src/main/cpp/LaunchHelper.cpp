@@ -35,7 +35,7 @@ void LaunchHelper::Init(std::function<units::degree_t()> hoodAngleSupplier,
     m_TrajectoryCalc.init();
     m_TrajectoryCalc.set_constant_shooter_elevation(true);
 
-    m_TrajectoryCalc.set_ball_compression(0.45);
+    m_TrajectoryCalc.set_ball_compression(0.422);
 
     m_Initialized = true;
 }
