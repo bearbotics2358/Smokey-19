@@ -42,7 +42,7 @@ void HopperSubsystem::ConfigureExtenderMotor() {
     extender_config.Slot0.kD = 0.0;
     extender_config.Slot0.kV = 0.12;
 
-    extender_config.MotionMagic.MotionMagicCruiseVelocity = 50_tps;
+    extender_config.MotionMagic.MotionMagicCruiseVelocity = 10_tps;
     extender_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
 
     extender_config.Feedback.FeedbackRemoteSensorID = m_ExtenderCANCoder.GetDeviceID();
@@ -82,14 +82,14 @@ frc2::CommandPtr HopperSubsystem::AgitateToHelpIndexer() {
 
 frc2::CommandPtr HopperSubsystem::AgitateIn(){
     return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.05_tr));
-    }).WithTimeout(0.5_s);
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.025_tr));
+    }).WithTimeout(1.5_s);
 }
 
 frc2::CommandPtr HopperSubsystem::AgitateOut(){
     return Run([this]{
         m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.25_tr));
-    }).WithTimeout(0.5_s);
+    }).WithTimeout(1_s);
 }
 
 frc2::CommandPtr HopperSubsystem::ExtendExtenderConstantVolts() {
