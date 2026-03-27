@@ -196,6 +196,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand()
 }
 
 void RobotContainer::ConfigurePathPlanner() {
+    const units::second_t kLaunchTime = 4_s;
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",
@@ -203,7 +204,7 @@ void RobotContainer::ConfigurePathPlanner() {
     );
     NamedCommands::registerCommand(
         "Squeeze Hopper",
-        std::move(m_hopperSubsystem.StowHopper().WithTimeout(2_s))
+        std::move(m_hopperSubsystem.AgitateToHelpIndexer().WithTimeout(kLaunchTime))
     );
     NamedCommands::registerCommand(
         "Run Intake",
@@ -227,7 +228,7 @@ void RobotContainer::ConfigurePathPlanner() {
             frc2::cmd::Parallel(
                 m_shooterSubsystem.EnableShooterWithFixedHoodAngle(),
                 m_indexerSubsystem.RunIndexerForLaunching()
-            ).WithTimeout(5_s)
+            ).WithTimeout(kLaunchTime)
         )
     );
     NamedCommands::registerCommand(

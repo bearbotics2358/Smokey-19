@@ -3,28 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.1764301801801804,
-        "y": 6.267004504504505
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.0150422798243084,
-        "y": 7.385960613638549
-      },
-      "isLocked": false,
-      "linkedName": "EndSweep"
-    },
-    {
-      "anchor": {
         "x": 4.0,
         "y": 7.36497034400949
       },
-      "prevControl": {
-        "x": 4.25,
-        "y": 7.36497034400949
-      },
+      "prevControl": null,
       "nextControl": {
-        "x": 3.75,
+        "x": 4.859335705812574,
         "y": 7.36497034400949
       },
       "isLocked": false,
@@ -119,50 +103,34 @@
         "x": 4.902949195246688,
         "y": 7.365797550036123
       },
-      "nextControl": {
-        "x": 2.1270495495495503,
-        "y": 7.363254504504505
-      },
-      "isLocked": false,
-      "linkedName": "Left Trench"
-    },
-    {
-      "anchor": {
-        "x": 2.1764301801801804,
-        "y": 6.267004504504505
-      },
-      "prevControl": {
-        "x": 2.2064423860662488,
-        "y": 6.515196501752305
-      },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "EndSweep"
+      "linkedName": "Left Trench"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.301610541727668,
+      "waypointRelativePos": 1.3016105417276682,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.8550512445095175,
+      "waypointRelativePos": 1.8550512445095175,
       "rotationDegrees": -115.0
     },
     {
-      "waypointRelativePos": 3.9721815519765835,
+      "waypointRelativePos": 2.9721815519765835,
       "rotationDegrees": -115.0
     },
     {
-      "waypointRelativePos": 5.1918008784773075,
+      "waypointRelativePos": 4.1918008784773075,
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 5.683748169838944,
+      "waypointRelativePos": 4.683748169838944,
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 6.431918008784791,
+      "waypointRelativePos": 5.431918008784791,
       "rotationDegrees": 0.0
     }
   ],

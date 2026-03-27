@@ -15,15 +15,15 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 3.0
+                  "name": "Launch Fuel at Hub"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Launch Fuel at Hub"
+                  "name": "Squeeze Hopper"
                 }
               }
             ]
@@ -33,6 +33,12 @@
           "type": "named",
           "data": {
             "name": "Stop Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Hopper"
           }
         },
         {
