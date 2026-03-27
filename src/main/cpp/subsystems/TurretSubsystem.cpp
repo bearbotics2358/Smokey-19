@@ -76,15 +76,15 @@ void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/TurretOffset", m_turretOffset);
 }
 
-frc2::CommandPtr TurretSubsystem::NudgeOffsetUp() {
-    return RunOnce([this] {
-        m_turretOffset += 5_deg;
+frc2::CommandPtr TurretSubsystem::NudgeOffsetUp(units::degree_t shift) {
+    return RunOnce([this, shift] {
+        m_turretOffset += shift;
     });
 }
 
-frc2::CommandPtr TurretSubsystem::NudgeOffsetDown() {
-    return RunOnce([this] {
-        m_turretOffset -= 5_deg;
+frc2::CommandPtr TurretSubsystem::NudgeOffsetDown(units::degree_t shift) {
+    return RunOnce([this, shift] {
+        m_turretOffset -= shift;
     });
 }
 
