@@ -115,8 +115,11 @@ void RobotContainer::ConfigureBindings()
     operatorJoystick.B().OnTrue(m_hopperSubsystem.StowHopper());
     operatorJoystick.B().OnFalse(m_hopperSubsystem.StopHopper());
 
-    operatorJoystick.POVLeft().OnTrue(m_turretSubsystem.NudgeOffsetUp());
-    operatorJoystick.POVRight().OnTrue(m_turretSubsystem.NudgeOffsetDown());
+    operatorJoystick.POVLeft().OnTrue(m_turretSubsystem.NudgeOffsetUp(5_deg));
+    operatorJoystick.POVRight().OnTrue(m_turretSubsystem.NudgeOffsetDown(5_deg));
+
+    operatorJoystick.POVUp().OnTrue(m_turretSubsystem.NudgeOffsetUp(45_deg));
+    operatorJoystick.POVDown().OnTrue(m_turretSubsystem.NudgeOffsetDown(45_deg));
 
     operatorJoystick.RightTrigger().WhileTrue(m_hopperSubsystem.AgitateToHelpIndexer());
     operatorJoystick.RightTrigger().OnFalse(m_hopperSubsystem.StopHopper());
@@ -181,8 +184,8 @@ void RobotContainer::ConfigureBindings()
     m_drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
 
     operatorJoystick.Y().OnTrue(m_turretSubsystem.ZeroTurret());
-    operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
-    operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
+    // operatorJoystick.POVUp().WhileTrue(m_FMSSubsystem.ManualShift("Red"));
+    // operatorJoystick.POVDown().WhileTrue(m_FMSSubsystem.ManualShift("Blue"));
     operatorJoystick.A().OnTrue(m_turretSubsystem.PointAtHub());
 
     //Don't use until tested
