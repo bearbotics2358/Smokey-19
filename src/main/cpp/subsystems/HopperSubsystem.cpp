@@ -82,8 +82,8 @@ frc2::CommandPtr HopperSubsystem::AgitateToHelpIndexer() {
 
 frc2::CommandPtr HopperSubsystem::AgitateIn(){
     return Run([this]{
-        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.025_tr));
-    }).WithTimeout(1.5_s);
+        m_extenderMotor.SetControl(m_ExtenderVoltage.WithPosition(0.05_tr));
+    }).WithTimeout(1_s);
 }
 
 frc2::CommandPtr HopperSubsystem::AgitateOut(){

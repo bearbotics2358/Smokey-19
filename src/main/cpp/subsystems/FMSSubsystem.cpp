@@ -10,6 +10,14 @@ void FMSSubsystem::Periodic() {
     BearLog::Log("FMS/MatchTime", GetMatchTime());
     CurrentShift();
     BearLog::Log("FMS/MyAllianceShift?", MyAllianceShift());
+
+    if (AutoWinner() == FMSSubsystem::autoWinner::kBlue) {
+        BearLog::Log("Auto Winner", std::string("#0000FF"));
+    } else if (AutoWinner() == FMSSubsystem::autoWinner::kRed) {
+        BearLog::Log("Auto Winner", std::string("#FF0000"));
+    } else {
+        BearLog::Log("Auto Winner", std::string("#ffffffff"));
+    }
 }
 
 FMSSubsystem::autoWinner FMSSubsystem::AutoWinner() {
