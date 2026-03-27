@@ -71,7 +71,9 @@ void TurretSubsystem::Periodic() {
     BearLog::Log("Turret/offset", m_turretOffset);
     BearLog::Log("Turret/PoseRotation", m_GetCurrentBotPose().Rotation().Degrees());
 
-    GoToAngle();
+    if (RobotZoneHelper::isRobotInMyAllianceZone(m_GetCurrentBotPose())) {
+        GoToAngle();
+    }
     BearLog::Log("Turret/Sensor", m_Sensor.Get());
     BearLog::Log("Turret/TurretOffset", m_turretOffset);
 }
@@ -173,11 +175,7 @@ void TurretSubsystem::SetGoalAngle() {
     if (m_pointAtHubToggle == false) {
         m_setpointAngle = m_stowAngle;
     } else {
-        if (RobotZoneHelper::isRobotInMyAllianceZone(m_GetCurrentBotPose())) {
-            m_setpointAngle = AngleToHub();
-        } else if (RobotZoneHelper::isRobotInNeutralZone(m_GetCurrentBotPose())) {
-            m_setpointAngle = AngleToAllianceZone();
-        }
+        m_setpointAngle = AngleToHub();
     }
 }
 
