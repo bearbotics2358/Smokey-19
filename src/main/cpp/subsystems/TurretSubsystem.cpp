@@ -78,13 +78,13 @@ void TurretSubsystem::Periodic() {
 
 frc2::CommandPtr TurretSubsystem::NudgeOffsetUp() {
     return RunOnce([this] {
-        m_turretOffset += 2_deg;
+        m_turretOffset += 5_deg;
     });
 }
 
 frc2::CommandPtr TurretSubsystem::NudgeOffsetDown() {
     return RunOnce([this] {
-        m_turretOffset -= 2_deg;
+        m_turretOffset -= 5_deg;
     });
 }
 

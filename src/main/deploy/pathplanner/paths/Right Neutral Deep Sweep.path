@@ -64,16 +64,16 @@
     },
     {
       "anchor": {
-        "x": 4.0,
+        "x": 3.439122182680902,
         "y": 0.6528635902189261
       },
       "prevControl": {
-        "x": 5.147361681232345,
+        "x": 4.586483863913248,
         "y": 0.6699976556374025
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "StartUnderTrench"
+      "linkedName": null
     }
   ],
   "rotationTargets": [

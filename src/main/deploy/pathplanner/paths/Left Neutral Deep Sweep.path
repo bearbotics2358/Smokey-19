@@ -64,16 +64,16 @@
     },
     {
       "anchor": {
-        "x": 4.0,
+        "x": 3.4283629893238445,
         "y": 7.36497034400949
       },
       "prevControl": {
-        "x": 5.147361681232345,
+        "x": 4.57572467055619,
         "y": 7.382104409427966
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Trench"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
