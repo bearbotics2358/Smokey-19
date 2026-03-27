@@ -196,7 +196,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand()
 }
 
 void RobotContainer::ConfigurePathPlanner() {
-    const units::second_t kLaunchTime = 4_s;
+    const units::second_t kLaunchTime = 12_s;
     using namespace pathplanner;
     NamedCommands::registerCommand(
         "Extend Hopper",

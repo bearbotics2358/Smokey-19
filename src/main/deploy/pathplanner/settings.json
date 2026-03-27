@@ -8,7 +8,9 @@
   ],
   "autoFolders": [
     "Feeding",
-    "Simple Preload"
+    "Single Cycles",
+    "Simple Preload",
+    "Single Cycles With Preload"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
