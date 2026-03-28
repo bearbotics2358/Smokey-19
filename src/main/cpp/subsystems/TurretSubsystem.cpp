@@ -28,6 +28,8 @@ TurretSubsystem::TurretSubsystem(std::function<frc::Pose2d()> getBotPose)
     // In this config object, we can also apply other things such as current limits,
     // brake mode, which direction is positive rotation, etc.
     ctre::phoenix6::configs::TalonFXConfiguration rotation_config;
+    rotation_config.MotionMagic.MotionMagicCruiseVelocity = 45_tps;
+    rotation_config.MotionMagic.MotionMagicAcceleration = 160_tr_per_s_sq;
     rotation_config
         .WithSlot0(slot0Config)
         .MotorOutput.WithInverted(ctre::phoenix6::signals::InvertedValue::Clockwise_Positive)

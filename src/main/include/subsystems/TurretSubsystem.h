@@ -60,7 +60,7 @@ class TurretSubsystem : public frc2::SubsystemBase {
         bool m_TurretZeroedInit = false;
         bool m_TurretZeroed = true;
 
-        controls::PositionVoltage m_RotationVoltage = controls::PositionVoltage(0_tr).WithSlot(0);
+        controls::MotionMagicVoltage m_RotationVoltage = controls::MotionMagicVoltage(0_tr).WithSlot(0);
 
         ctre::phoenix6::hardware::TalonFX m_turretSpinMotor;
         std::function<frc::Pose2d()> m_GetCurrentBotPose;
