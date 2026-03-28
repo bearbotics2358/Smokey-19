@@ -7,6 +7,7 @@
 #include <frc/simulation/RoboRioSim.h>
 #include <frc/util/Color8Bit.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc2/command/button/RobotModeTriggers.h>
 
 using namespace ctre::phoenix6;
 
@@ -17,6 +18,11 @@ IntakeSubsystem::IntakeSubsystem()
     if (frc::RobotBase::IsSimulation()) {
         SimulationInit();
     }
+
+    // Be sure to stop the intake if the robot is disabled while it's running
+    frc2::RobotModeTriggers::Disabled().WhileTrue(
+        StopIntake().IgnoringDisable(true)
+    );
 }
 
 void IntakeSubsystem::ConfigureIntakeMotor() {

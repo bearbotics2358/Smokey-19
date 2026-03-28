@@ -24,6 +24,11 @@ ShooterSubsystem::ShooterSubsystem()
         SimulationInit();
     }
 
+    // Be sure to stop the shooter if the robot is disabled while it's running
+    frc2::RobotModeTriggers::Disabled().WhileTrue(
+        StopShooter().IgnoringDisable(true)
+    );
+
     // frc2::RobotModeTriggers::Autonomous().OnTrue(
     //     frc2::cmd::RunOnce([this] {
     //         if (false == m_HoodZeroed) {

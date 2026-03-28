@@ -5,6 +5,7 @@
 #include <frc/RobotController.h>
 #include <frc/simulation/BatterySim.h>
 #include <frc/simulation/RoboRioSim.h>
+#include <frc2/command/button/RobotModeTriggers.h>
 
 IndexerSubsystem::IndexerSubsystem():
     m_indexerSpinMotor{kIndexerSpinMotorID}
@@ -33,6 +34,11 @@ IndexerSubsystem::IndexerSubsystem():
         return abs(m_indexerSpinMotor.GetVelocity().GetValue().value()) < 1 &&
             abs(m_indexerSpinMotor.GetTorqueCurrent().GetValue().value()) > 30;
     }).Debounce(0.1_s);
+
+    // Be sure to stop the indexer if the robot is disabled while it's running
+    frc2::RobotModeTriggers::Disabled().WhileTrue(
+        Stop().IgnoringDisable(true)
+    );
 }
 
 frc2::CommandPtr IndexerSubsystem::RunIndexerForLaunching() {
